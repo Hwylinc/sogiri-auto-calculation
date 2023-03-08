@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+
+  # phpのcompose setting
+  php:
+    build: ./docker/php
+    volumes:
+      - ./app:/var/www/html
+      - ./docker/php/default.conf:/etc/apache2/sites-enabled/000-default.conf
+      # php debug run setting
+      - type: bind
+        source: ./docker/php/docker-php-ext-xdebug.ini
+        target: /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    ports:
+      - 8081:80
+    extra_hosts:
+    #   # ご自身のPCのIPアドレスを指定してください
+      - "host.docker.internal:192.168.253.3"
+    tty: true
+  
+  # mysqlのcompose setting
+  mysql:
+    build: ./docker/mysql
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_USER: sogiri
+      MYSQL_PASSWORD: sogiri
+      MYSQL_DATABASE: sogiri
+      MYSQL_ROOT_PASSWORD: root
+    tty:  true
+    # restart: always
+    volumes:
+      - mysql_data:/var/lib/postgres/data
+
+volumes:        # volume = docker内で永続化
+  mysql_data:
+  

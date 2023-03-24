@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->integer('authority')->nullable(false)->comment('権限 1: 上位管理者 2: 下位管理者 3: 作業者');
+            $table->softDeletes();
         });
     }
 

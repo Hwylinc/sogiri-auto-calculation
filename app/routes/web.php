@@ -16,3 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/cal-test', [App\Http\Controllers\CsvCalculatorController::class, 'index']);
+

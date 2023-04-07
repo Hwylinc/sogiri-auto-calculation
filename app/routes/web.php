@@ -18,5 +18,6 @@ Route::get('/', function () {
 });
 
 
-Route::get('/cal-test', [App\Http\Controllers\CsvCalculatorController::class, 'index']);
+Route::get('/cal-test', [App\Http\Controllers\CsvCalculatorController::class, 'calTest']);
+Route::get('/cal-second-test', [App\Http\Controllers\CsvCalculatorController::class, 'calSecondTest']);
 

@@ -111,19 +111,29 @@ class CsvCalculatorController extends Controller
         // テストデータ生成　End
         // *****************************************************
         // 鉄筋径別に同時切断設定
-        foreach ($data as $size => $array) {     
+        foreach ($data as $size => $array) {
+            echo "□■□■□■□■□■□■□■□■□■□■□■□■　鉄筋径：".$size." 　計算開始　□■□■□■□■□■□■□■□■□■□■□■□■<br><br>";
             // 一番少ない本数を取得
             $min = $this->getMinAmount($size, $array);
             $min_renew_flg = false;
             $lengths[] = 'test';
             // 全て切断しているかの確認ループ
-            while ($min > 0) {
+            while ($min > 0) {                
                 // trueの時新たな最小値を取得する必要がある
                 if ($min_renew_flg) {
                     $min = $this->getMinAmount($size, $array);   
                 }
                 // trueの時新たな最小値を取得する必要がある
                 $min_renew_flg = true;
+                if ($min <= 0) {
+                    continue;
+                }
+                // *****************************************************
+                // 切断する素材のリストを吐き出すだけの関数（テスト時に使用するだけなので後で削除必要）
+                // *****************************************************
+                echo '<br>＝＝＝＝＝＝＝同時切断：　'.$min.'本 開始 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ <br>';
+                $message = '【切断する素材のリスト（切断ロジック計算開始時）】';
+                $this->getItemListMessage($message, $min, $array, $size);   
                 // 切断りストをリセット
                 $lengths = array();
                 foreach ($array as $port_length => $amount) {
@@ -132,10 +142,14 @@ class CsvCalculatorController extends Controller
                     if ($amount < $min) {
                         continue;
                     }
+                    // 最小値で何セット切断できるか取得
+                    $set_num = floor($amount / $min);
                     // 切断するリストに入れる
-                    $lengths[] = $temp[1];
+                    for ($i=0; $i < $set_num; $i++) { 
+                        $lengths[] = $temp[1];
+                    }
                     // 未切断の本数を更新
-                    $array[$port_length] = $amount - $min;
+                    $array[$port_length] = $amount - ($min*$set_num);
                     // 人組でも現在の最小切断数より大きければ、そのままの最小数で続行
                     if ($array[$port_length] > $min) {
                         $min_renew_flg = false;
@@ -143,10 +157,34 @@ class CsvCalculatorController extends Controller
                 }
                 // 切断指示作成
                 $test = $this->getCombination($lengths);
+                echo '<br>＝＝＝＝＝＝＝同時切断：　'.$min.'本 終了 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝ <br><br><br>';
+            }
+            $message = '【切断計算後の素材のリスト】';
+            $this->getItemListMessage($message, $min, $array, $size);
+            echo "<br><br>□■□■□■□■□■□■□■□■□■□■□■□■　鉄筋径：".$size." 　計算終了　□■□■□■□■□■□■□■□■□■□■□■□■<br><br>";
+        }
+    }
+
+
+    // *****************************************************
+    // 切断する素材のリストを吐き出すだけの関数（テスト時に使用するだけなので後で削除必要）
+    // *****************************************************
+    public function getItemListMessage($message, $min, $array, $size)
+    {
+        // 初期の入力値で最小の本数を取得
+        echo '<br>'.$message.'<br>';
+        foreach ($array as $port_length => $amount) {
+            echo "鉄筋径：　".$size."　長さ：　".$port_length."mm"."　本数：　".$amount."本<br>";
+            if($min == 0) {
+                $min = $amount;
+            }
+            if($min > $amount) {
+                $min = $amount;
             }
         }
-dd('sss');
     }
+
+
 
     /*
      * 最適な組み合わせを
@@ -192,9 +230,8 @@ dd('sss');
             array_splice($cut_list, $best_cut_index, 1);
         }
         $result = array();
-        echo "<br><br>【使用した8000mmの棒の設置回数】 <br>" . count($rods) . "回<br><br>";
         $count = 0;
-        echo "【切断の組み合わせ】<br><br>";
+        echo "<br>【切断の組み合わせ】<br>";
         foreach ($cuts as $i => $cut) {
             if ($count != $cut[1]+1) {
                 if($i != 0) {
@@ -234,7 +271,9 @@ dd('sss');
         $min = 0;
         // 初期の入力値で最小の本数を取得
         foreach ($array as $port_length => $amount) {
-            echo "キー：　".$port_length."mm"."　本数：　".$amount."本<br>";
+            if ($amount == 0) {
+                continue;
+            }
             if($min == 0) {
                 $min = $amount;
             }
@@ -246,8 +285,6 @@ dd('sss');
         if ($max_limit[$size] < $min) {
             $min = $max_limit[$size];
         }
-        echo "<br><br><br><br><br>";
-        echo "【今回は横並び】<br>".$min."本<br>";
         return $min;
     }
 

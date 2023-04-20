@@ -24,3 +24,4 @@ Route::get('/cal-second-test', [App\Http\Controllers\CsvCalculatorController::cl
 
 
 Route::get('/cal-third-test', [App\Http\Controllers\TestCalculatorController::class, 'index']);
+Route::get('/cal-forth-test', [App\Http\Controllers\TestCalculatorController::class, 'forth']);

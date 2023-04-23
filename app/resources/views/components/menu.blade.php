@@ -43,10 +43,9 @@
             <div class="menu-bg-color w-[220px] flex flex-col ">
     
                 <ul>
-                    <li class="p-4">□ 鉄筋計測</li>
-                    <li class="p-4">□ 計測結果履歴一覧</li>
-                    <li class="p-4">□ 予備材一覧</li>
-                    <li class="p-4">□ 部材集計データ</li>
+                    @foreach ($menuList as $key => $array)
+                        <li class="p-4 {{ $array['select'] ? 'main-bg-color' : '' }} ">□ {{ $array['title'] }}</li>
+                    @endforeach
                 </ul>
 
                 <div class="mt-auto pl-2 pr-2 text-center">

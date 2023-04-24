@@ -73,8 +73,7 @@ class TestController extends Controller
 
         // 選択項目が6個以上の場合は元の画面に戻す
         if(count($ids) > 5) {
-            $this->addFlash('error', '6個以上は選択できません。');
-            return back()->withInput();
+            $this->throwError('6個以上は選択できません。');
         }
 
         $spareIns->update_all_priority_reset($value["select_id"]);

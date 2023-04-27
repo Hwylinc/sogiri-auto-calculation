@@ -1,0 +1,21 @@
+1. 以下のコマンドを実行
+    npm install -D tailwindcss postcss autoprefixer
+    npx tailwindcss init
+
+2. resources/css/app.css ファイルに以下を記載
+    @tailwind base;
+    @tailwind components;
+    @tailwind utilities;
+
+3.  postcss.config.js ファイルを作成し以下を記載
+    module.exports = {
+        plugins: {
+            tailwindcss: {},
+            autoprefixer: {},
+        },
+    }
+
+4.  npm run dev もしくは npm run buildでtailwindo cssのクラスが反映されているか確認する
+
+※参考サイト
+http://blog.livedoor.jp/nnmy/archives/55088059.html

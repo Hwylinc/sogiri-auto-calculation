@@ -1,0 +1,35 @@
+1.  jqueryのinstall
+    npm install jquery –save
+
+2.  vite.config.jsを以下の形に変更
+    import { defineConfig } from 'vite';
+    import laravel from 'laravel-vite-plugin';
+
+    export default defineConfig({
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.js'],
+                refresh: true,
+            }),
+        ],
+        server: {
+            host: true,
+            hmr: { 
+                host: 'localhost'
+            },
+        },
+        resolve: {
+            alias: {
+                '$': 'jQuery',
+            }
+        }
+    });
+
+3.  resources/js/app.js に追記
+    import jQuery from ‘jquery’;
+    window.$ = jQuery;
+
+4.  jqueryが動くか確認
+
+※参考サイト
+https://www.ktsys.jp/wp/archives/2960

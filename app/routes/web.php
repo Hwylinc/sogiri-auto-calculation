@@ -32,7 +32,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-
+Auth::routes();
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/cal-test', [App\Http\Controllers\CsvCalculatorController::class, 'calTest']);
 Route::get('/cal-second-test', [App\Http\Controllers\CsvCalculatorController::class, 'calSecondTest']);
 
@@ -43,5 +44,3 @@ Route::get('/spare/{screen}/{select_id}', function(Request $request, $screen, $s
 Route::post('/spare/{screen}/{select_id}', function(Request $request, $screen, $select_id) {
     return routeStore($request, App\Http\Controllers\TestController::class, 'edit', ['screen' => $screen, 'select_id' => $select_id]);
 })->name('spare-edit');
-
-

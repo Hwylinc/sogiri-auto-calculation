@@ -1,0 +1,1 @@
+<p>404 | {{ $exception->getMessage() }}</p>

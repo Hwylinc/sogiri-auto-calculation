@@ -1,4 +1,4 @@
-<div>
+<div class="h-[36px]">
     <div>
         <ul>
             @if(session('message'))

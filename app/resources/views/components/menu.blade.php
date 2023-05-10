@@ -15,11 +15,6 @@
         </style>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-        <style>
-            /* .justify-between {
-    justify-content: space-between;
-} */
-        </style>
     </head>
 <body class="h-screen">
 

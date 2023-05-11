@@ -53,13 +53,11 @@ Route::middleware('auth')->group(function(){
     // 5_ * （計算管理) 
     Route::controller(App\Http\Controllers\CalculatorController::class)->group(function () {
         // 計算開始確認画面
-        Route::get('/calculate/ready',                     'getReady')->name('calculate.ready');
+        Route::get('/calculate/ready/{calculation_id}',    'getReady')->name('calculate.ready');
         // 計算結果確認画面
-        Route::get('/calculate/result-confirm',            'getResultConfirm')->name('calculate.confirm');
-        // 計算結果登録処理
-        Route::post('/calculate/complete',                 'postComplete')->name('calculate.complete');
+        Route::get('/calculate/start/{calculation_id}',    'getCaliculationStart')->name('calculate.start');
         // 計算結果完了画面
-        Route::get('/calculate/complete',                  'getComplete')->name('calculate.done');
+        Route::get('/calculate/complete/{calculation_id}/{diameter_id?}', 'getComplete')->name('calculate.complete');
         // 計算結果履歴一覧画面
         Route::get('/calculate/list',                      'getList')->name('calculate.list');
         // 計算結果詳細画面

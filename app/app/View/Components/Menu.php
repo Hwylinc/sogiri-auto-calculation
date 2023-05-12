@@ -19,10 +19,10 @@ class Menu extends Component
     public function __construct($selectPage="1")
     {
         $this->menuList = [
-            '1' => ['title' => '鉄筋計測', 'select' => false, 'route_name' => 'spare', 'route_path' => ['screen' => 'list', 'select_id' => '1']],
-            '2' => ['title' => '計測結果履歴一覧', 'select' => false, 'route_name' => 'spare', 'route_path' => ['screen' => 'list', 'select_id' => '1']],
-            '3' => ['title' => '予備材一覧', 'select' => false, 'route_name' => 'spare', 'route_path' => ['screen' => 'list', 'select_id' => '1']],
-            '4' => ['title' => '部材集計データ', 'select' => false, 'route_name' => 'spare', 'route_path' => ['screen' => 'list', 'select_id' => '1']],
+            '1' => ['title' => '鉄筋計測', 'select' => false, 'route_name' => 'rebar.register', 'param' => ['diameter' => "1"]],
+            '2' => ['title' => '計測結果履歴一覧', 'select' => false, 'route_name' => 'spare.list', 'param' => ['factry_id' => '1']],
+            '3' => ['title' => '予備材一覧', 'select' => false, 'route_name' => 'spare.list', 'param' => ['factry_id' => '1']],
+            '4' => ['title' => '部材集計データ', 'select' => false, 'route_name' => 'spare.list', 'param' => ['factry_id' => '1']],
         ];
 
         $this->menuList[$selectPage]['select'] = true;

@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/rebar/select',                              'getSelect')->name('rebar.select');
         // 鉄筋情報手入力画面
         Route::get('/rebar/register/{diameter}',                 'getRegister')->name('rebar.register');
+        // 鉄筋情報手入力一時保存
+        Route::post('/rebar/store',                              'postStore')->name('rebar.store');
         // 鉄筋情報手入力確認画面
         Route::get('/rebar/confirm/{diameter}',                  'getConfirm')->name('rebar.confirm');
         // 鉄筋情報手入力編集画面
@@ -53,15 +55,15 @@ Route::middleware('auth')->group(function(){
     // 5_ * （計算管理) 
     Route::controller(App\Http\Controllers\CalculatorController::class)->group(function () {
         // 計算開始確認画面
-        Route::get('/calculate/ready/{calculation_id}',    'getReady')->name('calculate.ready');
+        Route::get('/calculate/ready/{calculation_id}',                    'getReady')->name('calculate.ready');
         // 計算結果確認画面
-        Route::get('/calculate/start/{calculation_id}',    'getCaliculationStart')->name('calculate.start');
+        Route::get('/calculate/start/{calculation_id}',                    'getCaliculationStart')->name('calculate.start');
         // 計算結果完了画面
         Route::get('/calculate/complete/{calculation_id}/{diameter_id?}', 'getComplete')->name('calculate.complete');
         // 計算結果履歴一覧画面
-        Route::get('/calculate/list',                      'getList')->name('calculate.list');
+        Route::get('/calculate/list',                                      'getList')->name('calculate.list');
         // 計算結果詳細画面
-        Route::get('/calculate/detail/{calculation_id}',   'getDetail')->name('calculate.detail');
+        Route::get('/calculate/detail/{calculation_id}/{diameter_id?}',   'getDetail')->name('calculate.detail');
     });
 
     // 6_ * （予備材管理) 

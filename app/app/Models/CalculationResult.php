@@ -26,5 +26,4 @@ class CalculationResult extends Model
     public function scopeGetCalculationResultListCondition($query, $params) {
         return $query->where('code', '=', $params['code']);
     }
-
 }

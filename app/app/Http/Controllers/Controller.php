@@ -27,7 +27,7 @@ class Controller extends BaseController
             return $reteurn_result;
         } catch(Exception $e) {
             DB::rollBack();
-            $this->addFlash('error', $e->getMessage());
+            $this->addFlash($request, 'error', $e->getMessage());
             return back()->withInput();
         }
     }
@@ -52,9 +52,9 @@ class Controller extends BaseController
      * @param String $messageTxt　メッセージ内容
      * @return void
      */
-    public function addFlash(String $messageKbn, String $messageTxt)
+    public function addFlash($request, String $messageKbn, String $messageTxt)
     {
-        $sessionStore = $this->requestStore->session();
+        $sessionStore = $request->session();
         $messageKbn = 'message.' . $messageKbn;
 
         if ($sessionStore->has('$messageKbn')) {

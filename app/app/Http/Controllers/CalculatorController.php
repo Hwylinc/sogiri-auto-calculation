@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Diameter;
+use App\Models\CalculationCode;
 use App\Models\CalculationResult;
-use App\Models\CalculationRequest;
+use App\Models\CalculationRequests;
 use App\Http\Controllers\Traits\DiameterTrait;
 use App\Http\Controllers\Traits\CalculatorTrait;
 use App\Http\Controllers\Traits\CalculatorResultTrait;
@@ -28,7 +29,7 @@ class CalculatorController extends BaseController
     // 計算開始確認画面
     // *******************************************
     public function getReady(
-        CalculationRequest $calculationRequestModel
+        CalculationRequests $calculationRequestModel
      , $calculation_id
     ) {
         // 計算対象一覧の取得
@@ -47,7 +48,7 @@ class CalculatorController extends BaseController
     // 計算結果登録処理
     // *******************************************
     public function getCaliculationStart(
-        CalculationRequest $calculationRequestModel
+        CalculationRequests $calculationRequestModel
       , CalculationResult $calculationResultModel
       , Diameter $diameterModel
       , $calculation_id
@@ -113,18 +114,46 @@ class CalculatorController extends BaseController
     // *******************************************
     // 計算結果履歴一覧画面
     // *******************************************
-    public function getList()
-    {
-        dd('計算結果履歴一覧画面');
+    public function getList(
+        CalculationCode $calculationCodeModel
+      , CalculationResult $calculationResultModel
+    ) {
+        // 既存の計算コード一覧取得
+        $codeList = $calculationCodeModel->all();
+        // 計算済みのコードを取得
+        $caliculatedCodeList = $this->getCalculatedList($calculationResultModel, $codeList);
+
+        return view('calculator.list', [
+            'caliculatedCodeList'   => $caliculatedCodeList
+        ]);    
     
     }
     
     // *******************************************
     // 計算結果詳細画面
     // *******************************************
-    public function getDetail($calculation_id)
-    {
-        dd('計算結果詳細画面');
-    
+    public function getDetail(
+        CalculationResult $calculationResultModel
+      , Diameter $diameterModel
+      , $calculation_id
+      , $diameter_id = null
+    ) {
+        // 鉄筋径一覧取得
+        $diameterList = $diameterModel->all();
+        // 表示用のリストに加工
+        $diameterDisplayList = $this->convertDiameterDisplayData($diameterList);
+        
+        $diameter_id = empty($diameter_id) ? $diameterList[0]['id'] : $diameter_id;        
+        // 紐づく計算結果を取得
+        $calculationResultList = $this->getCalculationResultList($calculationResultModel, $calculation_id);
+        // 表示用のリストに加工
+        $resultDisplayList = $this->convertResultDisplayData($calculationResultList);
+
+        return view('calculator.detail', [
+            'resultDisplayList'   => $resultDisplayList
+          , 'diameterDisplayList' => $diameterDisplayList
+          , 'calculation_id'      => $calculation_id
+          , 'diameter_id'         => $diameter_id 
+        ]);   
     }
 }

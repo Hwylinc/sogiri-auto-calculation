@@ -63,4 +63,37 @@ trait CalculatorResultTrait
         
         return $resultDisplayList;
     }
+
+
+    /* **************************************** */
+    /*  計算済みのコードを取得
+    /* **************************************** */
+    private function getCalculatedList($calculationResultModel, $codeList)
+    {
+        $calculatedList = [];
+        if (!empty($codeList)) {
+            // 計算コード一覧をループ
+            foreach ($codeList as $params) {
+                // 計算コードに紐づく計算結果があるかどうか確認
+                $data = $this->getCalculatedCodeData($calculationResultModel, $params);
+                if (!empty($data['code'])) {
+                    // 計算コードに紐づく計算結果があればそのコードをリストに追加
+                    $calculatedList[] = $data['code'];
+                }
+            }
+        }
+        return $calculatedList;
+    }    
+    
+    /* **************************************** */
+    /* 計算済みのコード情報を取得
+    /* **************************************** */
+    private function getCalculatedCodeData(
+        $calculationResultModel
+      , $params
+    ) {
+        $data = $calculationResultModel->getCalculationResultListCondition($params)->first(['code']);
+        
+        return $data;
+    }
 }

@@ -41,7 +41,7 @@
                     @foreach ($menuList as $key => $array)
                         <li 
                             class="p-4 {{ $array['select'] ? 'main-bg-color' : '' }} " 
-                            onclick="location.href='{{ array_key_exists('route_path', $array) ? route($array['route_name'], $array['route_path']) : route($array['route_name']) }}'"
+                            onclick="location.href='{{ array_key_exists('param', $array) ? route($array['route_name'], $array['param']) : route($array['route_name']) }}'"
                         >□ 
                             {{ $array['title'] }}
                         </li>

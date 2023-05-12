@@ -7,7 +7,7 @@
             <div class="mt-8">
                 @foreach ($diameters as $diameter)
                     <a 
-                        href="{{ route('spare', ['screen' => 'list', 'select_id' => $diameter->id])}}" 
+                        {{-- href="{{ route('spare', ['screen' => 'list', 'select_id' => $diameter->id])}}"  --}}
                         class="
                             button 
                             @if($page['now'] == $diameter->id) select @endif

@@ -71,7 +71,7 @@ Route::middleware('auth')->group(function(){
     // 6_ * （予備材管理) 
     Route::controller(App\Http\Controllers\SpareController::class)->group(function () {
         // 工場別予備材一覧
-        Route::get('/spare/{factry_id}',       'getList')->name('spare.list');
+        Route::get('/spare/list/{factry_id}',   'getList')->name('spare.list');
         // 予備材編集画面
         Route::get('/spare/edit/{factry_id}',  'getEdit')->name('spare.edit');
         // 編集完了処理
@@ -105,11 +105,3 @@ function routeStore($request, $controller, $exe, $value=null) {
     $instance = new $controller();
     return $instance->store($request, $exe, $value);
 }
-
-// 予備材一覧
-Route::get('/spare/{screen}/{select_id}', function(Request $request, $screen, $select_id) {
-    return routeStore($request, App\Http\Controllers\TestController::class, 'get', ['screen' => $screen, 'select_id' => $select_id]);
-})->name('spare');
-Route::post('/spare/{screen}/{select_id}', function(Request $request, $screen, $select_id) {
-    return routeStore($request, App\Http\Controllers\TestController::class, 'edit', ['screen' => $screen, 'select_id' => $select_id]);
-})->name('spare-edit');

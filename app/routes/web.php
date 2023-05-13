@@ -92,16 +92,5 @@ Route::middleware('auth')->group(function(){
 });
 
 
-/**
- * Undocumented function
- *
- * @param [type] $request require　リクエスト内容
- * @param [type] $controller require　　routeのcontroller
- * @param [type] $exe       require 実行メソッド
- * @param [type] $value　　　パラメータ
- * @return void
- */
-function routeStore($request, $controller, $exe, $value=null) {
-    $instance = new $controller();
-    return $instance->store($request, $exe, $value);
-}
+Route::get('/cal-third-test', [App\Http\Controllers\TestCalculatorController::class, 'index']);
+Route::get('/cal-forth-test', [App\Http\Controllers\TestCalculatorController::class, 'forth']);

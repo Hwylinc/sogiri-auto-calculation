@@ -41,7 +41,7 @@ class CalculationRequestsSeeder extends Seeder
                 $insert_data['display_order'] = $count;
                 $insert_data['user_id']       = 1;
 
-                \App\Models\CalculationRequest::create([
+                \App\Models\CalculationRequests::create([
                     "code"          => $insert_data["code"],
                     "length"        => $insert_data["length"],
                     "number"        => $insert_data["number"],

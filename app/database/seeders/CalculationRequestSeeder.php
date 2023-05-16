@@ -4,11 +4,11 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\CalculationRequest;
+use App\Models\CalculationRequests;
 use App\Models\CalculationCode;
 use App\Models\Diameter;
 
-class CalculationRequestSeeder extends Seeder
+class CalculationRequestsSeeder extends Seeder
 {
     /**
      * Run the database seeds.

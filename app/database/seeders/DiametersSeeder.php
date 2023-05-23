@@ -16,23 +16,23 @@ class DiametersSeeder extends Seeder
     public function run()
     {
         Diameter::create([
-            'size' => 'D10',
+            'size' => 10,
         ]);
 
         Diameter::create([
-            'size' => 'D13',
+            'size' => 13,
         ]);
 
         Diameter::create([
-            'size' => 'D16',
+            'size' => 16,
         ]);
 
         Diameter::create([
-            'size' => 'D19',
+            'size' => 19,
         ]);
 
         Diameter::create([
-            'size' => 'D22',
+            'size' => 22,
         ]);
     }
 }

@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/rebar/list',                                'getList')->name('rebar.list');
         // 鉄筋情報入力方法・工場選択画面
         Route::get('/rebar/select',                              'getSelect')->name('rebar.select');
+        // 鉄筋情報入力保存
+        Route::post('/rebar/select-store',                       'postSelect')->name('rebar.select-store');
         // 鉄筋情報手入力画面
         Route::get('/rebar/register/{diameter}',                 'getRegister')->name('rebar.register');
         // 鉄筋情報手入力一時保存

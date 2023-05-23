@@ -15,7 +15,7 @@
     <!-- Style -->
     <link rel="stylesheet" href="{{ mix('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-
+    @yield('pageCss')
     <!-- Scripts -->
     <script src="{{ mix('js/app.js') }}" defer></script>
 </head>

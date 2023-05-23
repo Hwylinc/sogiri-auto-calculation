@@ -47,6 +47,14 @@ class CalculationRequests extends Model
     {
         return self::where('id', $id)->delete();
     }
+
+    // *******************************************
+    // 計算対象一覧情報を取得する条件
+    // *******************************************
+    public function scopeGetCalculationRequestListCondition($query, $params) {
+        return $query->join('diameters', 'calculation_requests.diameter_id', '=', 'diameters.id')
+        ->where('calculation_requests.code', '=', $params['code']);
+    }
 }
 
 ?>

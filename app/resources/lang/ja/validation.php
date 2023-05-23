@@ -154,6 +154,9 @@ return [
       |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'house_name' => '邸名',
+        'client_name' => 'メーカー名'
+    ],
 
 ];

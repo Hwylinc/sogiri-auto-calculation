@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('diameters', function (Blueprint $table) {
+        Schema::create('calculation_groups', function (Blueprint $table) {
             $table->id();
-            $table->integer('size')->comment('鉄筋径の値')->nullable(false);
-            $table->integer('length')->comment('生材のデフォルトの長さ')->nullable(false);
-            $table->integer('max_limit')->comment('同時切断可能数')->nullable(false);
+            $table->string('group_code')->nullable(false)->unique()->comment('計算グループコード');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('diameters');
+        Schema::dropIfExists('calculation_groups');
     }
 };

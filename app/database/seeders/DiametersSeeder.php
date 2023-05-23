@@ -16,23 +16,33 @@ class DiametersSeeder extends Seeder
     public function run()
     {
         Diameter::create([
-            'size' => 'D10',
+            'size'      => 10,
+            'length'    => 8000,
+            'max_limit' => 25,
+        ]);
+        
+        Diameter::create([
+            'size'      => 13,
+            'length'    => 8000,
+            'max_limit' => 19,
         ]);
 
         Diameter::create([
-            'size' => 'D13',
+            'size'      => 16,
+            'length'    => 8000,
+            'max_limit' => 15,
         ]);
 
         Diameter::create([
-            'size' => 'D16',
+            'size'      => 19,
+            'length'    => 8000,
+            'max_limit' => 12,
         ]);
 
         Diameter::create([
-            'size' => 'D19',
-        ]);
-
-        Diameter::create([
-            'size' => 'D22',
+            'size'      => 22,
+            'length'    => 8000,
+            'max_limit' => 10,
         ]);
     }
 }

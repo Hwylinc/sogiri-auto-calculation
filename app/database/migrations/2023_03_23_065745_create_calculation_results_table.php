@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('calculation_results', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable(false)->comment('計算番号');
+            $table->string('group_code')->nullable(false)->comment('計算依頼グループID');
             $table->integer('diameter_id')->nullable(false)->comment('鉄筋径ID');
             $table->integer('times')->nullable(false)->comment('切断順番');
             $table->integer('cutting_order')->nullable(false)->comment('切断順番');

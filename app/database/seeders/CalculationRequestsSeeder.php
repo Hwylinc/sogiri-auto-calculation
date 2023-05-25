@@ -17,43 +17,41 @@ class CalculationRequestsSeeder extends Seeder
      */
     public function run()
     {
-        $calculation_code = \App\Models\CalculationCode::where('id', 1)->first();
         
         $data = array();
         $data = $this->getTestDataFromCsv();
+        $calculation_code = \App\Models\CalculationCode::all();
 
-        $insert_data = [];
-        $insert_data['code'] = $calculation_code['code'];
+        for ($i=0; $i < 7; $i++) { 
+            $insert_data = [];
+            $insert_data['code'] = $calculation_code[$i]['code'];
+            
+            foreach ($data as $size => $value) {
+                $str = ltrim($size, 'D');
+                $diameter = \App\Models\Diameter::where('size',$str)->first();
+                $count = 1;
+                foreach ($value as $port_length => $number) {
+                    $temp = explode('-',$port_length);
+                    $insert_data['length']        = $temp[1];
+                    $insert_data['number']        = $number;
+                    $insert_data['diameter_id']   = $diameter['id'];
+                    $insert_data['component_id']  = rand(1, 5);
+                    $insert_data['port_id']       = intval($temp[0]);
+                    $insert_data['display_order'] = $count;
+                    $insert_data['user_id']       = 1;
 
-        foreach ($data as $size => $value) {
-            $str = ltrim($size, 'D');
-            $diameter = \App\Models\Diameter::where('size',$str)->first();
-            $count = 1;
-            foreach ($value as $port_length => $number) {
-                $temp = explode('-',$port_length);
-                $insert_data['length']        = $temp[1];
-                $insert_data['number']        = $number;
-                $insert_data['diameter_id']   = $diameter['id'];
-                $insert_data['component_id']  = rand(1, 5);
-                $insert_data['port_id']       = intval($temp[0]);
-                $insert_data['client_id']     = 1;
-                $insert_data['house_name']    = 'テスト邸';
-                $insert_data['display_order'] = $count;
-                $insert_data['user_id']       = 1;
-
-                \App\Models\CalculationRequests::create([
-                    "code"          => $insert_data["code"],
-                    "length"        => $insert_data["length"],
-                    "number"        => $insert_data["number"],
-                    "diameter_id"   => $insert_data["diameter_id"],
-                    "component_id"  => $insert_data["component_id"],
-                    "port_id"       => $insert_data["port_id"],
-                    "client_id"     => $insert_data["client_id"],
-                    "house_name"    => $insert_data["house_name"],
-                    "display_order" => $insert_data["display_order"],
-                    "user_id"       => $insert_data["user_id"],
-                ]);
-                $count++;
+                    \App\Models\CalculationRequests::create([
+                        "code"          => $insert_data["code"],
+                        "length"        => $insert_data["length"],
+                        "number"        => $insert_data["number"],
+                        "diameter_id"   => $insert_data["diameter_id"],
+                        "component_id"  => $insert_data["component_id"],
+                        "port_id"       => $insert_data["port_id"],
+                        "display_order" => $insert_data["display_order"],
+                        "user_id"       => $insert_data["user_id"],
+                    ]);
+                    $count++;
+                }
             }
         }
     }

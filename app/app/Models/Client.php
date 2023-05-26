@@ -8,4 +8,11 @@ use Illuminate\Database\Eloquent\Model;
 class Client extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'id';
+    protected $fillable = ['name', 'external_client_id'];
+
+    public static function get_all()
+    {
+        return self::orderby('id')->get();
+    }
 }

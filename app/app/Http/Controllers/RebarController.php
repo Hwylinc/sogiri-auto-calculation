@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Diameter;
 use App\Models\CalculationRequests;
+use App\Models\Client;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,8 +31,36 @@ class RebarController extends BaseController
     // 鉄筋情報入力方法・工場選択画面
     // *******************************************
     public function getSelect()
-    {
-        dd('鉄筋情報入力方法・工場選択画面');
+    {   
+        // メーカーを全件取得
+        $clients = Client::get_all();
+
+        // defaultが小野工場のため、2を渡すようにする
+        $factory_checked = 2;
+
+        // viewを表示する
+        return view('rebar.select')->with([
+            'clients' => $clients 
+            , 'factory_checked' => $factory_checked
+        ]); 
+    }
+
+    // *******************************************
+    // 鉄筋情報入力保存
+    // *******************************************
+    public function postSelect(Request $request)
+    { 
+        // validation処理
+        $request->validate([
+            'client_name' => 'required',
+            'house_name' => 'required',
+        ]);
+
+        // sessionに入力内容を保存
+        $request->session()->put('rebar.select', $request->all());
+
+        // getRegisterに遷移
+        return redirect()->route('rebar.register', ['diameter' => '1']);
     }
     
     // *******************************************
@@ -449,4 +478,11 @@ class RebarController extends BaseController
 
         return $page;
     }
+
+    public function attributes(): array
+{
+    return [
+        'house_name' => '邸名',
+    ];
+}
 }

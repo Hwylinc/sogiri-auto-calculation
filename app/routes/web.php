@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/rebar/list',                                'getList')->name('rebar.list');
         // 鉄筋情報入力方法・工場選択画面
         Route::get('/rebar/select',                              'getSelect')->name('rebar.select');
+        // 鉄筋情報入力保存
+        Route::post('/rebar/select-store',                       'postSelect')->name('rebar.select-store');
         // 鉄筋情報手入力画面
         Route::get('/rebar/register/{diameter}',                 'getRegister')->name('rebar.register');
         // 鉄筋情報手入力一時保存
@@ -90,16 +92,5 @@ Route::middleware('auth')->group(function(){
 });
 
 
-/**
- * Undocumented function
- *
- * @param [type] $request require　リクエスト内容
- * @param [type] $controller require　　routeのcontroller
- * @param [type] $exe       require 実行メソッド
- * @param [type] $value　　　パラメータ
- * @return void
- */
-function routeStore($request, $controller, $exe, $value=null) {
-    $instance = new $controller();
-    return $instance->store($request, $exe, $value);
-}
+Route::get('/cal-third-test', [App\Http\Controllers\TestCalculatorController::class, 'index']);
+Route::get('/cal-forth-test', [App\Http\Controllers\TestCalculatorController::class, 'forth']);

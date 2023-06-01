@@ -22,4 +22,11 @@ class Spare extends Model
     public function update_priority($ids) {
         self::whereIn('id', $ids)->update(['priority_flg' => 1]);
     }
+    
+    // *******************************************
+    // 予備材一覧情報を取得する条件
+    // *******************************************
+    public function scopeGetSpareListCondition($query) {
+        return $query->join('diameters', 'spares.diameters_id', '=', 'diameters.id');
+    }
 }

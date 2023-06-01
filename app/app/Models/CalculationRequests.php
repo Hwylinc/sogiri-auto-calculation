@@ -52,8 +52,15 @@ class CalculationRequests extends Model
     // 計算対象一覧情報を取得する条件
     // *******************************************
     public function scopeGetCalculationRequestListCondition($query, $params) {
-        return $query->join('diameters', 'calculation_requests.diameter_id', '=', 'diameters.id')
-        ->where('calculation_requests.code', '=', $params['code']);
+        $query = $query->select('*', 'calculation_requests.length as requests_length')->join('diameters', 'calculation_requests.diameter_id', '=', 'diameters.id');
+        foreach ($params as $key => $param) {
+            if ($key == 0) {
+                $query->where('calculation_requests.code', '=', $param['code']);
+            } else {
+                $query = $query->orWhere('calculation_requests.code', '=', $param['code']);
+            }
+        }
+        return $query;
     }
 }
 

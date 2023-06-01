@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('diameter_id')->nullable(false)->comment('鉄筋径ID');
             $table->integer('times')->nullable(false)->comment('切断順番');
             $table->integer('cutting_order')->nullable(false)->comment('切断順番');
-            $table->integer('component_id')->nullable(false)->comment('部材ID');
             $table->integer('length')->nullable(false)->comment('長さ');
             $table->integer('set_number')->nullable(false)->comment('切断セット本数');
             $table->integer('port_id')->nullable(false)->comment('吐き出し口ID');

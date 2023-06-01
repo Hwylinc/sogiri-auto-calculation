@@ -9,5 +9,13 @@ return [
     'factory_key' => [
         'sanda' => 1,
         'ono' => 2
+    ],
+    'calculation_status_id' => [
+        'keisanzumi' => 1,
+        'mikeisan'  => 2
+    ],
+    'calculation_status_key' => [
+        1 => '計算済み',
+        2 => '未計算'
     ]
 ];

@@ -5,6 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// Change 
+use Illuminate\Support\Str;
+
 class CalculationCode extends Model
 {
     use HasFactory;
@@ -15,6 +18,17 @@ class CalculationCode extends Model
                 , 'factory_id'
                 , 'calculation_status'
             ];
+    
+    public static function insert(array $data)
+    {
+        return self::create([
+            'code' => Str::uuid(),
+            'client_id' => $data['client_id'],
+            'house_name' => $data['house_name'],
+            'factory_id' => $data['factory_id'],
+            'calculation_status' => 0,
+        ]);
+    }
 
 
     // *******************************************

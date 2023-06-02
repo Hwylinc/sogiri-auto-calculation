@@ -1,13 +1,16 @@
 <x-menu select-page="1">
 
-    <div class="flex flex-col h-full ">
-        <div class="left-side w-[80%] border-r-[1px]">
-            <h1 class="text-xl">鉄筋計算</h1>
+    {{-- title --}}
+    <h1 class="text-xl">鉄筋計算</h1>
 
-            <div class="mt-8">
-                @foreach ($diameters as $diameter)
+    {{-- 直径/定尺寸法 --}}
+    <div>
+        {{-- 直径 --}}
+        <div class="mt-4 flex">
+            @foreach ($diameters as $diameter)
+                <div class="mr-0.5">
+                    <p class="text-center h-1.5">@if($page['now'] == $diameter->id) 現在の直径 @endif</p>
                     <a 
-                        {{-- href="{{ route('spare', ['screen' => 'list', 'select_id' => $diameter->id])}}"  --}}
                         class="
                             button 
                             @if($page['now'] == $diameter->id) select @endif
@@ -15,24 +18,38 @@
                         "
                     >
                         {{ $diameter->size }}
-                    </a>
-                @endforeach
+                    </a> 
+                </div>
+            @endforeach
+        </div>
+        {{-- 定尺寸法 --}}
+        <div class="relative">
+            <div>
+                <label for="std-size-name">定尺寸法</label> 
+                <input type="text" name="" id="std-size-name" class="std-size-name">
+                {{-- https://qiita.com/7note/items/86253752adfb95e9bf47 --}}
             </div>
+            <select name="" id="std-size-select" size="5" class="std-size-select hidden absolute" style="z-index: 1">
+                @foreach ($std_size as $size)
+                <option value="{{ $size }}">{{ $size }}</option>
+                @endforeach
+            </select>
+        </div>
+    </div>
+    
 
             <div class="h-[2px] w-full bg-black mt-4"></div>
 
-
-
+        <div class="left-side w-[80%] border-r-[1px]">
             <form method="POST" action="{{ route('rebar.store') }}">
                 @csrf
                 <x-message :message="session('message')" />
                 <div class="pr-2">
                     <div>
-                        <ul class="flex ">
-                            @foreach ($components as $i => $component)
-                                <li id="comp-tab-{{ $i }}" class="component" data="{{ $i }}">{{ $component }}</li>
-                            @endforeach
-                        </ul>
+                        @foreach ($components as $i => $component)
+                            <input type="checkbox" class="component" id="comp-check-{{ $i }}" data="{{ $i }}" onchange="functions.compoClick({{ $i }}, '{{ $component }}')">{{ $component }}
+                            {{-- <li id="comp-tab-{{ $i }}" class="component" data="{{ $i }}">{{ $component }}</li> --}}
+                        @endforeach
                     </div>
 
                     <div id="CompForm">
@@ -54,11 +71,10 @@
         <div class="right-side">
         </div>
 
-    </div>
-
 </x-menu>
 
 <script>
+    const functions = {}
     // $fucntionで読めないため、以下で実行
     window.addEventListener('DOMContentLoaded', function(){
 
@@ -67,38 +83,54 @@
         const existInfo = @json($exist_info);
 
         // 部材のform枠処理
-        const compDivExe = (selectId) => {
-            $('.comp-div').addClass('hidden')
+        const compDivExe = (id, name) => {
+            // $('.comp-div').addClass('hidden')
 
-            const compId =  'comp-div-' + selectId
+            const compId =  'comp-div-' + id
             if ( !($(`#${compId}`).length) ) {
-
+                
+                // ① make outline
                 const compDiv = $('<div>', {
                     id: compId,
                     'class': "comp-div bg-white p-1"
                 }).appendTo('#CompForm')
 
+                // ② make title
+                $('<p>').text(name).appendTo(compDiv);
+                
+                // ② make table and table header 
                 const CompoTable = $(createCompTableEl()).appendTo(compDiv)
+
+                // ② 選択されたidをhiddenに追加
                 const hiddenCompId = $('<input>', {
                     type: 'hidden',
-                    name: `input[comp_${selectComp}][id]`,
-                    value: selectComp
+                    name: `input[comp_${id}][id]`,
+                    value: id
                 }).appendTo(compDiv)
 
+                // ② 選択された名前をhiddenに追加
+                $('<input>', {
+                    type: 'hidden',
+                    name: `input[comp_${id}][name]`,
+                    value: name
+                }).appendTo(compDiv)
+
+                // ② make add button
                 const button = $('<button>', {
                     type: 'button',
                     'class': 'w-[26px] h-[26px] p-[4px] border-[2px]  flex items-center justify-center mt-4 ml-4',
                     on: {
-                        click: () => {addForm(compId)}
+                        click: () => {addForm(compId, id)}
                     }
                 }).text('＋').appendTo(compDiv)
 
+                // 編集時に必要な処理
                 let existInfoSelect = [];
 
                 if (existInfo.length !== 0) {
-                    console.log(existInfo)
+                    console.log(existInfo.input)
                     existInfo.input.forEach((array) => {
-                        if (array.id == selectId) {
+                        if (array.id == id) {
                             existInfoSelect = array.data
                         }
                     })
@@ -113,7 +145,7 @@
                 
                 for (let i=1; i <= rowCount; i++) {
                     const rowInfo = existInfoSelect[i]  ? existInfoSelect[i] : {detail: "1", display_order: i, length: null, number: null}
-                    $(createComoTableRowEl(rowInfo)).appendTo(CompoTable)
+                    $(createComoTableRowEl(id, rowInfo)).appendTo(CompoTable)
                 }
 
                 return;
@@ -128,7 +160,7 @@
                 'class': 'mt-8 ml-4',
             })
 
-            const tableHead = ['NO', '長さ', '本数', '部材詳細']
+            const tableHead = ['NO', '長さ', '本数', '削除']
 
             const tr = $('<tr>')
 
@@ -143,7 +175,7 @@
             return $(table).append(tr);
         }
 
-        const createComoTableRowEl = (rowInfo) => {
+        const createComoTableRowEl = (id, rowInfo) => {
             console.log('createComoTableRowEl')
             const bgClass = rowInfo.display_order % 2 === 0 ? "main-bg-color" : '' ; 
 
@@ -151,7 +183,7 @@
             
             $('<input>', {
                 type: 'hidden',
-                name: `input[comp_${selectComp}][data][${rowInfo.display_order}][display_order]`,
+                name: `input[comp_${id}][data][${rowInfo.display_order}][display_order]`,
                 value: rowInfo.display_order
             }).appendTo(tr)
 
@@ -165,7 +197,7 @@
 
             $('<input>', {
                 type: 'number',
-                name: `input[comp_${selectComp}][data][${rowInfo.display_order}][length]`,
+                name: `input[comp_${id}][data][${rowInfo.display_order}][length]`,
                 value: rowInfo.length
             }).appendTo(tdLength)
 
@@ -179,7 +211,7 @@
 
             $('<input>', {
                 type: 'number',
-                name: `input[comp_${selectComp}][data][${rowInfo.display_order}][number]`,
+                name: `input[comp_${id}][data][${rowInfo.display_order}][number]`,
                 value: rowInfo.number,
             }).appendTo(tdNumber)
 
@@ -187,24 +219,24 @@
                 'class': 'unit',
             }).text('本').appendTo(tdNumber)
 
-            const tdDetil = $('<td>', {
-                'class': `${bgClass} px-1`,
-            }).appendTo(tr)
+            // const tdDetil = $('<td>', {
+            //     'class': `${bgClass} px-1`,
+            // }).appendTo(tr)
 
-            $('<select>', {
-                name: `input[comp_${selectComp}][data][${rowInfo.display_order}][detail]`
-            }).append(createCompDtl).appendTo(tdDetil)
+            // $('<select>', {
+            //     name: `input[comp_${id}][data][${rowInfo.display_order}][detail]`
+            // }).append(createCompDtl).appendTo(tdDetil)
 
             return tr
 
         }
 
         // プラスボタン押下時にformを追加する
-        const addForm = (compId) => {
+        const addForm = (compId, id) => {
             const CompoTable = $(`#${compId} table`)
             const compoTableRowCount = CompoTable.children().length;
             const initialRow = {detail: "1", display_order: compoTableRowCount, length: null, number: null}
-            $(createComoTableRowEl(initialRow)).appendTo(CompoTable)
+            $(createComoTableRowEl(id, initialRow)).appendTo(CompoTable)
         }
 
         const createCompDtl = () => {
@@ -217,24 +249,41 @@
             return element;
         }
 
-        const makeFormEl = (selectId) => {
-            $('.component').removeClass('bg-white')
-            selectComp = selectId
-            compDivExe(selectId)
-            $(`#comp-tab-${selectId}`).addClass('bg-white')
+        const makeFormEl = (id, name) => {
+            // $('.component').removeClass('bg-white')
+            selectComp = id
+            compDivExe(id, name)
+            // $(`#comp-tab-${selectId}`).addClass('bg-white')
         }
 
         // 初期実行時にform情報がある場合のイベント
         if (existInfo.length != 0) {
-            for(let i = existInfo.input.length - 1; i >= 0; i--) {
-                makeFormEl(existInfo.input[i].id)
+            for(let i=0; i < existInfo.input.length ; i++) {
+                makeFormEl(existInfo.input[i].id, existInfo.input[i].name)
             }
         }
         
         // 部材タブクリック時イベント
-        $('.component').on('click', function() {
-            const selectId = $(this).attr('data')
-            makeFormEl(selectId)
+        // $('.component').on('click', function() {
+        //     const selectId = $(this).attr('data')
+        //     makeFormEl(selectId)
+        // })
+
+        functions.compoClick = (id, compoName) => {
+            makeFormEl(id, compoName)
+        }
+
+        // ---------------------------------
+        // 定尺寸法
+        // ---------------------------------
+        $('#std-size-name').on('click', function() {
+            $('#std-size-select').removeClass('hidden');
+        })
+
+        $('#std-size-select').on('change', function() {
+            const item =  $(this).val()
+            $('#std-size-name').val(item)
+            $(this).addClass('hidden')
         })
 
         // ---------------------------------
@@ -291,6 +340,19 @@
     .select {
         color: #ffffff;
         background-color: #16202E;
+    }
+
+    .h-1\.5 {
+        height: 1.5rem;
+    }
+
+    .mr-0\.5 {
+        margin-right: 0.5rem;
+    }
+
+    .std-size-name,
+    .std-size-select {
+        width: 108px;
     }
 
 </style>

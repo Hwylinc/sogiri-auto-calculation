@@ -21,8 +21,8 @@ class CalculationRequests extends Model
             'diameter_id'       => (int)$data['diameter_id'],   // 鉄筋径id
             'component_id'      => (int)$data['component_id'],  // 部材id
             'port_id'           => (int)$data['port_id'],       // 吐き出し口id
-            'client_id'         => (int)$data['client_id'],     // メーカid
-            'house_name'        => $data['house_name'],         // 邸名
+            // 'client_id'         => (int)$data['client_id'],     // メーカid
+            // 'house_name'        => $data['house_name'],         // 邸名
             'user_id'           => (int)$data['user_id'],       // 登録者id
             'display_order'     => (int)$data['display_order'], // 表示順
             'code'              => $data['code'],               // 計算番号

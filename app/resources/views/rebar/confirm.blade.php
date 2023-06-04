@@ -18,7 +18,7 @@
                             @if($page['now'] == $diameter->id) select @endif
                         "
                     >
-                        {{ $diameter->size }}
+                        D{{ $diameter->size }}
                     </a>
                 @endforeach
             </div>
@@ -64,6 +64,21 @@
 
                     {{-- 入力formのtable --}}
                     <div id="CompForm"></div>
+
+                    @if (array_key_exists('prev', $page))
+                        <a href="{{ route('rebar.confirm', ['diameter' => $page['prev']->id])}}">{{ $page['prev']->size }}</a>
+                    @endif
+
+                    <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
+                    <a 
+                        href="
+                            @if ($page['next']["id"] !== -1)
+                                {{ route('rebar.confirm', ['diameter' => $page['next']->id])}}
+                            @else
+                                {{ route('rebar.done')}}
+                            @endif
+                        "
+                    >{{ $page['next']["id"] !== -1 ? $page['next']->size . "に進む" : '鉄筋情報を登録' }}</a>
 
                 </div>
             </form>
@@ -186,14 +201,6 @@
             $('<span>', {
                 'class': 'unit',
             }).text('本').appendTo(tdNumber)
-
-            // const tdDetil = $('<td>', {
-            //     'class': `${bgClass} px-1`,
-            // }).appendTo(tr)
-
-            // $('<select>', {
-            //     name: `input[comp_${selectId}][data][${rowInfo.display_order}][detail]`
-            // }).append(createCompDtl).appendTo(tdDetil)
 
             return tr
 

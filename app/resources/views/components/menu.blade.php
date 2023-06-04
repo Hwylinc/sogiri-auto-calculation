@@ -27,13 +27,13 @@
 
         <header class="header-bg-color p-2">
 
-            <div class="flex justify-between text-white">
-                <div class="flex">
-                    <p>SOGIRI</p>
-                    <p>鉄筋計算システム</p>
+            <div class="flex justify-between items-center text-white">
+                <div class="flex items-center">
+                    <p class="pl-2 pr-2"><img src="{{ asset("images/logo.svg") }}" alt=""></p>
+                    <p class="text-sm pt-4">鉄筋計算システム</p>
                 </div>
                 <div>
-                    ログイン中
+                    ログイン
                 </div>
             </div>
         </header>
@@ -45,17 +45,22 @@
                 <ul>
                     @foreach ($menuList as $key => $array)
                         <li 
-                            class="p-4 {{ $array['select'] ? 'main-bg-color' : '' }} " 
+                            class="p-4 {{ $array['select'] ? 'select' : '' }} menu-title flex" 
                             onclick="location.href='{{ array_key_exists('param', $array) ? route($array['route_name'], $array['param']) : route($array['route_name']) }}'"
-                        >□ 
-                            {{ $array['title'] }}
+                        >
+                           <img src="{{ asset("images/{$array['image']}.svg") }}" alt="" class="mr-2" > 
+                           {{ $array['title'] }}
                         </li>
                     @endforeach
                 </ul>
 
-                <div class="mt-auto pl-2 pr-2 text-center">
+                <div class="mt-auto pl-2 pr-2 text-cente">
                     <div class="h-[0.5px] bg-[#16202E] w-full"></div>
-                    <button class="pt-4 pb-4 w-full">ログアウト</button>
+                    
+                    <button class="p-4 w-full menu-title flex items-center">
+                        <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" > 
+                        ログアウト
+                    </button>
                 </div>
     
             </div>
@@ -74,6 +79,23 @@
     li:hover {
         cursor: pointer;
     }
+
+    .select {
+        background: linear-gradient(90deg, #30CFC7 9.11%, #3A7EBA 89.29%);
+    }
+
+    .menu-title {
+        color: #ffffff;
+    }
+
+    img {
+        display: inline;
+    }
+
+    .pt-4 {
+        padding-top: 8px;
+    }
+
 </style>
 
 </html>

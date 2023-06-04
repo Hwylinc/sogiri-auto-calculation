@@ -1,7 +1,7 @@
 <x-menu select-page="1">
 
     {{-- title --}}
-    <h1 class="text-xl">鉄筋計算</h1>
+    <x-head title="鉄筋計算" imageFlg="1"></x-head>
 
     {{-- 直径/定尺寸法 --}}
     <div>
@@ -17,7 +17,7 @@
                             a-disabled
                         "
                     >
-                        {{ $diameter->size }}
+                        D{{ $diameter->size }}
                     </a> 
                 </div>
             @endforeach
@@ -47,8 +47,14 @@
                 <div class="pr-2">
                     <div>
                         @foreach ($components as $i => $component)
-                            <input type="checkbox" class="component" id="comp-check-{{ $i }}" data="{{ $i }}" onchange="functions.compoClick({{ $i }}, '{{ $component }}')">{{ $component }}
-                            {{-- <li id="comp-tab-{{ $i }}" class="component" data="{{ $i }}">{{ $component }}</li> --}}
+                            <input 
+                                name="component[]" 
+                                type="checkbox" 
+                                class="component" 
+                                id="comp-check-{{ $i }}" data="{{ $i }}" 
+                                value="comp_{{ $i }}"
+                                onchange="compoClick({{ $i }}, '{{ $component }}')"
+                            >{{ $component }}
                         @endforeach
                     </div>
 
@@ -61,12 +67,13 @@
 
                     <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
                     <button type="submit" name="action" value="{{ $page['next']["id"] }}">
-                        {{ $page['next']["id"] !== -1 ? $page['next']->size . "に進む" : '入力情報確認' }}
+                        {{ $page['next']["id"] !== -1 ? $page['next']->size . "に進む" : '確認に進む' }}
                     </button>
-                    
                 </div>
             </form>
         </div>
+
+        
 
         <div class="right-side">
         </div>
@@ -262,15 +269,14 @@
                 makeFormEl(existInfo.input[i].id, existInfo.input[i].name)
             }
         }
-        
-        // 部材タブクリック時イベント
-        // $('.component').on('click', function() {
-        //     const selectId = $(this).attr('data')
-        //     makeFormEl(selectId)
-        // })
 
-        functions.compoClick = (id, compoName) => {
-            makeFormEl(id, compoName)
+        const compoClick = (id, compoName) => {
+            const selectCheck = $(`#comp-check-${id}`).prop('checked');
+            if( selectCheck ) {
+                makeFormEl(id, compoName)
+            } else {
+                $(`#comp-div-${id}`).addClass('hidden')
+            }
         }
 
         // ---------------------------------
@@ -289,7 +295,8 @@
         // ---------------------------------
         // The methods used in HTML
         // ---------------------------------
-        window.addForm = addForm; 
+        window.addForm = addForm;
+        window.compoClick = compoClick;
         
      });
 

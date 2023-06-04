@@ -60,7 +60,7 @@ class RebarController extends BaseController
         $query_result = CalculationCode::insert($request->all());
     
         // sessionに履歴を保存
-        $request->session()->push('rebar.select', [
+        $request->session()->push('rebar.select.his', [
             'client_name' => $request->get('client_name'),
             'house_name' => $request->get('house_name')
         ]);
@@ -144,30 +144,35 @@ class RebarController extends BaseController
         try {
             if ($request->has('input')) {
                 $reInput = $request->get('input');
+                $checked_comp = $request->get('component');
                 ksort($reInput);
-                foreach ($reInput as $key => $array) {
-                    $newRow = [];
-                    ksort($array['data']);
-                    $count = 1;
-                    foreach($array['data'] as $order => $row) {
-                        if ($row['length'] || $row['number']) {
-                            $message = $this->customValidate($row);
-                            $row['display_order'] = $count;
-                            if ( !($message == 'OK') && $errorFlg ) {
-                                $transArrayFlg = true;
-                                $errorFlg = false;
-                            } 
-                            $newRow[$count] = $row;
-                            $count++;
-                        }
-                    }
 
-                    // 新しく作成した部材毎のデータを配列に追加
-                    if ($transArrayFlg) {
-                        array_unshift($newRows, ['id' => $array['id'], 'name' => $array['name'], 'data' => $newRow]);    // 1つ目のエラーを先頭に追加
-                        $request->session()->flash('message.error', $message);
-                    } else {
-                        array_push($newRows, ['id' => $array['id'],'name' => $array['name'],  'data' => $newRow]);    
+                foreach ($reInput as $key => $array) {
+                    // 選択されているデータのみをsessionに保存する
+                    if( in_array($key, $checked_comp) ) {
+                        $newRow = [];
+                        ksort($array['data']);
+                        $count = 1;
+                        foreach($array['data'] as $order => $row) {
+                            if ($row['length'] || $row['number']) {
+                                $message = $this->customValidate($row);
+                                $row['display_order'] = $count;
+                                if ( !($message == 'OK') && $errorFlg ) {
+                                    $transArrayFlg = true;
+                                    $errorFlg = false;
+                                } 
+                                $newRow[$count] = $row;
+                                $count++;
+                            }
+                        }
+
+                        // 新しく作成した部材毎のデータを配列に追加
+                        if ($transArrayFlg) {
+                            array_unshift($newRows, ['id' => $array['id'], 'name' => $array['name'], 'data' => $newRow]);    // 1つ目のエラーを先頭に追加
+                            $request->session()->flash('message.error', $message);
+                        } else {
+                            array_push($newRows, ['id' => $array['id'],'name' => $array['name'],  'data' => $newRow]);    
+                        }
                     }
                 }
     
@@ -349,9 +354,13 @@ class RebarController extends BaseController
     // *******************************************
     // 鉄筋情報登録・編集完了画面
     // *******************************************
-    public function getComplete()
+    public function getComplete(Request $request)
     {
-        dd('鉄筋情報登録・編集完了画面');
+        $select_datas = $request->session()->get('rebar.select.his');
+        $select_data = $select_datas[count($select_datas) - 1];
+        // $v_data['house_name'] = $request->session()->get('rebar.select.now.house_name');
+        // $v_data['house_name'] = $request->session()->get('rebar.select.now.house_name');
+        return view('rebar.done')->with($select_data); 
     }
     
     // *******************************************

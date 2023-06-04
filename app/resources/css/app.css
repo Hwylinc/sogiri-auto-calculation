@@ -3,11 +3,11 @@
 @tailwind utilities;
 
 .header-bg-color {
-    background-color: #16202E;
+    background-color: #333333;
 }
 
 .menu-bg-color {
-    background-color: #E3E7ED;
+    background-color: #3C4252;
 }
 
 .main-bg-color {

@@ -6,17 +6,61 @@ use Illuminate\Support\Facades\Auth;
 
 trait CalculatorTrait
 {
+    // *******************************************
+    // 計算対象のコード一覧取得
+    // *******************************************
+    public function getCalculationRequestCodeList(
+        $calculationCodeModel
+      , $factory_id
+    ) {
+        // 検索に使用するパラメータ設定
+        $params['factory_id'] = $factory_id;
+        $params['calculation_status'] = config('const.calculation_status_id.mikeisan');
+
+        // 計算対象一覧情報を取得
+        $calculationRequestCodeList = $this->getCalculationRequestCodeListData($calculationCodeModel, $params);
+
+        return $calculationRequestCodeList;
+    }
+
+    /* **************************************** */
+    /* 計算対象のコード一覧情報を取得
+    /* **************************************** */
+    private function getCalculationRequestCodeListData(
+        $calculationCodeModel
+      , $params
+    ) {
+        $list = array();
+        $list = $calculationCodeModel->getCalculationRequestListCondition($params)->get();
+
+        return $list;
+    }
+
+    /* **************************************** */
+    /* 予備材一覧情報を取得
+    /* **************************************** */
+    private function getSpareList($spareModel) {
+        $list = [];
+        $spareList = $spareModel->getSpareListCondition()->get()->toArray();    
+        if (!empty($spareList)) {
+            foreach ($spareList as $spare) {
+                $list['D'.$spare['size']][] = intval($spare['name']);
+            }
+        }
+        return $list;
+    }
+
 
     // *******************************************
     // 計算対象一覧の取得
     // *******************************************
     public function getCalculationRequestList(
         $calculationRequestModel
-      , $calculation_id
+      , $calculationRequestCodeList
     ) {
-        // 工場IDが必要になったらここで取得
-        // $params['factory_id'] = Auth::user()->id;
-        $params['code'] = $calculation_id;
+        foreach ($calculationRequestCodeList as $key => $value) {
+            $params[]['code'] = $value['code'];
+        }
 
         // 計算対象一覧情報を取得
         $calculationRequestList = $this->getCalculationRequestListData($calculationRequestModel, $params);
@@ -41,13 +85,34 @@ trait CalculatorTrait
     /*  計算処理開始（計算結果の配列取得）
     /* **************************************** */
     public function getCalculationList(
-        $calculationRequestList
+        $spareList
+      , $calculationRequestList
     ) {
         $data = array();
+        $calculationList = array();
+        $exception = array();
+        // 例外処理で使う長さの一覧を取得
+        $exception_lengths = [4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
         foreach ($calculationRequestList as $value) {
-            $data['D'.$value['size']][$value['port_id'].'-'.$value['length']] = $value['number'];
+            if (in_array($value['requests_length'], $exception_lengths)) {
+                // 例外処理に渡す値
+                // 既に値がある場合は追加する
+                if ( isset($exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']]) ) {
+                    $exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] + $value['number'];
+                } else {
+                    $exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $value['number'];
+                }            
+            } else {
+                // 既に値がある場合は追加する
+                if ( isset($exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']]) ) {
+                    $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] + $value['number'];
+                } else {
+                    $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $value['number'];
+                }
+            }
         }
-        $dataArray = [];
+
+        $dataArray = [];        
         foreach ($data as $size => $temp_array)
         {
             // 各数字の約数の一覧を格納する配列
@@ -66,6 +131,7 @@ trait CalculatorTrait
                 // 重複なく約数を統合する
                 $exist_divisors = array_unique(array_merge($exist_divisors, $divisors[$length]));
             }
+
             // 約数一覧を降順
             rsort($exist_divisors);
             // 共通する約数を持つ数字をグループ化するための配列
@@ -101,17 +167,40 @@ trait CalculatorTrait
             foreach ($array as $cutting_num => $arr) {
                 // 切断りストをリセット
                 $lengths = array();
+                $count = 0;
                 foreach ($arr as $port_length => $amount) {
                     $temp = explode("-",$port_length);
                     // 切断するリストに入れる
                     for ($i=0; $i < $amount; $i++) { 
-                        $lengths[] = $temp[1];
+                        $lengths['port'][$count]   = $temp[0];
+                        $lengths['length'][$count] = $temp[1];
+                        $count++;
                     }
                 }
                 // 切断指示作成
-                $calculationList[$size][$cutting_num] = $this->getCombination($lengths, $size);                
+                $calculationList['target'][$size][$cutting_num] = $this->getCombination($spareList, $lengths, $size);                
+            }            
+        }
+ 
+        $exceptionArray = [];
+        // 例外処理に値があれば同時切断０の配列に変更
+        if (!empty($exception)) {
+            foreach ($exception as $size => $temp_array) {
+                foreach ($temp_array as $key => $requiredNumber) {
+                    $exceptionArray[$size][$requiredNumber][$key] = $requiredNumber;
+                }
             }
-            
+        }       
+        // 例外処理に同時切断数でまとめる
+        foreach ($exceptionArray as $size => $array) {
+            foreach ($array as $requiredNumber => $arr) {
+                foreach ($arr as $port_length => $amount) {
+                    $temp = explode("-",$port_length);
+                    
+                    $calculationList['exception'][$size][$requiredNumber][0]['port'][]   = $temp[0];
+                    $calculationList['exception'][$size][$requiredNumber][0]['length'][] = $temp[1];
+                }
+            }            
         }
         return $calculationList;
     }
@@ -181,18 +270,23 @@ trait CalculatorTrait
      /*
      * 最適な組み合わせを
     */
-    public function getCombination($lengths, $size)
-    {
+    public function getCombination(
+        $spareList
+      , $lengths
+      , $size
+    ) {
         $data = [];
+        $port_list = $lengths['port'];
+        $cut_list  = $lengths['length'];
+        // shuffle($cut_list);
+        // 鉄筋径ごとの生材の長さを取得（8000の場所をこの変数に後程置き換え）
+        // $material_length =
         
-        $cut_list = $lengths;
-        shuffle($cut_list);
-
         $rods = [8000];
         $cuts = [];
 
         // 予備材リスト
-        $spare_cut_list =$this->getSpareBySize($size);
+        $spare_cut_list =$this->getSpareBySize($spareList, $size);
 
         while (count($cut_list) > 0) {
             $best_cut_index = -1;
@@ -201,6 +295,7 @@ trait CalculatorTrait
                 $rod = $rods[$i];
                 for ($j = 0; $j < count($cut_list); $j++) {
                     $cut = $cut_list[$j];
+                    $port_id = $port_list[$j];
                     if ($cut > $rod) continue;
                     $waste = $rod - $cut;
                     if ($waste < $best_cut_waste) {
@@ -220,7 +315,7 @@ trait CalculatorTrait
             }
 
             $cut = $cut_list[$best_cut_index];
-            $cuts[] = [$cut, $best_cut_rod];
+            $cuts[] = [$cut, $best_cut_rod, $port_id];
             $rods[$best_cut_rod] -= $cut;
             array_splice($cut_list, $best_cut_index, 1);
         }
@@ -228,22 +323,28 @@ trait CalculatorTrait
         $count = 0;
         
         foreach ($cuts as $i => $cut) {
+            // dd($cut);
             if ($count != $cut[1]+1) {
                 if($i != 0) {
                     $left = 8000 - $result[$cut[1]];
                     //　予備材を使って端材を最小化
-                    $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
-                    if (!empty($used_spare_list['used'])) {
-                        foreach ($used_spare_list['used'] as $key => $value) {
-                            $data[$cut[1]][] = $value;
+                    if (!empty($spare_cut_list)) {
+                        $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
+                        if (!empty($used_spare_list['used'])) {
+                            foreach ($used_spare_list['used'] as $key => $value) {
+                                $data[$cut[1]]['length'][] = $value;
+                                $data[$cut[1]]['port'][] = 0;
+                            }
                         }
                     }
                     // $data[$cut[1]]['waste'] = $used_spare_list['waste'];
                 }
-                $data[$cut[1]+1][] = $cut[0];
+                $data[$cut[1]+1]['length'][] = $cut[0];
+                $data[$cut[1]+1]['port'][] = $cut[2];
                 $count = $cut[1]+1;
             } else {
-                $data[$cut[1]+1][] = $cut[0];
+                $data[$cut[1]+1]['length'][] = $cut[0];
+                $data[$cut[1]+1]['port'][] = $cut[2];
             }
             if (empty($result[$cut[1]+1])) {
                 $result[$cut[1]+1] = $cut[0];
@@ -251,35 +352,33 @@ trait CalculatorTrait
                 $result[$cut[1]+1] = $cut[0]+$result[$cut[1]+1];
             }
         }        
+        
         $left = 8000 - end($result);
         //　予備材を使って端材を最小化
-        $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
-        if (!empty($used_spare_list['used'])) {
-            foreach ($used_spare_list['used'] as $key => $value) {
-                $data[$cut[1]+1][] = $value;
+        if (!empty($spare_cut_list)) {
+            $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
+            if (!empty($used_spare_list['used'])) {
+                foreach ($used_spare_list['used'] as $key => $value) {
+                    $data[$cut[1]+1]['length'][] = $value;
+                    $data[$cut[1]+1]['port'][] = 0;
+                }
             }
         }
+        
+
         // $data[$cut[1]+1]['waste'] = $used_spare_list['waste'];
         return $data;
     }
 
 
-
     /* **************************************** */
     /*  鉄筋径別の予備材リストを取得
     /* **************************************** */
-    public function getSpareBySize($size)
+    public function getSpareBySize($spareList, $size)
     {
-        if($size == 'D10') {
-            $list = array(180, 280, 320, 370, 410, 550, 580, 700, 765, 800, 840, 860, 870, 900, 910, 915, 1000, 1100, 1200, 1250, 1300, 1310, 1325, 1360, 1500, 1760, 1780, 1800, 1960, 2235, 2660, 2690, 2730, 3560, 3600);
-        } elseif ($size == 'D13') {
-            $list = array(180, 250, 280, 330, 550, 860, 870, 910, 940, 1000, 1050, 1100, 1200, 1300, 1310, 1325, 1400, 1450, 1500, 1530, 1550, 1600, 1650, 1720, 1760, 1780, 1800, 1960, 2000, 2100, 2235, 2660, 2690, 3600);
-        } elseif ($size == 'D16') {
-            $list = array(420, 825, 860, 870, 1310, 1376, 1380, 1400, 1500, 1760, 1780, 1800, 1960, 2000, 2235, 2300, 2660, 2690, 3560, 3600);
-        } elseif ($size == 'D19') {
-            $list = array(930, 1580, 1680, 1710, 1800, 1830, 2200, 2230, 2280, 2580, 2730, 3630);
-        } elseif ($size == 'D22') {
-            $list = array(2000, 2400);
+        $list = [];
+        if ( array_key_exists($size, $spareList) ) {
+            $list = $spareList[$size];
         }
         return $list;
     }    
@@ -321,6 +420,7 @@ trait CalculatorTrait
             $cut_result[$i]++; // 切断する$spare_cut_listの要素のカウントを1増やす
             $left_length -= $spare_cut_list[$i]; // 切断した分、left_lengthを減らす
         }
+
         return $cut_result; // 切断結果を返す
     }
 
@@ -335,7 +435,8 @@ trait CalculatorTrait
         if ($used_spare_result === false) {
             
         } else {
-            
+            sort($spare_cut_list); 
+
             $cutCount = count($spare_cut_list);
             $waste = $left;
             for ($j = 0; $j < $cutCount; $j++) {
@@ -346,6 +447,7 @@ trait CalculatorTrait
             }
             $return_data['waste'] = $waste;
         }
+
         return $return_data;
     }
 
@@ -355,45 +457,52 @@ trait CalculatorTrait
     private function convertCalculationData(
         $diameterModel
       , $calculationList
-      , $calculationCode
+      , $resultGroupCode
     ) {
         $convertData = [];
         $count = 0;
         $times = [];
+        
         // 鉄筋径ごとにループ
         if (!empty($calculationList)) {
-            foreach ($calculationList as $size => $setNumberArray) {
-                $sizeInt = (int)ltrim($size, 'D');
-                $diameterId = $diameterModel->where('size', $sizeInt)->first(['id']);
-                $cutTimes[$sizeInt] = 1;
-
-                // 同時切断数ごとにループ
-                if (!empty($setNumberArray)) {
-                    foreach ($setNumberArray as $setNumber => $setArray) {
-                        // セット数ごとにループ
-                        if (!empty($setArray)) {
-                            foreach ($setArray as $times => $combination) {
-                                if (!empty($combination)) {
-                                    foreach ($combination as $preCuttingOrder => $length) {
-                                        $convertData[$count]['code']          = $calculationCode;      //計算番号   
-                                        $convertData[$count]['diameter_id']   = $diameterId['id'];     //鉄筋径ID
-                                        $convertData[$count]['times']         = $cutTimes[$sizeInt];              //切断順番
-                                        $convertData[$count]['cutting_order'] = $preCuttingOrder + 1;  //切断順番 
-                                        $convertData[$count]['component_id']  = 1;                     //部材ID 
-                                        $convertData[$count]['length']        = $length;               //長さ 
-                                        $convertData[$count]['set_number']    = $setNumber;            //同時切断セット本数	  
-                                        $convertData[$count]['port_id']       = 1;                     //吐出口ID 
-                                        
-                                        $count++;
+            foreach ($calculationList as $target => $targetValue) {
+                foreach ($targetValue as $size => $setNumberArray) {
+                    $sizeInt = (int)ltrim($size, 'D');
+                    $diameterId = $diameterModel->where('size', $sizeInt)->first(['id']);            
+                    $cutTimes[$sizeInt] = 1;
+                    // 同時切断数ごとにループ
+                    if (!empty($setNumberArray)) {
+                        foreach ($setNumberArray as $setNumber => $setArray) {
+                            // セット数ごとにループ
+                            if (!empty($setArray)) {
+                                foreach ($setArray as $times => $combination) {
+                                    if (!empty($combination['length'])) {
+                                        foreach ($combination['length'] as $preCuttingOrder => $length) {
+                                            $convertData[$count]['group_code']    = $resultGroupCode;                         //計算依頼グループID   
+                                            $convertData[$count]['diameter_id']   = $diameterId['id'];                        //鉄筋径ID
+                                            if ($target == 'exception') {
+                                                $convertData[$count]['times']         = 0;                                    //切断順番
+                                                $convertData[$count]['cutting_order'] = 0;                                    //切断順番 
+                                            } else {
+                                                $convertData[$count]['times']         = $cutTimes[$sizeInt];                  //切断順番
+                                                $convertData[$count]['cutting_order'] = $preCuttingOrder + 1;                 //切断順番 
+                                            }
+                                            $convertData[$count]['length']        = $length;                                  //長さ 
+                                            $convertData[$count]['set_number']    = $setNumber;                               //同時切断セット本数	  
+                                            $convertData[$count]['port_id']       = $combination['port'][$preCuttingOrder];   //吐出口ID 
+                                            
+                                            $count++;
+                                        }
                                     }
+                                    $cutTimes[$sizeInt]++;
                                 }
-                                $cutTimes[$sizeInt]++;
                             }
                         }
                     }
                 }
             }
         }
+        
         return $convertData;
     }
 
@@ -407,6 +516,77 @@ trait CalculatorTrait
         foreach ($convertData as $insertData) {
             // 計算データをDBに登録
             $calculationResultModel->create($insertData);
+        }
+    }
+
+    // *******************************************
+    // 計算グループをDBに登録
+    // *******************************************
+    private function createCalculationGroup(
+        $calculationGroupModel
+      , $resultGroupCode
+    ) {
+        $insertData['group_code'] = $resultGroupCode;
+
+        // 計算グループをDBに登録
+        $calculationGroupModel->create($insertData);
+    }
+
+
+    // *******************************************
+    // 中間テーブルをDBに登録
+    // *******************************************
+    private function createCalGroupCalCode(
+        $calGroupCalCodeModel
+      , $calculationRequestCodeList
+      , $resultGroupCode
+    ) {
+        if (!empty($calculationRequestCodeList)) {
+            foreach ($calculationRequestCodeList as $key => $value) {
+                $convertData[$key]['code'] = $value['code'];
+                $convertData[$key]['group_code'] = $resultGroupCode;
+            }
+            foreach ($convertData as $insertData) {
+                // 中間テーブルDBに登録
+                $calGroupCalCodeModel->create($insertData);
+            }
+        }
+    }
+
+
+
+    /* **************************************** */
+    /*  計算結果グループコード（計算結果登録に使用する）
+    /* **************************************** */
+    public function getResultGroupCode(
+        $calculationGroupModel
+    ) {
+        // 重複判定フラグ
+        $unique_flg = false;
+        while (!$unique_flg) {
+            // 新規のコード作成
+            $resultGroupCode = uniqid();
+            $calculationGroup = $calculationGroupModel->where('group_code', $resultGroupCode)->first();
+            // 同じコードが設定されたものがないかの確認
+            if (empty($calculationGroup)) {
+                // 重複がない場合はループを抜ける
+                $unique_flg = true;
+            }
+        }
+        
+        return $resultGroupCode;
+    }
+    
+    // *******************************************
+    // 計算コードの中の計算ステータスを変更する
+    // *******************************************
+    private function updateCodeStatus(
+        $calculationCodeModel
+      , $calculationRequestCodeList
+    ) {
+        $params['calculation_status'] = config('const.calculation_status_id.keisanzumi');
+        foreach ($calculationRequestCodeList as $codeInfo) {
+            $calculationCodeModel->where('code', $codeInfo['code'])->update(['calculation_status' => $params['calculation_status']]);
         }
     }
 }

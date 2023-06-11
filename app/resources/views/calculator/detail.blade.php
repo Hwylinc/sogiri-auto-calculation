@@ -3,7 +3,7 @@
 @section('pageCss')
 <style>
     .active_diameter {
-        color: blue;
+        color: red;
     }
 </style>
 @endsection

@@ -9,7 +9,7 @@
                     <div>
                         <input 
                             type="radio" 
-                            name="factory" 
+                            name="factory_id" 
                             id="" 
                             value="{{ $id }}" 
                             class="mr-2"

@@ -18,7 +18,7 @@
                             @if($page['now'] == $diameter->id) select @endif
                         "
                     >
-                        {{ $diameter->size }}
+                        D{{ $diameter->size }}
                     </a>
                 @endforeach
             </div>
@@ -45,13 +45,40 @@
                     <div>
                         <ul class="flex ">
                             @foreach ($components as $i => $component)
-                                <li id="comp-tab-{{ $i }}" class="component" data="{{ $i }}" disabled="disabled">{{ $component }}</li>
+                            <input 
+                                type="checkbox" 
+                                class="component
+                                    @if( !isset($exist_info['c_' . $i]) ) hidden @endif
+                                " 
+                                id="comp-check-{{ $i }}" data="{{ $i }}"
+                                @if( isset($exist_info['c_' . $i]) ) checked @endif
+                                onchange="functions.compoClick({{ $i }}, '{{ $component }}')"
+                            />
+                            <label 
+                                for="comp-check-{{ $i }}" 
+                                class="component_name @if( !isset($exist_info['c_' . $i]) ) hidden @endif" 
+                            > {{ $component }}</label>
                             @endforeach
                         </ul>
                     </div>
 
                     {{-- 入力formのtable --}}
                     <div id="CompForm"></div>
+
+                    @if (array_key_exists('prev', $page))
+                        <a href="{{ route('rebar.confirm', ['diameter' => $page['prev']->id])}}">{{ $page['prev']->size }}</a>
+                    @endif
+
+                    <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
+                    <a 
+                        href="
+                            @if ($page['next']["id"] !== -1)
+                                {{ route('rebar.confirm', ['diameter' => $page['next']->id])}}
+                            @else
+                                {{ route('rebar.done')}}
+                            @endif
+                        "
+                    >{{ $page['next']["id"] !== -1 ? $page['next']->size . "に進む" : '鉄筋情報を登録' }}</a>
 
                 </div>
             </form>
@@ -93,15 +120,21 @@
 
             $('#CompForm').empty(); // 子要素をリセット
 
-            const reversKeys = Object.keys(existInfo).reverse()
+            const reversKeys = Object.keys(existInfo).sort()
             reversKeys.forEach((key) => {
                 const id = key.substr(2)
                 compDivExe(id)  // form画面を再構築
             })
 
+            // componentのcheckboxのhiddenを削除
             $('.component').each((i, el) => {
                 console.log(el)
-                $(el).removeAttr('disabled')
+                $(el).removeClass('hidden')
+            })
+            // component名のhiddenを削除
+            $('.component_name').each((i, el) => {
+                console.log(el)
+                $(el).removeClass('hidden')
             })
 
             $('#edit-btn').text('完了')
@@ -169,14 +202,6 @@
                 'class': 'unit',
             }).text('本').appendTo(tdNumber)
 
-            const tdDetil = $('<td>', {
-                'class': `${bgClass} px-1`,
-            }).appendTo(tr)
-
-            $('<select>', {
-                name: `input[comp_${selectId}][data][${rowInfo.display_order}][detail]`
-            }).append(createCompDtl).appendTo(tdDetil)
-
             return tr
 
         }
@@ -205,7 +230,6 @@
         // 部材のform枠処理
         const compDivExe = (selectId) => {
             console.log('compDiv')
-            $('.comp-div').addClass('hidden')
 
             const compId =  'comp-div-' + selectId
             if ( !($(`#${compId}`).length) ) {
@@ -231,7 +255,7 @@
                 }).text('＋').appendTo(compDiv)
 
                 // データが存在するか確認
-                const rows =  existInfo['c_' + selectId];
+                const rows =  existInfo['c_' + selectId]['data'];
                 let rowCount = rows ? Object.keys(rows).length : 10;
 
                 if (rowCount < 10) {
@@ -246,7 +270,7 @@
                 return 
             } 
 
-                $(`#${compId}`).removeClass('hidden')
+                // $(`#${compId}`).removeClass('hidden')
 
 
         }
@@ -261,21 +285,19 @@
 
         // 要素の処理
         const makeFormEl = (selectId) => {
-            $('.component').removeClass('bg-white')
             selectComp = selectId
             compDivExe(selectId)
-            $(`#comp-tab-${selectId}`).addClass('bg-white')
         }
 
         // 初期実行時にform情報がある場合のイベント
         if (existInfo.length != 0) {
             console.log(existInfo)
             // 後ろから作成し、若い番号が先頭に来るよにする
-            const reversKeys = Object.keys(existInfo).reverse()
+            const reversKeys = Object.keys(existInfo).sort()
             reversKeys.forEach((key) => {
                 const id = key.substr(2)
                 console.log(id)
-                $(`#comp-tab-${id}`).removeAttr('disabled');
+                // $(`#comp-tab-${id}`).removeAttr('disabled');
                 makeFormEl(id)
             })
 
@@ -290,6 +312,11 @@
             const selectId = $(e.target).attr('data')
             makeFormEl(selectId)
         })
+
+        // ---------------------------------
+        // The methods used in HTML
+        // ---------------------------------
+        window.addForm = addForm; 
 
     });
 

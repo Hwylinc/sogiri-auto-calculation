@@ -1,83 +1,113 @@
 <x-menu select-page="1">
-
+<div class="rebar">
     {{-- title --}}
     <x-head title="鉄筋計算" imageFlg="1"></x-head>
 
-    {{-- 直径/定尺寸法 --}}
-    <div>
-        {{-- 直径 --}}
-        <div class="mt-4 flex">
-            @foreach ($diameters as $diameter)
-                <div class="mr-0.5">
-                    <p class="text-center h-1.5">@if($page['now'] == $diameter->id) 現在の直径 @endif</p>
-                    <a 
-                        class="
-                            button 
-                            @if($page['now'] == $diameter->id) select @endif
-                            a-disabled
-                        "
-                    >
-                        D{{ $diameter->size }}
-                    </a> 
+    <div class="flex mt-4">
+        {{-- 左サイド --}}
+        <div class="left">
+            {{-- 直径/定尺寸法 --}}
+            <div class="flex justify-between items-center">
+                {{-- 直径 --}}
+                <div class="flex items-center">
+                    <label class="mr-2 font-semibold">現在の鉄筋径</label>
+                    @foreach ($diameters as $diameter)
+                        <div class="mr-0.5">
+                            <a 
+                                class="
+                                    button 
+                                    @if($page['now'] == $diameter->id) diameter-select @endif
+                                    a-disabled
+                                "
+                            >
+                                D{{ $diameter->size }}
+                            </a> 
+                        </div>
+                    @endforeach
                 </div>
-            @endforeach
-        </div>
-        {{-- 定尺寸法 --}}
-        <div class="relative">
-            <div>
-                <label for="std-size-name">定尺寸法</label> 
-                <input type="text" name="" id="std-size-name" class="std-size-name">
-                {{-- https://qiita.com/7note/items/86253752adfb95e9bf47 --}}
+                {{-- 定尺寸法 --}}
+                <div class="flex items-center">
+                    <label for="std-size-name" class="mr-2 font-semibold">定尺寸法</label> 
+                    <p class="font-bold text-xl">{{ number_format($select_diameter['length']) }}mm</p>
+                </div>
             </div>
-            <select name="" id="std-size-select" size="5" class="std-size-select hidden absolute" style="z-index: 1">
-                @foreach ($std_size as $size)
-                <option value="{{ $size }}">{{ $size }}</option>
-                @endforeach
-            </select>
+
+            <div>
+                <form method="POST" action="{{ route('rebar.store') }}">
+                    @csrf
+                    <x-message :message="session('message')" />
+                    <input type="hidden" name="process" value="insert" />
+                    <div>
+                        <div class="comp-frame bg-white flex w-full mb-3">
+                            @foreach ($components as $component)
+                            <div class="mr-2">
+                                <input 
+                                    name="component[]" 
+                                    type="checkbox" 
+                                    class="component mr-2" 
+                                    id="comp-check-{{ $component['id'] }}" data="{{ $component['id'] }}" 
+                                    value="comp_{{ $component['id'] }}"
+                                    onchange="compoClick({{ $component['id'] }}, '{{ $component['name'] }}')"
+                                    @if ($component['factory_id'] != $factory_id) disabled @endif
+                                >
+                                <label for="comp-check-{{ $component['id'] }}" data="{{ $component['id'] }}">{{ $component['name'] }}</label>
+                            </div>
+                            @endforeach
+                        </div>
+
+                        <div id="CompForm" class="comp-form  bg-white p-4 hidden">
+                        </div>
+
+                        <div class="flex justify-center mt-4">
+
+                            {{-- 現在選択されている鉄筋径 --}}
+                            <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
+
+                            {{-- 戻るボタン --}}
+                            @if (array_key_exists('prev', $page))
+                                <button type="submit" name="action" value="{{ $page['prev']->id }}" class="page-btn prev-btn mr-2">D{{ $page['prev']->size }}へ戻る</button>
+                            @endif
+
+                            @if ($page['next']["id"] !== -1)
+                                {{-- 進むボタン --}}
+                                <button type="submit" name="action" value="{{ $page['next']["id"] }}" class="page-btn bg-black text-white ml-2">
+                                    {{ $page['next']->size . "へ進む" }}
+                                </button>
+                            @else
+                                {{-- 確認ボタン --}}
+                                <button type="submit" name="action" value="{{ $page['next']["id"] }}" class="page-btn confirm-btn bg-black text-white ml-2">
+                                    {{ '確認に進む' }}
+                                </button>
+                            @endif
+                            
+                           
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        {{-- 右サイド --}}
+        <div class="right ml-4">
+            <div class="calc-text">
+                計算情報
+            </div>
+            <div class="bg-white p-4">
+                <table class="w-full">
+                    <tr>
+                        <th class="t-col t-left">メーカー</th>
+                        <th class="t-col">邸名</th>
+                    </tr>
+                    <tr>
+                        <td class="t-left">{{ $select_info['client_name'] }}</td>
+                        <td>{{ $select_info['house_name'] }}</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
-    
-
-            <div class="h-[2px] w-full bg-black mt-4"></div>
-
-        <div class="left-side w-[80%] border-r-[1px]">
-            <form method="POST" action="{{ route('rebar.store') }}">
-                @csrf
-                <x-message :message="session('message')" />
-                <div class="pr-2">
-                    <div>
-                        @foreach ($components as $i => $component)
-                            <input 
-                                name="component[]" 
-                                type="checkbox" 
-                                class="component" 
-                                id="comp-check-{{ $i }}" data="{{ $i }}" 
-                                value="comp_{{ $i }}"
-                                onchange="compoClick({{ $i }}, '{{ $component }}')"
-                            >{{ $component }}
-                        @endforeach
-                    </div>
-
-                    <div id="CompForm">
-                    </div>
-
-                    @if (array_key_exists('prev', $page))
-                        <button type="submit" name="action" value="{{ $page['prev']->id }}">{{ $page['prev']->size }}</button>
-                    @endif
-
-                    <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
-                    <button type="submit" name="action" value="{{ $page['next']["id"] }}">
-                        {{ $page['next']["id"] !== -1 ? $page['next']->size . "に進む" : '確認に進む' }}
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        
-
-        <div class="right-side">
-        </div>
-
+<div>
 </x-menu>
 
 <script>
@@ -85,8 +115,6 @@
     // $fucntionで読めないため、以下で実行
     window.addEventListener('DOMContentLoaded', function(){
 
-        let selectComp = 0;
-        const compDetail = @json($comp_detail);
         const existInfo = @json($exist_info);
 
         // 部材のform枠処理
@@ -99,11 +127,11 @@
                 // ① make outline
                 const compDiv = $('<div>', {
                     id: compId,
-                    'class': "comp-div bg-white p-1"
+                    'class': "comp-div bg-white comp-div-outline"
                 }).appendTo('#CompForm')
 
                 // ② make title
-                $('<p>').text(name).appendTo(compDiv);
+                $('<p class="comp-div-title">').text(name).appendTo(compDiv);
                 
                 // ② make table and table header 
                 const CompoTable = $(createCompTableEl()).appendTo(compDiv)
@@ -135,7 +163,6 @@
                 let existInfoSelect = [];
 
                 if (existInfo.length !== 0) {
-                    console.log(existInfo.input)
                     existInfo.input.forEach((array) => {
                         if (array.id == id) {
                             existInfoSelect = array.data
@@ -164,7 +191,7 @@
         const createCompTableEl = () => {
 
             const table = $('<table>', {
-                'class': 'mt-8 ml-4',
+                'class': 'mt-2 input-table',
             })
 
             const tableHead = ['NO', '長さ', '本数', '削除']
@@ -172,8 +199,15 @@
             const tr = $('<tr>')
 
             tableHead.forEach((title) => {
+
+                let wClass = "w-40per"
+
+                if (title === "NO" || title === "削除") {
+                    wClass = "w-10per"
+                } 
+
                 const th = $('<th>', {
-                    'class': "bg-[#F0F0F0] border-r-[1px] border-[#DADADA] w-[25%]"
+                    'class': `comp-div-th ${wClass}`
                 }).append(title)
 
                 $(th).appendTo(tr)
@@ -194,9 +228,12 @@
                 value: rowInfo.display_order
             }).appendTo(tr)
 
+            let showOrder = "000" + rowInfo.display_order;
+            const order = showOrder.substr(showOrder.length - 4)
+
             $('<td>', {
-                'class': `${bgClass} p-1 border-r-[1px] border-[#DADADA]`,
-            }).text(rowInfo.display_order).appendTo(tr)
+                'class': `${bgClass} p-1 border-r-[1px] border-[#DADADA] w-10per text-center`,
+            }).text(order).appendTo(tr)
 
             const tdLength = $('<td>', {
                 'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative`,
@@ -205,7 +242,8 @@
             $('<input>', {
                 type: 'number',
                 name: `input[comp_${id}][data][${rowInfo.display_order}][length]`,
-                value: rowInfo.length
+                value: rowInfo.length,
+                id: `comp-len-${id}-${rowInfo.display_order}`
             }).appendTo(tdLength)
 
             $('<span>', {
@@ -220,19 +258,28 @@
                 type: 'number',
                 name: `input[comp_${id}][data][${rowInfo.display_order}][number]`,
                 value: rowInfo.number,
+                id: `comp-num-${id}-${rowInfo.display_order}`
             }).appendTo(tdNumber)
 
             $('<span>', {
                 'class': 'unit',
             }).text('本').appendTo(tdNumber)
 
-            // const tdDetil = $('<td>', {
-            //     'class': `${bgClass} px-1`,
-            // }).appendTo(tr)
+            // 削除
+            const tdDelete = $('<td>', {
+                'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative text-center`,
+            }).appendTo(tr)
 
-            // $('<select>', {
-            //     name: `input[comp_${id}][data][${rowInfo.display_order}][detail]`
-            // }).append(createCompDtl).appendTo(tdDetil)
+            $('<img>', {
+                src: "{{ asset("images/delete.svg") }}",
+                height: '16px',
+                width: '16px',
+                on: {
+                    click: () => {deleteInput(id, rowInfo.display_order)}
+                },
+                'class': 'delete-icon'
+            }).appendTo(tdDelete)
+
 
             return tr
 
@@ -246,51 +293,44 @@
             $(createComoTableRowEl(id, initialRow)).appendTo(CompoTable)
         }
 
-        const createCompDtl = () => {
-            let element = ""
-            for (const detail of compDetail) {
-                element += `
-                    <option value="${detail.id}">${detail.name}</option>
-                `
-            }
-            return element;
-        }
-
-        const makeFormEl = (id, name) => {
-            // $('.component').removeClass('bg-white')
-            selectComp = id
-            compDivExe(id, name)
-            // $(`#comp-tab-${selectId}`).addClass('bg-white')
+        // 削除ボタン処理
+        const deleteInput = (compId, display_order) => {
+            $(`#comp-len-${compId}-${display_order}`).val("");
+            $(`#comp-num-${compId}-${display_order}`).val("");
         }
 
         // 初期実行時にform情報がある場合のイベント
+        console.log(existInfo)
         if (existInfo.length != 0) {
             for(let i=0; i < existInfo.input.length ; i++) {
-                makeFormEl(existInfo.input[i].id, existInfo.input[i].name)
+                $('.component').each((index, element) => {
+                    if ($(element).val() === `comp_${existInfo.input[i].id}`) {
+                        $(element).prop('checked', true)
+                        $("#CompForm").removeClass('hidden');
+                    }
+                })
+                compDivExe(existInfo.input[i].id, existInfo.input[i].name)
             }
         }
 
         const compoClick = (id, compoName) => {
+
+            const checkComponent = $('.component:checked').length;
+            if( checkComponent === 0 ) {
+                $("#CompForm").addClass('hidden');
+                return;
+            } else {
+                $("#CompForm").removeClass('hidden');
+            }
+
             const selectCheck = $(`#comp-check-${id}`).prop('checked');
             if( selectCheck ) {
-                makeFormEl(id, compoName)
+                compDivExe(id, compoName)
             } else {
                 $(`#comp-div-${id}`).addClass('hidden')
             }
+  
         }
-
-        // ---------------------------------
-        // 定尺寸法
-        // ---------------------------------
-        $('#std-size-name').on('click', function() {
-            $('#std-size-select').removeClass('hidden');
-        })
-
-        $('#std-size-select').on('change', function() {
-            const item =  $(this).val()
-            $('#std-size-name').val(item)
-            $(this).addClass('hidden')
-        })
 
         // ---------------------------------
         // The methods used in HTML
@@ -304,6 +344,37 @@
 </script>
 
 <style scoped>
+
+    .font-bold{
+        font-weight: 700;
+    }
+
+    .right td, th {
+        width: 50%;
+        text-align: left;
+        padding: 6px 8px; 
+    }
+
+    .t-col {
+        background-color: #6D6D6D;
+        color: #ffffff;
+    }
+
+    .t-left {
+       border-right: solid 2px #DADADA;
+    }
+
+    .calc-text {
+        padding: 8px 6px;
+        background-color: #E3E7ED;
+        font-weight: 600;
+        border-left: solid 4px #2083D7;
+    }
+
+    .comp-frame {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
 
     input[type="number"]::-webkit-outer-spin-button, 
     input[type="number"]::-webkit-inner-spin-button { 
@@ -320,9 +391,10 @@
 
     .unit {
         position: absolute;
-        right: 15px;
+        left: 250px;
         top: 50%;
-        transform: translateY(-50%)
+        transform: translateY(-50%);
+        color: #d0d0d0;
     }
 
     .a-disabled {
@@ -330,23 +402,22 @@
     }
 
     .button {
-        width: 100px;
+        width: 80px;
         text-align: center;
         display: inline-block;
         padding: 8px 16px;
         color: #16202E;
         font-size: 16px;
         cursor: pointer;
-        border-radius: 100px;
-        border: 2px solid #16202E;
+        background-color: #DADADA;
     }
     .bt-tran {
         width: 130px;
     }
 
-    .select {
+    .diameter-select {
         color: #ffffff;
-        background-color: #16202E;
+        background-color: #3A7EBA;
     }
 
     .h-1\.5 {
@@ -362,4 +433,56 @@
         width: 108px;
     }
 
+    .page-btn {
+        font-size: 14px;
+        padding: 4px 32px 4px 32px;
+        width: 160px;
+        height: 35px;
+        border-radius: 62px;
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    /* 入力項目の外枠 */
+    .comp-div-outline {
+        border: 1px solid #DADADA;
+        padding: 16px;
+        margin-bottom: 8px;
+    }
+    /* 入力項目のタイトル */
+    .comp-div-title {
+        border-left: 4px solid #2083D7;
+        font-weight: 600;
+        padding: 4px;
+    }
+    /* 入力項目のテーブルヘッダー */
+    .input-table {
+       border: 1px solid #DADADA;
+       width: 100%;
+    }
+    /* 入力項目のテーブルヘッダー */
+    .comp-div-th {
+        border: 1px solid #DADADA;
+        background-color: #333333;
+        color: #ffffff;
+        padding-left: 10px;
+    }
+
+    .w-10per {
+        width: 10%
+    }
+    .w-40per {
+        width: 40%
+    }
+
+    /* ボタン */
+    .prev-btn {
+        background-color: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+    }
+    .confirm-btn {
+        background-color: #53BC00;
+    }
 </style>

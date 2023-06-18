@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.header-bg-color {
+    background-color: #333333;
+}
+
+.menu-bg-color {
+    background-color: #3C4252;
+}
+
+.main-bg-color {
+    background-color: #F4F6FA;
+}
+
+.h-90 {
+    height: 92%;
+}

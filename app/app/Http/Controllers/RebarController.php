@@ -7,11 +7,13 @@ use App\Models\Diameter;
 use App\Models\CalculationRequests;
 use App\Models\Client;
 use App\Models\CalculationCode;
+use App\Models\Component;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
 class RebarController extends BaseController
 {
+
     // *******************************************
     // コンストラクタ
     // *******************************************
@@ -33,11 +35,13 @@ class RebarController extends BaseController
     // *******************************************
     public function getSelect()
     {   
+
+
         // メーカーを全件取得
         $clients = Client::get_all();
 
         // defaultが小野工場のため、2を渡すようにする
-        $factory_checked = 2;
+        $factory_checked = Auth::user()['factory_id'];
 
         // viewを表示する
         return view('rebar.select')->with([
@@ -53,25 +57,29 @@ class RebarController extends BaseController
     { 
         // validation処理
         $request->validate([
-            'client_name' => 'required',
+            'client_id' => 'required',
             'house_name' => 'required',
         ]);
 
-        $query_result = CalculationCode::insert($request->all());
+        // クライアント名を取得する
+        $client = Client::get_by_id($request->get('client_id'));
     
         // sessionに履歴を保存
         $request->session()->push('rebar.select.his', [
-            'client_name' => $request->get('client_name'),
+            'client_name' => $client['name'],
             'house_name' => $request->get('house_name')
         ]);
         $request->session()->put('rebar.select.now', [
-            'code' => $query_result['code'],
             'client_id' => $request->get('client_id'),
-            'house_name' => $request->get('house_name')
+            'client_name' => $client['name'],
+            'house_name' => $request->get('house_name'),
+            'factory_id' => $request->get('factory_id'),
         ]);
 
+        $disameter = Diameter::get_first(0);
+
         // getRegisterに遷移
-        return redirect()->route('rebar.register', ['diameter' => '1']);
+        return redirect()->route('rebar.register', ['diameter' => $disameter['id']]);
     }
     
     // *******************************************
@@ -84,6 +92,8 @@ class RebarController extends BaseController
             return redirect()->route('rebar.select');
         }
 
+        $view_data = [];
+
         try {
             // initial variable
             $exist_info = [];
@@ -91,34 +101,28 @@ class RebarController extends BaseController
             // 鉄筋径情報取得
             $diameterIns = new Diameter();
             $diameters = $diameterIns->get_all();
+            $view_data["select_diameter"] = Diameter::get_by_id($select_diameter);
 
-            $view_data = [];
-            
-            // ダミーデータ
-            $compDetail = [
-                ['id' => 1, 'name' => '鉄筋部材a-a'],
-                ['id' => 2, 'name' => '鉄筋部材a-b'],
-                ['id' => 3, 'name' => '鉄筋部材a-c'],
-            ];
-            $std_size = ['1000', '2000', '3000', '4000', '5000','1000', '2000', '3000', '4000', '5000','1000', '2000', '3000', '4000', '5000','1000', '2000', '3000', '4000', '5000'];
-            $component = ['鉄筋', '横筋', 'ストレート筋', 'コーナー筋', 'スラブ補強筋', '継手筋', 'Z筋'];
-
+            $view_data['components'] = Component::get_all();
 
             // pagenation
             $page = $this->pagenation($diameters, $select_diameter);
 
             // session get info
             $exist_info = [];
-            if ($request->session()->has('rebar.diameter_' . $select_diameter)) {
-                $exist_info = $request->session()->get('rebar.diameter_' . $select_diameter);
+            if ($request->session()->has('rebar.data.diameter_' . $select_diameter)) {
+                $exist_info = $request->session()->get('rebar.data.diameter_' . $select_diameter);
             }
 
-            $view_data['components'] = $component;
+            // get select info
+            $view_data['select_info'] = $request->session()->get('rebar.select.now');
+
+            // 選択できるfacotry_id
+            $view_data['factory_id'] = Auth::user()['factory_id'];
+
             $view_data['diameters'] = $diameters;
-            $view_data['comp_detail'] = $compDetail;
             $view_data['page'] = $page;
             $view_data['exist_info'] = $exist_info;
-            $view_data['std_size'] = $std_size;
         } catch (Exception $e) {
             $this->addFlash($request, 'error', $e->getMessage());
             return back()->withInput();
@@ -140,54 +144,79 @@ class RebarController extends BaseController
         $errorFlg = true;
         $transArrayFlg = false;
         $message = "";
+        $reMess = "";
 
         try {
-            if ($request->has('input')) {
-                $reInput = $request->get('input');
-                $checked_comp = $request->get('component');
-                ksort($reInput);
 
-                foreach ($reInput as $key => $array) {
-                    // 選択されているデータのみをsessionに保存する
+            if( $request->has('input') ){
+                $input_data = $request->get('input');
+                $checked_comp = $request->get('component');
+                ksort($input_data);
+
+                foreach( $input_data as $key => $data ){
                     if( in_array($key, $checked_comp) ) {
                         $newRow = [];
-                        ksort($array['data']);
+                        ksort($data['data']);
                         $count = 1;
-                        foreach($array['data'] as $order => $row) {
+                        foreach( $data['data'] as $order => $row ){
                             if ($row['length'] || $row['number']) {
                                 $message = $this->customValidate($row);
                                 $row['display_order'] = $count;
                                 if ( !($message == 'OK') && $errorFlg ) {
                                     $transArrayFlg = true;
                                     $errorFlg = false;
+                                    $reMess = $message;
                                 } 
                                 $newRow[$count] = $row;
                                 $count++;
-                            }
+                            } 
+                        }
+
+                        if($count === 1 ) {
+                            $transArrayFlg = true;
+                            $reMess = "選択された部材は、入力必須です";
                         }
 
                         // 新しく作成した部材毎のデータを配列に追加
                         if ($transArrayFlg) {
-                            array_unshift($newRows, ['id' => $array['id'], 'name' => $array['name'], 'data' => $newRow]);    // 1つ目のエラーを先頭に追加
-                            $request->session()->flash('message.error', $message);
+                            array_push($newRows, ['id' => $data['id'], 'name' => $data['name'], 'data' => $data]);
+                            $request->session()->flash('message.error', $reMess);
                         } else {
-                            array_push($newRows, ['id' => $array['id'],'name' => $array['name'],  'data' => $newRow]);    
+                            array_push($newRows, ['id' => $data['id'],'name' => $data['name'],  'data' => $newRow]);    
                         }
                     }
                 }
-    
+                
+                if ($transArrayFlg) {
+                    $newRows = [];
+                    foreach( $input_data as $key => $data ) {
+                        array_push($newRows, $data);
+                        $request->session()->flash('message.error', $reMess);
+                    }
+                }
+
                 $rebarRef = [
                     'diamenter_id' => $input['select_diameter'],
                     'input' => $newRows,
                 ];
                 
-                $request->session()->put('rebar.data.diameter_' . $input['select_diameter'], $rebarRef);
-            } 
-            if ( (int)$input['action'] !== -1 ) {
-                $nextPage = $transArrayFlg ? $input['select_diameter'] : $input['action'];
-                return redirect()->route('rebar.register', $nextPage);
-            } else {
-                return $this->postComplete($request);
+                $request->session()->put('rebar.data.diameter_' . $input['select_diameter'], $rebarRef);                
+            }
+
+            // 確認画面の更新時処理
+            if ($request->get('process') === 'update') {
+                return redirect()->route('rebar.confirm', $request->get('select_diameter'));
+            }
+
+            // 入力画面の更新時処理
+            if( $request->get('process') === 'insert' ){
+                if ( (int)$input['action'] !== -1 ) {
+                    $nextPage = $transArrayFlg ? $input['select_diameter'] : $input['action'];
+                    return redirect()->route('rebar.register', $nextPage);
+                } else {
+                    $disameter = Diameter::get_first(0);
+                    return redirect()->route('rebar.confirm', $disameter);
+                }
             }
         } catch (Exception $e) {
             $this->addFlash($request, 'error', $e->getMessage());
@@ -204,57 +233,33 @@ class RebarController extends BaseController
     public function getConfirm(Request $request, $select_diameter)
     {   
 
+        if( $request->session()->missing('rebar.select.now') ) {
+            return redirect()->route('rebar.select');
+        }
+
         // initial variable
         $view_data = [];
-        $diameterIns = new Diameter();
-        $error = "0";
 
         // 鉄筋径情報取得
-        $diameters = $diameterIns->get_all();
+        $diameters = Diameter::get_all();
+        $view_data["select_diameter"] = Diameter::get_by_id($select_diameter);
 
         // ダミーデータ
-        $compDetail = [
-            ['id' => 1, 'name' => '鉄筋部材a-a'],
-            ['id' => 2, 'name' => '鉄筋部材a-b'],
-            ['id' => 3, 'name' => '鉄筋部材a-c'],
-        ];
         $component = ['鉄筋', '横筋', 'ストレート筋', 'コーナー筋', 'スラブ補強筋', '継手筋', 'Z筋'];
 
         // pagenation
         $page = $this->pagenation($diameters, $select_diameter);
 
-        $where = [
-            'diameter_id' => $select_diameter,
-            'code' => $request->session()->get('rebar.select.now.code'),
-        ];
+        $exist_info = $request->session()->get("rebar.data.diameter_" . $select_diameter) ?? [];
 
-        $exist_info = [];
-        if ($request->session()->has('error_data')) {
-            $get_result = $request->session()->get('error_data');
-            foreach($get_result as $index => $row) {
-                foreach($row['data'] as $key => $data) {
-                    $exist_info["c_". $row['id']][] = $data;
-                }
-            }
-            $error = "1";
-            $request->session()->forget('error_data');
-        } else {
-            $get_result = CalculationRequests::getWhereCalucReq($where);
-            foreach($get_result as $index => $row) {
-                $exist_info["c_" . $row['component_id']]['data'][] = $row;
-
-                if( !array_key_exists('info', $exist_info["c_" . $row['component_id']]) ) {
-                    $exist_info["c_" . $row['component_id']]['info'] = ['id' => $row['component_id'], 'name' => $component[$row['component_id']]];
-                }
-            }
-        }
+        // get select info
+        $view_data['select_info'] = $request->session()->get('rebar.select.now');
 
         $view_data['components'] = $component;
         $view_data['diameters'] = $diameters;
-        $view_data['comp_detail'] = $compDetail;
         $view_data['page'] = $page;
         $view_data['exist_info'] = $exist_info;
-        $view_data['error'] = $error;
+        $view_data['error'] = $request->session()->has('message.error') ? "1" : "0";
         return view('rebar.confirm')->with($view_data);
     }
     
@@ -356,11 +361,49 @@ class RebarController extends BaseController
     // *******************************************
     public function getComplete(Request $request)
     {
-        $select_datas = $request->session()->get('rebar.select.his');
-        $select_data = $select_datas[count($select_datas) - 1];
-        // $v_data['house_name'] = $request->session()->get('rebar.select.now.house_name');
-        // $v_data['house_name'] = $request->session()->get('rebar.select.now.house_name');
-        return view('rebar.done')->with($select_data); 
+
+        try {
+
+            // session確認
+            if( $request->session()->missing('rebar.select.now') ) {
+                return redirect()->route('rebar.select');
+            }
+
+            // DB処理
+            $calculation_select_info = $request->session()->get('rebar.select.now');
+            // dd($calculation_info);
+            $calculation_query = CalculationCode::insert($calculation_select_info);
+
+            $calculation_input_data = $request->session()->get('rebar.data');
+            $user = Auth::user();
+
+            foreach( $calculation_input_data as $key => $diameter ) {
+                foreach( $diameter['input'] as $rows ) {
+                    foreach( $rows['data'] as $row ) {
+                        $row['diameter_id'] = $diameter['diamenter_id'];
+                        $row['component_id'] = $rows['id'];
+                        $row['port_id'] = 1;
+                        $row['user_id'] = $user['id'];
+                        $row['code'] = $calculation_query['code'];
+                        CalculationRequests::ins($row);
+                    }
+                }
+            }
+            
+
+
+            // 画面表示用データ
+            $select_data = $request->session()->get('rebar.select.now');
+
+            // sessionから入力情報の削除
+            $request->session()->forget('rebar');
+
+            // 画面表示
+            return view('rebar.done')->with($select_data); 
+
+        } catch(Exception $e) {
+            dd($e->getMessage());
+        }
     }
     
     // *******************************************

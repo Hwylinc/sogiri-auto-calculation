@@ -470,17 +470,17 @@ video {
 .mb-0{
   margin-bottom: 0px;
 }
-.mb-1{
-  margin-bottom: 0.25rem;
-}
-.mb-2{
-  margin-bottom: 0.5rem;
-}
 .mb-3{
   margin-bottom: 0.75rem;
 }
+.mb-4{
+  margin-bottom: 1rem;
+}
 .mb-5{
   margin-bottom: 1.25rem;
+}
+.mb-8{
+  margin-bottom: 2rem;
 }
 .me-auto{
   -webkit-margin-end: auto;
@@ -500,9 +500,6 @@ video {
 }
 .mr-0{
   margin-right: 0px;
-}
-.mr-0\.5{
-  margin-right: 0.125rem;
 }
 .mr-2{
   margin-right: 0.5rem;
@@ -877,16 +874,28 @@ video {
 /*************************************************** */
 /* custom tailwind css
 /*************************************************** */
-.mr-0\.5 {
-  margin-right: 0.5rem;
-}
-
 .w-10\% {
   width: 10%;
 }
 
 .w-40\% {
   width: 40%;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.w-250px {
+  width: 250px;
+}
+
+.h-5\/6 {
+  height: 83.333333%;
 }
 
 /*************************************************** */
@@ -899,6 +908,10 @@ video {
 
 .delete-icon:hover {
   cursor: pointer;
+}
+
+.text-error {
+  color: #b51f1f;
 }
 
 /*************************************************** */

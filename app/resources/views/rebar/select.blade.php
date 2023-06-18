@@ -7,7 +7,7 @@
 
         <form method="POST" action="{{ route('rebar.select-store') }}">
             @csrf
-            <div class="mb-1 text-center flex justify-around">
+            <div class="mb-4 text-center flex justify-around">
                 @foreach(config('const.factory_id') as $id => $name)
                     <div>
                         <input 
@@ -21,36 +21,36 @@
                     </div>
                 @endforeach
             </div>
-            <hr class="mt-1 mb-2">
-            <div class="mb-1">
+            <hr class="mt-1 mb-8">
+            <div class="mb-4">
                 <label for="client_name" class="form-label">メーカー</label>
-                <select id="client_select" name="client_id" class="w-250p">
+                <select id="client_select" name="client_id" class="w-250px">
                     <option value="" disabled selected style="display:none;">メーカーを選択してください</option>
                     @foreach($clients as $client)
                     <option value="{{ $client['id'] }}" data-id="{{ $client['id'] }}">{{ $client['name'] }}</option>
                     @endforeach
                 </select>
                 @error('client_id')
-                     <div class="alert alert-danger">{{ $message }}</div>
+                     <div class="alert alert-danger text-center text-error">{{ $message }}</div>
                 @enderror
             </div>
 
-            <div class="mb-2">
+            <div class="mb-8">
                 <label for="house_name" class="form-label" >邸名</label>
                 <input 
                     type="text" 
                     name="house_name" 
                     id="house_name" 
                     placeholder="邸名を記入してください" 
-                    class="@error('house_name') is-invalid @enderror w-250p house_name" 
+                    class="@error('house_name') is-invalid @enderror w-250px house_name" 
                     value="{{ old('house_name') }}"
                 >
                 @error('house_name')
-                     <div class="alert alert-danger">{{ $message }}</div>
+                     <div class="alert alert-danger text-center text-error">{{ $message }}</div>
                 @enderror
             </div>
             
-            <hr class="mt-2 mb-1">
+            <hr class="mt-2 mb-4">
 
             <div class="text-center">
                 <input type="submit" value="計算へ進む" class="button">
@@ -87,22 +87,6 @@ window.addEventListener('DOMContentLoaded', function(){
         width: 88px;
     }
 
-    .mb-1 {
-        margin-bottom: 1rem;
-    }
-
-    .mb-2 {
-        margin-bottom: 2rem;
-    }
-
-    .h-5\/6 {
-        height: 83.333333%;
-    }
-
-    .justify-around {
-        justify-content: space-around;
-    }
-
     .button {
         background-color: black;
         font-size: 14px;
@@ -114,10 +98,6 @@ window.addEventListener('DOMContentLoaded', function(){
         &:hover {
             cursor: pointer;
         }
-    }
-
-    .w-250p {
-        width: 250px;
     }
 
     .select2-container--default .select2-selection--single .select2-selection__rendered { 

@@ -14,7 +14,7 @@
                 <div class="flex items-center">
                     <label class="mr-2 font-semibold">現在の鉄筋径</label>
                     @foreach ($diameters as $diameter)
-                        <div class="mr-0.5">
+                        <div class="mr-2">
                             <a 
                                 class="
                                     button 
@@ -103,23 +103,7 @@
         </div>
 
         {{-- 右サイド --}}
-        <div class="right ml-4">
-            <div class="calc-text">
-                計算情報
-            </div>
-            <div class="bg-white p-4">
-                <table class="w-full">
-                    <tr>
-                        <th class="t-col t-left">メーカー</th>
-                        <th class="t-col">邸名</th>
-                    </tr>
-                    <tr>
-                        <td class="t-left">{{ $select_info['client_name'] }}</td>
-                        <td>{{ $select_info['house_name'] }}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+        <x-calculation_info :select-info=$select_info />
 
     </div>
 </div>

@@ -3,7 +3,7 @@
 @section('pageCss')
 <style>
     .active_diameter {
-        color: red;
+        color: blue;
     }
 </style>
 @endsection
@@ -29,7 +29,7 @@
                           <a data-bs-toggle="tab" href="#exception" @if($page_tab=='exception') class="nav-link active" @else class="nav-link" @endif>例外処理内容</a>
                         </li>
                     </ul>
-                    
+
                     <div class="tab-content">
                         {{-- 切断指示　Start --}}
                         <div id="result" @if($page_tab=='result') class="tab-pane active" @else class="tab-pane" @endif>
@@ -39,7 +39,7 @@
                                 </a>
                             @endforeach
                             <div class="mt-5">
-                                @if (!empty($resultDisplayList[$diameter_id])) 
+                                @if (!empty($resultDisplayList[$diameter_id]))
                                     @foreach ($resultDisplayList[$diameter_id] as $setTimes => $combination)
                                         <h2 class="text-center">設置　{{ $setTimes }}回目</h2>
                                         @if (!empty($combination['data']))
@@ -79,7 +79,7 @@
                                     {{ $diameter }}<br>
                                 </a>
                             @endforeach
-                            @if (!empty($calculationRequestCodeList)) 
+                            @if (!empty($calculationRequestCodeList))
                                 <select id="calculation_id">
                                     @foreach ($calculationRequestCodeList as $value)
                                         <option @if($value['code'] == $calculation_id) selected @endif value="{{ $value['code'] }}">{{ $value['name'] }} {{ $value['house_name'] }}</option>

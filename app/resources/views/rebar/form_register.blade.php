@@ -39,15 +39,15 @@
                     <input type="hidden" name="process" value="insert" />
                     <div>
                         <div class="comp-frame bg-white flex w-full mb-3">
-                            @foreach ($components as $component)
+                            @foreach ($components as $index => $component)
                             <div class="mr-2">
                                 <input 
                                     name="component[]" 
                                     type="checkbox" 
                                     class="component mr-2" 
-                                    id="comp-check-{{ $component['id'] }}" data="{{ $component['id'] }}" 
+                                    id="comp-check-{{ $index }}" data="{{ $component['id'] }}" 
                                     value="comp_{{ $component['id'] }}"
-                                    onchange="compoClick({{ $component['id'] }}, '{{ $component['name'] }}')"
+                                    onchange="compoClick({{ $index }}, {{ $component['id'] }}, '{{ $component['name'] }}')"
                                     @if ($component['factory_id'] != $factory_id) disabled @endif
                                 >
                                 <label for="comp-check-{{ $component['id'] }}" data="{{ $component['id'] }}">{{ $component['name'] }}</label>
@@ -71,7 +71,7 @@
                             @if ($page['next']["id"] !== -1)
                                 {{-- 進むボタン --}}
                                 <button type="submit" name="action" value="{{ $page['next']["id"] }}" class="page-btn bg-black text-white ml-2">
-                                    {{ $page['next']->size . "へ進む" }}
+                                    D{{ $page['next']->size . "へ進む" }}
                                 </button>
                             @else
                                 {{-- 確認ボタン --}}
@@ -94,6 +94,7 @@
 <div>
 </x-menu>
 
+<script src="{{ asset('/js/common.js') }}"></script>
 <script>
     const functions = {}
     // $fucntionで読めないため、以下で実行
@@ -102,67 +103,24 @@
         const existInfo = @json($exist_info);
 
         // 部材のform枠処理
-        const compDivExe = (id, name) => {
-            // $('.comp-div').addClass('hidden')
+        const makeFormEl = (index, id, name, inputData=[]) => {
 
-            const compId =  'comp-div-' + id
+            const compId =  'comp-div-' + index
+
             if ( !($(`#${compId}`).length) ) {
                 
-                // ① make outline
-                const compDiv = $('<div>', {
-                    id: compId,
-                    'class': "comp-div bg-white comp-div-outline"
-                }).appendTo('#CompForm')
-
-                // ② make title
-                $('<p class="comp-div-title">').text(name).appendTo(compDiv);
-                
-                // ② make table and table header 
+                const compDiv = createComponentFormDiv(compId)
+                setComponentName(name, compDiv)
                 const CompoTable = $(createCompTableEl()).appendTo(compDiv)
+                createComponentIdHidden(id, compDiv)
+                createComponentNameHidden(id, name, compDiv)
 
-                // ② 選択されたidをhiddenに追加
-                const hiddenCompId = $('<input>', {
-                    type: 'hidden',
-                    name: `input[comp_${id}][id]`,
-                    value: id
-                }).appendTo(compDiv)
+                const button = createAddBtn(compId, id, createComoTableRowEl, compDiv)
 
-                // ② 選択された名前をhiddenに追加
-                $('<input>', {
-                    type: 'hidden',
-                    name: `input[comp_${id}][name]`,
-                    value: name
-                }).appendTo(compDiv)
-
-                // ② make add button
-                const button = $('<button>', {
-                    type: 'button',
-                    'class': 'w-[26px] h-[26px] p-[4px] border-[2px]  flex items-center justify-center mt-4 ml-4',
-                    on: {
-                        click: () => {addForm(compId, id)}
-                    }
-                }).text('＋').appendTo(compDiv)
-
-                // 編集時に必要な処理
-                let existInfoSelect = [];
-
-                if (existInfo.length !== 0) {
-                    existInfo.input.forEach((array) => {
-                        if (array.id == id) {
-                            existInfoSelect = array.data
-                        }
-                    })
-                }
-                console.log(existInfoSelect)
-
-                let rowCount = Object.keys(existInfoSelect).length
-
-                if (rowCount < 10) {
-                    rowCount = 10;
-                }
+                let rowCount = getRowCount(inputData)
                 
-                for (let i=1; i <= rowCount; i++) {
-                    const rowInfo = existInfoSelect[i]  ? existInfoSelect[i] : {detail: "1", display_order: i, length: null, number: null}
+                for (let i=0; i < rowCount; i++) {
+                    const rowInfo = inputData.length !== 0 && inputData[i+1]  ? inputData[i+1] : getInitialFormData(i+1)
                     $(createComoTableRowEl(id, rowInfo)).appendTo(CompoTable)
                 }
 
@@ -174,25 +132,18 @@
 
         const createCompTableEl = () => {
 
-            const table = $('<table>', {
-                'class': 'mt-2 input-table',
-            })
-
-            const tableHead = ['NO', '長さ', '本数', '削除']
-
+            const table = createFormTableEl();
+            const tableHead = getFormTableTitle()
             const tr = $('<tr>')
 
             tableHead.forEach((title) => {
-
                 let wClass = "w-40per"
 
                 if (title === "NO" || title === "削除") {
                     wClass = "w-10per"
                 } 
 
-                const th = $('<th>', {
-                    'class': `comp-div-th ${wClass}`
-                }).append(title)
+                const th = createFormTableHeadEl(wClass, title);
 
                 $(th).appendTo(tr)
             })
@@ -201,103 +152,68 @@
         }
 
         const createComoTableRowEl = (id, rowInfo) => {
-            console.log('createComoTableRowEl')
-            const bgClass = rowInfo.display_order % 2 === 0 ? "main-bg-color" : '' ; 
-
+            const bgClass = getRowBackGroundColor(rowInfo.display_order); 
             const tr = $('<tr>')
             
-            $('<input>', {
-                type: 'hidden',
-                name: `input[comp_${id}][data][${rowInfo.display_order}][display_order]`,
-                value: rowInfo.display_order
-            }).appendTo(tr)
+            // Noの値をhiddenで作成
+            createComponentInputHiddenEl(id, rowInfo.display_order, rowInfo.display_order, 'display_order', tr)
 
-            let showOrder = "000" + rowInfo.display_order;
-            const order = showOrder.substr(showOrder.length - 4)
+            // Noの作成
+            const order = createZeroForth(rowInfo.display_order)
+            createTdNo(bgClass, order, tr)
 
-            $('<td>', {
-                'class': `${bgClass} p-1 border-r-[1px] border-[#DADADA] w-10per text-center`,
-            }).text(order).appendTo(tr)
+            // 長さの作成
+            const tdLength = createTd(bgClass, tr)
+            createInputNumberEl(id, rowInfo.display_order, rowInfo.length, tdLength, 'length')
+            createUnitSpanEl('mm', tdLength)
 
-            const tdLength = $('<td>', {
-                'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative`,
-            }).appendTo(tr)
-
-            $('<input>', {
-                type: 'number',
-                name: `input[comp_${id}][data][${rowInfo.display_order}][length]`,
-                value: rowInfo.length,
-                id: `comp-len-${id}-${rowInfo.display_order}`
-            }).appendTo(tdLength)
-
-            $('<span>', {
-                'class': 'unit',
-            }).text('mm').appendTo(tdLength)
-
-            const tdNumber = $('<td>', {
-                'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative`,
-            }).appendTo(tr)
-
-            $('<input>', {
-                type: 'number',
-                name: `input[comp_${id}][data][${rowInfo.display_order}][number]`,
-                value: rowInfo.number,
-                id: `comp-num-${id}-${rowInfo.display_order}`
-            }).appendTo(tdNumber)
-
-            $('<span>', {
-                'class': 'unit',
-            }).text('本').appendTo(tdNumber)
+            // 本数の作成
+            const tdNumber = createTd(bgClass, tr)
+            createInputNumberEl(id, rowInfo.display_order, rowInfo.number, tdNumber, 'number')
+            createUnitSpanEl('本', tdNumber)
 
             // 削除
-            const tdDelete = $('<td>', {
-                'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative text-center`,
-            }).appendTo(tr)
-
-            $('<img>', {
-                src: "{{ asset("images/delete.svg") }}",
-                height: '16px',
-                width: '16px',
-                on: {
-                    click: () => {deleteInput(id, rowInfo.display_order)}
-                },
-                'class': 'delete-icon'
-            }).appendTo(tdDelete)
-
+            const tdDelete = createTd(bgClass, tr, 'text-center')
+            createRemoveBtnIcon("{{ asset("images/delete.svg") }}", id, rowInfo.display_order, tdDelete)
 
             return tr
 
         }
 
-        // プラスボタン押下時にformを追加する
-        const addForm = (compId, id) => {
-            const CompoTable = $(`#${compId} table`)
-            const compoTableRowCount = CompoTable.children().length;
-            const initialRow = {detail: "1", display_order: compoTableRowCount, length: null, number: null}
-            $(createComoTableRowEl(id, initialRow)).appendTo(CompoTable)
-        }
-
-        // 削除ボタン処理
-        const deleteInput = (compId, display_order) => {
-            $(`#comp-len-${compId}-${display_order}`).val("");
-            $(`#comp-num-${compId}-${display_order}`).val("");
-        }
-
         // 初期実行時にform情報がある場合のイベント
-        console.log(existInfo)
         if (existInfo.length != 0) {
-            for(let i=0; i < existInfo.input.length ; i++) {
+            existInfo.input.forEach((row) => {
                 $('.component').each((index, element) => {
-                    if ($(element).val() === `comp_${existInfo.input[i].id}`) {
+                    if ($(element).val() === `comp_${row.id}`) {
                         $(element).prop('checked', true)
                         $("#CompForm").removeClass('hidden');
+                        makeFormEl(index, row.id, row.name, row.data)
                     }
                 })
-                compDivExe(existInfo.input[i].id, existInfo.input[i].name)
-            }
+            })
         }
 
-        const compoClick = (id, compoName) => {
+        const compoClick = (index, id, compoName) => {
+
+            const selectCheck = $(`#comp-check-${index}`).prop('checked');
+            if( selectCheck ) {
+                makeFormEl(index, id, compoName)
+
+                // 中身要素をid順に並び替える
+                const parent = $('#CompForm')
+                const children = parent.children()
+
+                children.sort((a,b) => {
+                    var idA = $(a).attr('id');
+                    var idB = $(b).attr('id');
+                    return idA.localeCompare(idB); // localeCompareを使って文字列としてidを比較する
+                })
+
+                parent.empty().append(children);
+
+            } else {
+                $(`#comp-div-${index}`).addClass('hidden')
+            }
 
             const checkComponent = $('.component:checked').length;
             if( checkComponent === 0 ) {
@@ -305,13 +221,6 @@
                 return;
             } else {
                 $("#CompForm").removeClass('hidden');
-            }
-
-            const selectCheck = $(`#comp-check-${id}`).prop('checked');
-            if( selectCheck ) {
-                compDivExe(id, compoName)
-            } else {
-                $(`#comp-div-${id}`).addClass('hidden')
             }
   
         }

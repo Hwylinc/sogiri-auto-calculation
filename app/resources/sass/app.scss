@@ -70,6 +70,10 @@
     color: #b51f1f;
 }
 
+.disabled-a {
+    pointer-events: none;
+}
+
 
 /*************************************************** */
 /* 鉄筋計算
@@ -89,6 +93,9 @@
     .comp-form {
         max-height: 68vh;
         overflow-y: auto;
+        &.confirm-frame {
+            max-height: 65vh;
+        }
     }
 }
 

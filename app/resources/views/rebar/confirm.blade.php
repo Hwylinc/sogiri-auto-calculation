@@ -43,7 +43,7 @@
                 <div>
 
                     {{-- 部材タブ --}}
-                    <div id="comp-frame" class="comp-frame bg-white flex w-full mb-3 mt-3 hidden">
+                    <div id="comp-frame" class="comp-frame confirm-frame bg-white flex w-full mb-3 mt-3 hidden">
                         <ul class="flex">
                             @if( !empty($exist_info) )
                             @forEach( $exist_info['input'] as $data )
@@ -65,7 +65,7 @@
                     </div>
 
                     {{-- 入力formのtable --}}
-                    <div id="CompForm" class="bg-white p-4 hidden"></div>
+                    <div id="CompForm" class="comp-form bg-white p-4 hidden"></div>
 
                     <div class="flex justify-center mt-4">
 
@@ -76,6 +76,7 @@
                             <a 
                                 href="{{ route('rebar.confirm', ['diameter' => $page['prev']->id])}}"
                                 class="page-btn prev-btn"
+                                id="prev-btn"
                             >
                                 D{{ $page['prev']->size }}へ戻る
                             </a>
@@ -85,6 +86,7 @@
                             <a 
                                 href="{{ route('rebar.confirm', ['diameter' => $page['next']->id])}}"
                                 class="page-btn black-btn"
+                                id="next-btn"
                             >
                                 D{{ $page['next']->size }}へ進む
                             </a>
@@ -92,6 +94,7 @@
                             <a 
                                 href="{{ route('rebar.done') }}"
                                 class="page-btn confirm-btn"
+                                id="done"
                             >
                                 鉄筋情報を登録
                             </a>
@@ -109,157 +112,101 @@
 </div>
 </x-menu>
 
+<script src="{{ asset('/js/common.js') }}"></script>
 <script>
 
     window.addEventListener('DOMContentLoaded', function(){ 
 
         const existInfo = @json($exist_info);
-        console.log(existInfo)
         let screenMode = false; // false: 確認モード, true: 編集モード
         let error = @json($error);
 
-        console.log(error)
-
         // 編集ボタンクリック時処理
         $('#edit-btn').on('click', (e) => {
-
+            // クリック処理を停止する
             e.preventDefault();
             
-            if (!screenMode) {  // screen modeを変更して編集モードにする
+            // 確認モードか編集モードによって処理を行う
+            if (!screenMode) {
+                // 編集モードに切り替える準備を行う
+                $('#prev-btn').addClass('disabled-a')
+                $('#next-btn').addClass('disabled-a')
+                $('#done').addClass('disabled-a')
                 changeScreen()
-            } else {    // 編集内容をpost送信する
+            } else { 
+                // 編集内容をpost送信する   
                 $('form').submit()
             }
             
         })
 
+        // 編集モードに切り替える処理
         const changeScreen = () => {
-
+            // フラグを編集モードに切り替える
             screenMode = true;
+            
+            // 子要素をリセット
+            $('#CompForm').empty(); 
 
-            $('#CompForm').empty(); // 子要素をリセット
-
+            // textをinputに切り替える為、再度要素を作成
             existInfo.input.forEach((row) => {
                 makeFormEl(row.id, row.name, row.data)
             })
 
+            // ボタンのテキストを変更
             $('#edit-btn').text('完了')
 
         }
 
-        const createCompDtl = () => {
-            let element = ""
-            for (const detail of compDetail) {
-                element += `
-                    <option value="${detail.id}">${detail.name}</option>
-                `
-            }
-            return element;
-        }
-
-        const createComoTableRowEl = (rowInfo, selectId) => {
-            console.log('createComoTableRowEl')
-            const bgClass = rowInfo.display_order % 2 === 0 ? "main-bg-color" : '' ; 
-
+        const createComoTableRowEl = (selectId, rowInfo) => {
+            const bgClass = getRowBackGroundColor(rowInfo.display_order);  
             const tr = $('<tr>')
             
-            $('<input>', {
-                type: 'hidden',
-                name: `input[comp_${selectId}][data][${rowInfo.display_order}][display_order]`,
-                value: rowInfo.display_order
-            }).appendTo(tr)
+            // // Noの値をhiddenで作成
+            createComponentInputHiddenEl(selectId, rowInfo.display_order, rowInfo.display_order, 'display_order', tr)
 
-            $('<input>', {
-                type: 'hidden',
-                name: `input[comp_${selectId}][data][${rowInfo.display_order}][id]`,
-                value: rowInfo.id ? rowInfo.id : -999
-            }).appendTo(tr)
-
-            let showOrder = "000" + rowInfo.display_order;
-            const order = showOrder.substr(showOrder.length - 4)
-
-            $('<td>', {
-                'class': `${bgClass} p-1 border-r-[1px] border-[#DADADA]`,
-            }).text(order).appendTo(tr)
-
-            const tdLength = $('<td>', {
-                'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative`,
-            }).appendTo(tr)
+            // Noの作成
+            const order = createZeroForth(rowInfo.display_order)
+            createTdNo(bgClass, order, tr)
+            
+            const tdLength = createTd(bgClass, tr)
 
             // 長さ
             if( screenMode ) {
-                $('<input>', {
-                    type: 'number',
-                    name: `input[comp_${selectId}][data][${rowInfo.display_order}][length]`,
-                    disabled: !screenMode,
-                    value: rowInfo.length,
-                    id: `comp-len-${selectId}-${rowInfo.display_order}`,
-                    'class': "len-input"
-                }).appendTo(tdLength)
+                createInputNumberEl(selectId, rowInfo.display_order, rowInfo.length, tdLength, 'length')
             } else {
-                $('<p class="tracking-wider font-semibold">', {
-                }).text(rowInfo.length).appendTo(tdLength)
+                createTextNumberEl(rowInfo.length, tdLength)
             }
 
-            $('<span>', {
-                'class': 'unit',
-            }).text('mm').appendTo(tdLength)
+            createUnitSpanEl('mm', tdLength)
 
-            const tdNumber = $('<td>', {
-                'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative`,
-            }).appendTo(tr)
+            const tdNumber = createTd(bgClass, tr)
 
             if( screenMode ) {
-                $('<input>', {
-                    type: 'number',
-                    name: `input[comp_${selectId}][data][${rowInfo.display_order}][number]`,
-                    value: rowInfo.number,
-                    id: `comp-num-${selectId}-${rowInfo.display_order}`
-                }).appendTo(tdNumber)
+                createInputNumberEl(selectId, rowInfo.display_order, rowInfo.number, tdNumber, 'number')
             } else {
-                $('<p class="tracking-wider font-semibold">', {
-                }).text(rowInfo.number).appendTo(tdNumber)
+                createTextNumberEl(rowInfo.number, tdNumber)
             }
 
-            $('<span>', {
-                'class': 'unit',
-            }).text('本').appendTo(tdNumber)
+            createUnitSpanEl('本', tdNumber)
 
             // 削除
-        
             if ( screenMode ) {
-
-                const tdDelete = $('<td>', {
-                    'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative text-center`,
-                }).appendTo(tr)
-
-                $('<img>', {
-                    src: "{{ asset("images/delete.svg") }}",
-                    height: '16px',
-                    width: '16px',
-                    on: {
-                        click: () => {deleteInput(selectId, rowInfo.display_order)}
-                    },
-                    'class': 'delete-icon'
-                }).appendTo(tdDelete)
+                const tdDelete = createTd(bgClass, tr, 'text-center')
+                createRemoveBtnIcon("{{ asset("images/delete.svg") }}", selectId, rowInfo.display_order, tdDelete)
             }
             
-
             return tr
 
         }
 
         const createCompTableEl = () => {
-            const table = $('<table>', {
-                'class': 'mt-2 input-table',
-            })
 
-            const tableHead = ['NO', '長さ', '本数', "削除"]
-
+            const table = createFormTableEl();
+            const tableHead = getFormTableTitle();
             const tr = $('<tr>')
 
             tableHead.forEach((title) => {
-
                 let wClass = "w-40%"
                 let hiddenClass = ""
 
@@ -271,9 +218,7 @@
                     hiddenClass = "hidden"
                 }
 
-                const th = $('<th>', {
-                    'class': `comp-div-th ${wClass} ${hiddenClass}`
-                }).append(title)
+                const th = createFormTableHeadEl(wClass, title, hiddenClass);
 
                 $(th).appendTo(tr)
             })
@@ -284,15 +229,11 @@
 
         // 部材のform枠処理
         const makeFormEl = (selectId, componentName, inputData=[]) => {
-            console.log('compDiv')
 
             const compId =  'comp-div-' + selectId
             if ( !($(`#${compId}`).length) ) {
 
-                const compDiv = $('<div>', {
-                    id: compId,
-                    'class': "comp-div bg-white comp-div-outline"
-                }).appendTo('#CompForm')
+                const compDiv = createComponentFormDiv(compId)
 
                 $('<input>', {
                     type: 'hidden',
@@ -300,68 +241,27 @@
                     value: 'comp_' + selectId
                 }).appendTo('#CompForm')
 
-                // ② make title
-                $('<p class="comp-div-title">').text(componentName).appendTo(compDiv);
-                $('<input>', {
-                    type: 'hidden',
-                    name: `input[comp_${selectId}][name]`,
-                    value: componentName
-                }).appendTo(compDiv)
-
+                setComponentName(componentName, compDiv)
+                createComponentNameHidden(selectId, componentName, compDiv)
                 const CompoTable = $(createCompTableEl()).appendTo(compDiv)
-                const hiddenCompId = $('<input>', {
-                    type: 'hidden',
-                    name: `input[comp_${selectId}][id]`,
-                    value: selectId
-                }).appendTo(compDiv)
+                createComponentIdHidden(selectId, compDiv)
 
-                // ② 選択された名前をhiddenに追加
-
-                
-                const button = $('<button>', {
-                    type: 'button',
-                    'class': `w-[26px] h-[26px] p-[4px] border-[2px]  flex items-center justify-center mt-4 ml-4 ${!screenMode ? 'hidden' : ''}`,
-                    on: {
-                        click: () => {addForm(compId)}
-                    }
-                }).text('＋').appendTo(compDiv)
+                const button = createAddBtn(compId, selectId, createComoTableRowEl, compDiv, !screenMode ? ' hidden' : '')
 
                 // データが存在するか確認
-                let rowCount = inputData ? Object.keys(inputData).length : 10;
-
-                if (rowCount < 10) {
-                    rowCount = 10;
-                }
+                let rowCount = getRowCount(inputData)
                 
                 for (let i=0; i < rowCount; i++) {
-                    const rowInfo = inputData.length !== 0 && inputData[i+1]  ? inputData[i+1] : {detail: "1", display_order: i+1, length: null, number: null}
-                    console.log(rowInfo)
-                    $(createComoTableRowEl(rowInfo, selectId)).appendTo(CompoTable)
+                    const rowInfo = inputData.length !== 0 && inputData[i+1]  ? inputData[i+1] : getInitialFormData(i+1)
+                    $(createComoTableRowEl(selectId, rowInfo)).appendTo(CompoTable)
                 }
-                console.log('compDiv done')
                 return 
             } 
         }
 
-        // プラスボタン押下時にformを追加する
-        const addForm = (compId) => {
-            const CompoTable = $(`#${compId} table`)
-            const compoTableRowCount = CompoTable.children().length;
-            const initialRow = {detail: "1", display_order: compoTableRowCount, length: null, number: null}
-            $(createComoTableRowEl(initialRow, compId)).appendTo(CompoTable)
-        }
-
-        // 削除ボタン処理
-        const deleteInput = (compId, display_order) => {
-            $(`#comp-len-${compId}-${display_order}`).val("");
-            $(`#comp-num-${compId}-${display_order}`).val("");
-        }
-
         // 初期実行時にform情報がある場合のイベント
         if (existInfo.length != 0) {
-            console.log(existInfo)
             existInfo.input.forEach((row) => {
-                console.log(row.id)
                 makeFormEl(row.id, row.name, row.data)
                 $('#comp-frame').removeClass('hidden');
                 $("#CompForm").removeClass('hidden');

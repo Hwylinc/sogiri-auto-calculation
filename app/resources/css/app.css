@@ -66,6 +66,10 @@
   color: #b51f1f;
 }
 
+.disabled-a {
+  pointer-events: none;
+}
+
 /*************************************************** */
 /* 鉄筋計算
 /*************************************************** */
@@ -84,6 +88,9 @@
 .rebar .comp-form {
   max-height: 68vh;
   overflow-y: auto;
+}
+.rebar .comp-form.confirm-frame {
+  max-height: 65vh;
 }
 
 /* 部材選択フレーム */

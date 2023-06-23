@@ -87,7 +87,9 @@ class RebarController extends BaseController
     public function getRegister(Request $request, $select_diameter)
     {
 
-        $this->sessionCheck($request);
+        if( $request->session()->missing('rebar.select.now') ) {
+            return redirect()->route('rebar.select');
+        }
 
         $view_data = [];
 
@@ -141,12 +143,15 @@ class RebarController extends BaseController
                 ksort($input_data);
 
                 foreach( $input_data as $key => $data ){
-                    if( in_array($key, $checked_comp) ) {
+                    if( $checked_comp && in_array($key, $checked_comp) ) {
                         $newRow = [];
                         ksort($data['data']);
                         $count = 1;
                         foreach( $data['data'] as $order => $row ){
-                            if ($row['length'] || $row['number']) {
+                            if (
+                                ( !is_null($row['length']) && $row['length'] !== "" ) 
+                                || ( !is_null($row['number']) && $row['number'] !== "" )
+                            ) {
                                 // validation check
                                 $message = $this->customValidate($row);
                                 $row['display_order'] = $count;
@@ -192,9 +197,13 @@ class RebarController extends BaseController
 
             // 入力画面の更新時処理
             if( $request->get('process') === 'insert' ){
+
+                if( $transArrayFlg ) {
+                    return redirect()->route('rebar.register', $request->get('select_diameter'));
+                }
+
                 if ( (int)$request->get('action') !== -1 ) {
-                    $nextPage = $transArrayFlg ? $request->get('select_diameter') : $request->get('action');
-                    return redirect()->route('rebar.register', $nextPage);
+                    return redirect()->route('rebar.register', $request->get('action'));
                 } else {
                     $disameter = Diameter::get_first(0);
                     return redirect()->route('rebar.confirm', $disameter);
@@ -215,7 +224,9 @@ class RebarController extends BaseController
     public function getConfirm(Request $request, $select_diameter)
     {   
         // session確認
-        $this->sessionCheck($request);
+        if( $request->session()->missing('rebar.select.now') ) {
+            return redirect()->route('rebar.select');
+        }
 
         // initial variable
         $view_data = [];
@@ -287,7 +298,9 @@ class RebarController extends BaseController
         try {
 
             // session確認
-            $this->sessionCheck($request);
+            if( $request->session()->missing('rebar.select.now') ) {
+                return redirect()->route('rebar.select');
+            }
 
             // sessionから値を取得
             $calculation_select_info = $request->session()->get('rebar.select.now');
@@ -344,14 +357,12 @@ class RebarController extends BaseController
      */
     private function customValidate(array $data): string 
     {
-        if ($data['number'] || $data['length']) {
-            if ( !$data['number'] ) {
-                return '長さを入力した場合、本数は入力必須です';
-            } elseif ( !$data['length'] ) {
-                return '本数を入力した場合、長さは入力必須です';
-            } else {
-                return 'OK';
-            }
+        if ( is_null($data['number']) || $data['number'] === "" ) {
+            return '長さを入力した場合、本数は入力必須です';
+        } elseif ( is_null($data['length']) || $data['length'] === "" ) {
+            return '本数を入力した場合、長さは入力必須です';
+        } else {
+            return 'OK';
         }
     }
 
@@ -382,13 +393,6 @@ class RebarController extends BaseController
         }
 
         return $page;
-    }
-
-    private function sessionCheck($request)
-    {
-        if( $request->session()->missing('rebar.select.now') ) {
-            return redirect()->route('rebar.select');
-        }
     }
 
     public function attributes(): array

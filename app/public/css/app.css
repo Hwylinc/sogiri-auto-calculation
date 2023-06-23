@@ -664,15 +664,8 @@ video {
 .border-b-2{
   border-bottom-width: 2px;
 }
-.border-r-\[1px\]{
-  border-right-width: 1px;
-}
 .border-t{
   border-top-width: 1px;
-}
-.border-\[\#DADADA\]{
-  --tw-border-opacity: 1;
-  border-color: rgb(218 218 218 / var(--tw-border-opacity));
 }
 .border-gray-200{
   --tw-border-opacity: 1;
@@ -731,10 +724,6 @@ video {
 }
 .p-\[4px\]{
   padding: 4px;
-}
-.px-3{
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
 }
 .px-6{
   padding-left: 1.5rem;
@@ -841,9 +830,6 @@ video {
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
-.outline{
-  outline-style: solid;
-}
 .blur{
   --tw-blur: blur(8px);
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
@@ -914,6 +900,10 @@ video {
   color: #b51f1f;
 }
 
+.disabled-a {
+  pointer-events: none;
+}
+
 /*************************************************** */
 /* 鉄筋計算
 /*************************************************** */
@@ -932,6 +922,9 @@ video {
 .rebar .comp-form {
   max-height: 68vh;
   overflow-y: auto;
+}
+.rebar .comp-form.confirm-frame {
+  max-height: 65vh;
 }
 
 /* 部材選択フレーム */

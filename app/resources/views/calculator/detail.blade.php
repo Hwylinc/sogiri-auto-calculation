@@ -20,13 +20,13 @@
                 <div class="card-body">
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
-                          <a data-bs-toggle="tab" href="#result"  @if($page_tab=='result') class="nav-link active" @else class="nav-link" @endif>切断指示</a>
+                          <a data-bs-toggle="tab" href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'result']) }}"  @if($page_tab=='result') class="nav-link active" @else class="nav-link" @endif>切断指示</a>
                         </li>
                         <li class="nav-item">
-                          <a data-bs-toggle="tab" href="#request" @if($page_tab=='request') class="nav-link active" @else class="nav-link" @endif>計算依頼内容</a>
+                          <a data-bs-toggle="tab" href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'request']) }}" @if($page_tab=='request') class="nav-link active" @else class="nav-link" @endif>計算依頼内容</a>
                         </li>
                         <li class="nav-item">
-                          <a data-bs-toggle="tab" href="#exception" @if($page_tab=='exception') class="nav-link active" @else class="nav-link" @endif>例外処理内容</a>
+                          <a data-bs-toggle="tab" href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'exception']) }}" @if($page_tab=='exception') class="nav-link active" @else class="nav-link" @endif>例外処理内容</a>
                         </li>
                     </ul>
                     
@@ -34,9 +34,11 @@
                         {{-- 切断指示　Start --}}
                         <div id="result" @if($page_tab=='result') class="tab-pane active" @else class="tab-pane" @endif>
                             @foreach ($diameterDisplayList as $diameter => $id)
-                                <a @if($id == $diameter_id) class="active_diameter" @endif href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'result', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
-                                    {{ $diameter }}<br>
-                                </a>
+                                @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16')
+                                    <a @if($id == $diameter_id) class="active_diameter" @endif href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'result', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
+                                        {{ $diameter }}<br>
+                                    </a>
+                                @endif
                             @endforeach
                             <div class="mt-5">
                                 @if (!empty($resultDisplayList[$diameter_id])) 
@@ -121,9 +123,11 @@
                         {{-- 例外処理内容　Start --}}
                         <div id="exception" @if($page_tab=='exception') class="tab-pane active" @else class="tab-pane" @endif>
                             @foreach ($diameterDisplayList as $diameter => $id)
-                                <a @if($id == $diameter_id) class="active_diameter" @endif href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'exception', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
-                                    {{ $diameter }}<br>
-                                </a>
+                                @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16' )
+                                    <a @if($id == $diameter_id) class="active_diameter" @endif href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'exception', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
+                                        {{ $diameter }}<br>
+                                    </a>
+                                @endif
                             @endforeach
                             @if (isset($exceptionDisplayList[$diameter_id]))
                             <table class="table">

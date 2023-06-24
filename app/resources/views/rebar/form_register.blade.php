@@ -137,10 +137,10 @@
             const tr = $('<tr>')
 
             tableHead.forEach((title) => {
-                let wClass = "w-40per"
+                let wClass = "w-40%"
 
                 if (title === "NO" || title === "削除") {
-                    wClass = "w-10per"
+                    wClass = "w-10%"
                 } 
 
                 const th = createFormTableHeadEl(wClass, title);
@@ -238,73 +238,6 @@
 
 <style scoped>
 
-    .font-bold{
-        font-weight: 700;
-    }
-
-    .right td, th {
-        width: 50%;
-        text-align: left;
-        padding: 6px 8px; 
-    }
-
-    .comp-frame {
-        padding-top: 8px;
-        padding-bottom: 8px;
-    }
-
-    input[type="number"]::-webkit-outer-spin-button, 
-    input[type="number"]::-webkit-inner-spin-button { 
-        -webkit-appearance: none; 
-        margin: 0; 
-    } 
-
-    input[type="text"],
-    input[type="number"] {
-        padding: 4px;
-        padding-right: 45px; /* 右側に30px分の余白を設定 */
-        border: 1px solid #d0d0d0;
-    }
-
-    .unit {
-        position: absolute;
-        left: 250px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #d0d0d0;
-    }
-
-    .a-disabled {
-        pointer-events: none;
-    }
-
-    .button {
-        width: 80px;
-        text-align: center;
-        display: inline-block;
-        padding: 8px 16px;
-        color: #16202E;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #DADADA;
-    }
-    .bt-tran {
-        width: 130px;
-    }
-
-    .diameter-select {
-        color: #ffffff;
-        background-color: #3A7EBA;
-    }
-
-    .h-1\.5 {
-        height: 1.5rem;
-    }
-
-    .mr-0\.5 {
-        margin-right: 0.5rem;
-    }
-
     .std-size-name,
     .std-size-select {
         width: 108px;
@@ -321,45 +254,4 @@
         }
     }
 
-    /* 入力項目の外枠 */
-    .comp-div-outline {
-        border: 1px solid #DADADA;
-        padding: 16px;
-        margin-bottom: 8px;
-    }
-    /* 入力項目のタイトル */
-    .comp-div-title {
-        border-left: 4px solid #2083D7;
-        font-weight: 600;
-        padding: 4px;
-    }
-    /* 入力項目のテーブルヘッダー */
-    .input-table {
-       border: 1px solid #DADADA;
-       width: 100%;
-    }
-    /* 入力項目のテーブルヘッダー */
-    .comp-div-th {
-        border: 1px solid #DADADA;
-        background-color: #333333;
-        color: #ffffff;
-        padding-left: 10px;
-    }
-
-    .w-10per {
-        width: 10%
-    }
-    .w-40per {
-        width: 40%
-    }
-
-    /* ボタン */
-    .prev-btn {
-        background-color: #ffffff;
-        color: #000000;
-        border: 1px solid #000000;
-    }
-    .confirm-btn {
-        background-color: #53BC00;
-    }
 </style>

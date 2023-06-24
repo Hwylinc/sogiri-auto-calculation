@@ -65,7 +65,7 @@
                     </div>
 
                     {{-- 入力formのtable --}}
-                    <div id="CompForm" class="comp-form bg-white p-4 hidden"></div>
+                    <div id="CompForm" class="comp-form confirm-frame bg-white p-4 hidden"></div>
 
                     <div class="flex justify-center mt-4">
 
@@ -285,12 +285,6 @@
 
 <style scoped>
 
-    .right td, th {
-        width: 50%;
-        text-align: left;
-        padding: 6px 8px; 
-    }
-
     .t-col {
         background-color: #6D6D6D;
         color: #ffffff;
@@ -305,34 +299,6 @@
         background-color: #E3E7ED;
         font-weight: 600;
         border-left: solid 4px #2083D7;
-    }
-
-    input[type="number"]::-webkit-outer-spin-button, 
-    input[type="number"]::-webkit-inner-spin-button { 
-        -webkit-appearance: none; 
-        margin: 0; 
-    } 
-
-    input[type="text"],
-    input[type="number"] {
-        padding: 4px;
-        padding-right: 45px; /* 右側に30px分の余白を設定 */
-        border: 1px solid #d0d0d0;
-    }
-
-    .unit {
-        position: absolute;
-        right: 15px;
-        top: 50%;
-        transform: translateY(-50%)
-    }
-
-    .a-disabled {
-        pointer-events: none;
-    }
-
-    .bt-tran {
-        width: 130px;
     }
 
     .select {
@@ -353,18 +319,7 @@
         }
     }
 
-    .button {
-        width: 80px;
-        text-align: center;
-        display: inline-block;
-        padding: 8px 16px;
-        color: #16202E;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #DADADA;
-    }
-
-    .edit-btn {
+    .button.edit-btn {
         display: flex;
         padding: 4px;
         align-items: center;
@@ -372,25 +327,6 @@
         background-color: #53BC00;
         color: #ffffff;
         height: 32px;
-    }
-
-    .diameter-select {
-        color: #ffffff;
-        background-color: #3A7EBA;
-    }
-
-
-
-    /* ボタン */
-    .prev-btn {
-        background-color: #ffffff;
-        color: #000000;
-        border: 1px solid #000000;
-        margin-right: 8px;
-    }
-    .confirm-btn {
-        background-color: #53BC00;
-        color: #ffffff;
     }
 
     .len-input {

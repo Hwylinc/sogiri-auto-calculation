@@ -78,14 +78,14 @@ const createZeroForth = (displayOrder) => {
 // テーブル行のNo列の作成
 const createTdNo = (bgClass, order, tr) => {
     $('<td>', {
-        'class': `${bgClass} p-1 border-r-[1px] border-[#DADADA] w-10per text-center`,
+        'class': `${bgClass} p-1 border-r-1 border-DADADA w-10per text-center`,
     }).text(order).appendTo(tr)
 }
 
 // テーブル行のNo以外の作成
 const createTd = (bgClass, tr, center="") => {
     return $('<td>', {
-        'class': `${bgClass} px-3 border-r-[1px] border-[#DADADA] relative ${center}`,
+        'class': `${bgClass} px-3 border-r-1 border-DADADA relative ${center}`,
     }).appendTo(tr)
 }
 
@@ -158,7 +158,7 @@ const addForm = (compId, id, callback) => {
 const createAddBtn = (compId, id, createComoTableRowEl, compDiv, op="") => {
     return $('<button>', {
         type: 'button',
-        'class': 'w-[26px] h-[26px] p-[4px] border-[2px]  flex items-center justify-center mt-4 ml-4' + op,
+        'class': 'w-26px h-26px p-4px border-2 flex items-center justify-center mt-4 ml-4' + op,
         on: {
             click: () => {addForm(compId, id, createComoTableRowEl)}
         }

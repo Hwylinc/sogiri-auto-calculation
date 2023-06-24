@@ -3,6 +3,7 @@
 // ####################################################
 // 削除ボタン処理
 const deleteInput = (compId, display_order) => {
+    console.log('delete')
     $(`#comp-len-${compId}-${display_order}`).val("");
     $(`#comp-num-${compId}-${display_order}`).val("");
 }
@@ -104,11 +105,12 @@ const createRemoveBtnIcon = (path, id, displayOrder, tdDelete) => {
 
 // 長さと本数のinput要素を作成
 const createInputNumberEl = (id, displayOrder, inputValue, td, inputName) => {
+    const category = inputName === 'length' ? 'len' : 'num'
     $('<input>', {
         type: 'number',
         name: `input[comp_${id}][data][${displayOrder}][${inputName}]`,
         value: inputValue,
-        id: `comp-len-${id}-${displayOrder}`
+        id: `comp-${category}-${id}-${displayOrder}`
     }).appendTo(td)
 }
 // 長さと本数のテキスト要素を作成

@@ -292,9 +292,15 @@ trait CalculatorTrait
                 $times = $arr[$temp_length]/$divisor;
                 
                 $length = explode('_',$temp_length)[0];
-                $data[$size][$divisor][$length] = $times;
+                // 既に値がある場合は追加する
+                if ( isset($data[$size][$divisor][$length]) ) {
+                    $data[$size][$divisor][$length] = $data[$size][$divisor][$length] + $times;
+                } else {
+                    $data[$size][$divisor][$length] = $times;
+                }
             }
         }
+
         return $data;
     }
 

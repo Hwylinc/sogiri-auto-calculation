@@ -42,18 +42,18 @@
                 </div>
             </div>
         </header>
-    
+
         <main class="body flex flex-1" >
-    
+
             <div class="menu-bg-color w-[220px] flex flex-col ">
-    
+
                 <ul>
                     @foreach ($menuList as $key => $array)
-                        <li 
-                            class="p-4 {{ $array['select'] ? 'select' : '' }} menu-title flex" 
+                        <li
+                            class="p-4 {{ $array['select'] ? 'select' : '' }} menu-title flex"
                             onclick="location.href='{{ array_key_exists('param', $array) ? route($array['route_name'], $array['param']) : route($array['route_name']) }}'"
                         >
-                           <img src="{{ asset("images/{$array['image']}.svg") }}" alt="" class="mr-2" > 
+                           <img src="{{ asset("images/{$array['image']}.svg") }}" alt="" class="mr-2" >
                            {{ $array['title'] }}
                         </li>
                     @endforeach
@@ -61,23 +61,23 @@
 
                 <div class="mt-auto pl-2 pr-2 text-cente">
                     <div class="h-[0.5px] bg-[#16202E] w-full"></div>
-                    
+
                     <button class="p-4 w-full menu-title flex items-center">
-                        <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" > 
+                        <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" >
                         ログアウト
                     </button>
                 </div>
-    
+
             </div>
-        
+
             <div class="h-full w-full p-4 pl-10 pr-10 main-bg-color">
                {{ $slot }}
             </div>
-    
+
         </main>
 
     </div>
-    
+
 </body>
 
 <style scoped>

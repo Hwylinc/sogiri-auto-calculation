@@ -18,7 +18,12 @@
         {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
 
         <link rel="stylesheet" href="{{ mix('css/app.css') }}">
-        <script src="{{ mix('js/app.js') }}" defer></script>
+        <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+        {{-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> --}}
+        <script src="{{ mix('js/app.js') }}" ></script>
+        <script src="{{ asset('js/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/select2.min.js') }}" defer></script>
+        
 
     </head>
 <body class="h-screen">

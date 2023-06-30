@@ -92,7 +92,7 @@ trait CalculatorTrait
         $calculationList = array();
         $exception = array();
         // 例外処理で使う長さの一覧を取得
-        $exception_lengths = [4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
+        $exception_lengths = [4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
         foreach ($calculationRequestList as $value) {
             if (in_array($value['requests_length'], $exception_lengths)) {
                 // 例外処理に渡す値
@@ -115,53 +115,58 @@ trait CalculatorTrait
         $dataArray = [];        
         foreach ($data as $size => $temp_array)
         {
-            // 各数字の約数の一覧を格納する配列
-            $divisors = [];
-            // 存在する約数の一覧を格納する配列
-            $exist_divisors = [];
+            // D10/13/16以外は対応しない
+            if ($size == 'D10' || $size == 'D13' || $size == 'D16') {
+                // 各数字の約数の一覧を格納する配列
+                $divisors = [];
+                // 存在する約数の一覧を格納する配列
+                $exist_divisors = [];
+                // 13以上25以下の素数の一覧を取得
+                $prime_numbers = [13, 17, 19, 23];
+                // 紐づく物理最大数を取得
+                $max_limit = $this->getMaxNumber($size);
+                // Numが物理幅以上の場合は２５の倍数とあまりに分ける
+                // 後で約数は25以下にしかとらないとかにしとく
+                $array = $this->getAdjustedByNum($max_limit, $temp_array);
+                // 素数をマイナス１した数値と１に分ける
+                $array = $this->getAdjustedByPrimeNum($prime_numbers, $array);
+                // 各数字に対して約数を取得し、$divisors に格納する
+                foreach ($array as $length => $num) {
+                    $divisors[$length] = $this->getDivisors($max_limit, $num);
+                    // 重複なく約数を統合する
+                    $exist_divisors = array_unique(array_merge($exist_divisors, $divisors[$length]));
+                }
 
-            // 紐づく物理最大数を取得
-            $max_limit = $this->getMaxNumber($size);
-            // Numが物理幅以上の場合は２５の倍数とあまりに分ける
-            // 後で約数は25以下にしかとらないとかにしとく
-            $array = $this->getAdjustedByNum($max_limit, $temp_array);
-            // 各数字に対して約数を取得し、$divisors に格納する
-            foreach ($array as $length => $num) {
-                $divisors[$length] = $this->getDivisors($max_limit, $num);
-                // 重複なく約数を統合する
-                $exist_divisors = array_unique(array_merge($exist_divisors, $divisors[$length]));
-            }
-
-            // 約数一覧を降順
-            rsort($exist_divisors);
-            // 共通する約数を持つ数字をグループ化するための配列
-            $groups = [];
-            if (!empty($exist_divisors)) {
-                // 存在する約数をループ
-                foreach ($exist_divisors as $n) {
-                    // 各数字の約数の一覧に現在回している約数が含まれている確認するループ
-                    foreach ($divisors as $key => $divisor) {
-                        if (array_key_exists($n, $divisor)) {
-                            $groups[$n][$key] = $divisor[$n];
-                            // unset($divisors[$key]);
+                // 約数一覧を降順
+                rsort($exist_divisors);
+                // 共通する約数を持つ数字をグループ化するための配列
+                $groups = [];
+                if (!empty($exist_divisors)) {
+                    // 存在する約数をループ
+                    foreach ($exist_divisors as $n) {
+                        // 各数字の約数の一覧に現在回している約数が含まれている確認するループ
+                        foreach ($divisors as $key => $divisor) {
+                            if (array_key_exists($n, $divisor)) {
+                                $groups[$n][$key] = $divisor[$n];
+                                // unset($divisors[$key]);
+                            }
                         }
-                    }
-                    // group内に一つしかなければ共通約数ではないのでグループにはしない
-                    if(array_key_exists($n, $groups)) {
-                        if (count($groups[$n]) <= 1) {
-                            unset($groups[$n]);
-                        } else {
-                            // 複数ある場合は共通約数として括り、以後のループにその数値は考慮されないように除外する
-                            foreach (array_keys($groups[$n]) as  $value) {
-                                unset($divisors[$value]);
+                        // group内に一つしかなければ共通約数ではないのでグループにはしない
+                        if(array_key_exists($n, $groups)) {
+                            if (count($groups[$n]) <= 1) {
+                                unset($groups[$n]);
+                            } else {
+                                // 複数ある場合は共通約数として括り、以後のループにその数値は考慮されないように除外する
+                                foreach (array_keys($groups[$n]) as  $value) {
+                                    unset($divisors[$value]);
+                                }
                             }
                         }
                     }
                 }
-            }            
-            $dataArray = $this->getGroupResult($size, $groups, $array, $dataArray);
+                $dataArray = $this->getGroupResult($size, $groups, $array, $dataArray);
+            }
         }
-
         // 鉄筋径別に同時切断設定
         foreach ($dataArray as $size => $array) {
             foreach ($array as $cutting_num => $arr) {
@@ -181,7 +186,7 @@ trait CalculatorTrait
                 $calculationList['target'][$size][$cutting_num] = $this->getCombination($spareList, $lengths, $size);                
             }            
         }
- 
+        
         $exceptionArray = [];
         // 例外処理に値があれば同時切断０の配列に変更
         if (!empty($exception)) {
@@ -223,6 +228,32 @@ trait CalculatorTrait
         return $array;
     }
 
+    /*
+    *
+    * 素数をマイナス１した数値と１に分ける
+    *
+    */
+    public function getAdjustedByPrimeNum($prime_numbers, $array)
+    {
+        $data = [];
+        // 素数から引く数
+        $subtrahend = 1;
+        foreach ($array as $length => $num) {
+            // 素数かどうか確認
+            if (in_array($num, $prime_numbers)) {
+                // 素数の場合、定められた数値（現状では１）を引いて素数でなくす
+                $non_prime_num = $num - $subtrahend;
+                // 定められた数値（現状では１）と元の数値からそれを引いたものに分けて配列に登録
+                $data[$length.'_adjusted3'] = $non_prime_num;
+                $data[$length.'_adjusted4'] = $subtrahend;
+            } else {
+                $data[$length] = $num;
+            }
+        }
+        return $data;
+    }
+
+
 
     // 約数を取得する関数
     public function getDivisors($max_limit, $n) 
@@ -261,9 +292,15 @@ trait CalculatorTrait
                 $times = $arr[$temp_length]/$divisor;
                 
                 $length = explode('_',$temp_length)[0];
-                $data[$size][$divisor][$length] = $times;
+                // 既に値がある場合は追加する
+                if ( isset($data[$size][$divisor][$length]) ) {
+                    $data[$size][$divisor][$length] = $data[$size][$divisor][$length] + $times;
+                } else {
+                    $data[$size][$divisor][$length] = $times;
+                }
             }
         }
+
         return $data;
     }
 

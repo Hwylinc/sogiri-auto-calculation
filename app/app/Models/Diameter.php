@@ -11,7 +11,20 @@ class Diameter extends Model
     protected $primaryKey = 'id';
     protected $fillable = ['size'];
 
-    public function get_all() {
+    public static function get_all() {
         return self::orderby('id')->get();
+    }
+
+    public static function get_first($offset)
+    {
+        return self::orderby('id')
+            ->offset($offset)
+            ->limit(1)
+            ->first();
+    }
+
+    public static function get_by_id($id)
+    {
+        return self::where('id', $id)->first();
     }
 }

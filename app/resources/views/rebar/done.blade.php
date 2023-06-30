@@ -18,8 +18,7 @@
                     <a href="{{ route('rebar.select') }}" class="add-bt">案件を追加する</a>
                 </div>
                 <div>
-                    {{-- どこのrouteに飛ばせば良いかわからない --}}
-                    <a href="{{ route('rebar.register', ['diameter' => 1]) }}" class="next-bt">計算へ進む</a>
+                    <a href="{{ route('calculate.ready') }}" class="next-bt">計算へ進む</a>
                 </div>
             </div>
         </div>

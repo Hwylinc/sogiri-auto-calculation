@@ -7,6 +7,7 @@ use Illuminate\Database\Seeder;
 use Database\Seeders\DiametersSeeder;
 use Database\Seeders\SpareSeeder;
 use Database\Seeders\ClientSeeder;
+use Database\Seeders\ComponentsSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,9 +26,9 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         // exe 
-        $this->call(DiametersSeeder::class);    // diameters seeder
-        $this->call(SpareSeeder::class);        // spare seeder
-        $this->call(ClientSeeder::class);        // client seeder
-
+        // $this->call(DiametersSeeder::class);    // diameters seeder
+        // $this->call(SpareSeeder::class);        // spare seeder
+        // $this->call(ClientSeeder::class);        // client seeder
+        $this->call(ComponentsSeeder::class);         
     }
 }

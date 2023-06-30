@@ -4,5 +4,227 @@
 // Variables
 @import 'variables';
 
-// Bootstrap
-@import 'bootstrap/scss/bootstrap';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.header-bg-color {
+    background-color: #333333;
+}
+
+.menu-bg-color {
+    background-color: #3C4252;
+}
+
+.main-bg-color {
+    background-color: #F4F6FA;
+}
+
+.h-90 {
+    height: 92%;
+}
+
+// Custom Tailwind CSS
+.h-90 {
+    height: 90%;
+}
+
+/*************************************************** */
+/* custom tailwind css
+/*************************************************** */
+// width
+.w-10\% {
+    width: 10%
+}
+.w-40\% {
+    width: 40%
+}
+.w-26px {
+    width: 26px;
+}
+// margin
+.mb-4 {
+    margin-bottom: 1rem;
+}
+.mb-8 {
+    margin-bottom: 2rem;
+}
+.w-250px {
+    width: 250px;
+}
+// height
+.h-5\/6 {
+    height: 83.333333%;
+}
+.h-26px {
+    height: 26px;
+}
+.p-4px {
+    padding: 4px;
+}
+.px-3 {
+    padding-left: 0.75rem; 
+    padding-right: 0.75rem;
+}
+.border-2 {
+    border-width: 2px;
+}
+.border-r-1 {
+    border-right-width: 1px;
+}
+.border-DADADA {
+    border-color: #DADADA;
+}
+
+// font
+.font-bold{
+    font-weight: 700;
+}
+
+
+/*************************************************** */
+/* share component
+/*************************************************** */
+.black-btn {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.delete-icon:hover {
+    cursor: pointer;
+}
+
+.text-error {
+    color: #b51f1f;
+}
+
+.disabled-a {
+    pointer-events: none;
+}
+
+
+/*************************************************** */
+/* 鉄筋計算
+/*************************************************** */
+.rebar {
+    height: 100%;
+    /* 左サイド */
+    .left {
+        width: 70%;
+    }
+    /* 右サイド */
+    .right {
+        width: 30%;
+        td, th {
+            width: 50%;
+            text-align: left;
+            padding: 6px 8px;
+        }
+    }
+
+    /* 入力全体のフレーム */
+    .comp-form {
+        max-height: 68vh;
+        overflow-y: auto;
+        &.confirm-frame {
+            max-height: 65vh;
+        }
+    }
+
+    /* 部材選択フレーム */
+    .comp-frame {
+        padding: 8px;
+    }
+
+    /* 入力項目の外枠 */
+    .comp-div-outline {
+        border: 1px solid #DADADA;
+        padding: 16px;
+        margin-bottom: 8px;
+    }
+
+    /* 入力項目のタイトル */
+    .comp-div-title {
+        border-left: 4px solid #2083D7;
+        font-weight: 600;
+        padding: 4px;
+    }
+
+    /* 入力項目のテーブルヘッダー */
+    .input-table {
+        border: 1px solid #DADADA;
+        width: 100%;
+    }
+
+    /* 入力項目のテーブルヘッダー */
+    .comp-div-th {
+        border: 1px solid #DADADA;
+        background-color: #333333;
+        color: #ffffff;
+        padding-left: 10px;
+    }
+
+    // numberの右側につく上下ボタンの削除
+    input[type='number']::-webkit-outer-spin-button, 
+    input[type='number']::-webkit-inner-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    } 
+
+    // 長さと本数のinput
+    input[type="text"],
+    input[type="number"] {
+        width: 220px;
+        padding: 4px 8px;
+        border: 1px solid #d0d0d0;
+    }
+
+    // 単位
+    .unit {
+        position: absolute;
+        left: 250px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #d0d0d0;
+    }
+
+    // aタグのイベント行なわない
+    .a-disabled {
+        pointer-events: none;
+    }
+
+    .bt-tran {
+        width: 130px;
+    }
+
+    // 戻るボタン
+    .prev-btn {
+        background-color: #ffffff;
+        color: #000000;
+        border: 1px solid #000000;
+        margin-right: 8px;
+    }
+
+    // 確認ボタン
+    .confirm-btn {
+        background-color: #53BC00;
+        color: #ffffff;
+    }
+
+    .button {
+        width: 80px;
+        text-align: center;
+        display: inline-block;
+        padding: 8px 16px;
+        color: #16202E;
+        font-size: 16px;
+        cursor: pointer;
+        background-color: #DADADA;
+    }
+    // 鉄筋径の選択
+    .button.diameter-select {
+        color: #ffffff;
+        background-color: #3A7EBA;
+    }
+    
+}

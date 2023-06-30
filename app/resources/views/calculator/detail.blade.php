@@ -1,21 +1,23 @@
-@extends('layouts.app')
+{{--  @extends('layouts.app')
 
 @section('pageCss')
 <style>
     .active_diameter {
-        color: red;
+        color: blue;
     }
 </style>
 @endsection
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+@section('content')  --}}
+<x-menu select-page="1">
 
-            <a href="{{ route('calculate.list') }}" type="button" class="btn btn-dark rounded-pill ">一覧へ戻る</a>
-            <a href="{{ route('home') }}" type="button" class="btn btn-dark rounded-pill ">トップへ戻る</a>
-
+    {{-- title --}}
+    <x-head title="鉄筋計算" imageFlg="1"></x-head>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <a href="{{ route('calculate.list') }}" type="button" class="btn btn-dark rounded-pill ">一覧へ戻る</a>
+                <a href="{{ route('home') }}" type="button" class="btn btn-dark rounded-pill ">トップへ戻る</a>
             <div class="card">
                 <div class="card-body">
                     <ul class="nav nav-tabs">
@@ -62,37 +64,42 @@
                                                     <td>{{  $value['number'] }} 本</td>
                                                     <td>{{  $value['port'] }}</td>
                                                 </tr>
-                                            @endforeach
-                                                </tbody>
-                                            </table>
-                                            <p>端材：{{ $combination['left'] }}mm</p>
-                                        @endif
-                                    @endforeach
-                                @else
-                                    表示内容がありません
-                                @endif
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                        <p>端材：{{ $combination['left'] }}mm</p>
+                                    @endif
+                                @endforeach
+                            @else
+                                表示内容がありません
+                            @endif
                             </div>
                         </div>
                         {{-- 切断指示　End --}}
+                        
                         {{-- 依頼内容　Start --}}
-                        <div id="request" @if($page_tab=='request') class="tab-pane active" @else class="tab-pane" @endif>
+                        <div id="request"
+                            @if ($page_tab == 'request') class="tab-pane active" @else class="tab-pane" @endif>
                             @foreach ($diameterDisplayList as $diameter => $id)
-                                <a @if($id == $diameter_id) class="active_diameter" @endif href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'request', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
+                                <a @if ($id == $diameter_id) class="active_diameter" @endif
+                                    href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'request', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
                                     {{ $diameter }}<br>
                                 </a>
                             @endforeach
-                            @if (!empty($calculationRequestCodeList)) 
+                            @if (!empty($calculationRequestCodeList))
                                 <select id="calculation_id">
                                     @foreach ($calculationRequestCodeList as $value)
-                                        <option @if($value['code'] == $calculation_id) selected @endif value="{{ $value['code'] }}">{{ $value['name'] }} {{ $value['house_name'] }}</option>
+                                        <option @if ($value['code'] == $calculation_id) selected @endif
+                                            value="{{ $value['code'] }}">{{ $value['name'] }}
+                                            {{ $value['house_name'] }}</option>
                                     @endforeach
                                 </select>
                             @endif
                             @if (isset($calculationRequestDisplayList[$calculation_id][$diameter_id]))
                                 @foreach ($calculationRequestDisplayList[$calculation_id][$diameter_id] as $compornent_id => $detailArray)
                                     @if (!empty($detailArray))
-                                    <?php $disp_no = 1;?>
-                                    <h3 class="text-center">部材　{{ $compornent_id }}</h3>
+                                        <?php $disp_no = 1; ?>
+                                        <h3 class="text-center">部材　{{ $compornent_id }}</h3>
                                         <table class="table">
                                             <thead>
                                                 <tr>
@@ -105,11 +112,11 @@
                                                 @foreach ($detailArray as $value)
                                                     <tr>
                                                         <th scope="row">{{ $disp_no }}</th>
-                                                        <td>{{  $value['length'] }} mm</td>
-                                                        <td>{{  $value['number'] }} 本</td>
-                                                        <td>{{  $value['port'] }}</td>
+                                                        <td>{{ $value['length'] }} mm</td>
+                                                        <td>{{ $value['number'] }} 本</td>
+                                                        <td>{{ $value['port'] }}</td>
                                                     </tr>
-                                                    <?php $disp_no++;?>
+                                                    <?php $disp_no++; ?>
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -118,7 +125,6 @@
                             @endif
                         </div>
                         {{-- 依頼内容　End --}}
-
 
                         {{-- 例外処理内容　Start --}}
                         <div id="exception" @if($page_tab=='exception') class="tab-pane active" @else class="tab-pane" @endif>
@@ -148,32 +154,33 @@
                                         <td>{{  $value['number'] }} 本</td>
                                         <td>{{  $value['port'] }}</td>
                                     </tr>
-                                <?php $count++;?>
-                                @endforeach
-                                    </tbody>
-                            </table>
-                            @else
-                                <p>表示内容がありません。</p>
-                            @endif
+                                         <?php $count++; ?>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <p>表示内容がありません。</p>
+                                @endif
+                            </div>
+                            {{-- 例外処理内容　End --}}
                         </div>
-                        {{-- 例外処理内容　End --}}
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@endsection
+</x-menu>
+{{--  @endsection  --}}
 
 @section('pageJs')
-<script type="text/javascript">
-	$(function(){
-        $("#calculation_id").on('change', function() {
-            // selectボックスの値を取得
-            var group_code = "{{ $group_code }}";
-            var calculation_id = $("#calculation_id").val();
-            window.location.href = "/calculate/detail/"+group_code+"/request/"+calculation_id;
+    <script type="text/javascript">
+        $(function() {
+            $("#calculation_id").on('change', function() {
+                // selectボックスの値を取得
+                var group_code = "{{ $group_code }}";
+                var calculation_id = $("#calculation_id").val();
+                window.location.href = "/calculate/detail/" + group_code + "/request/" + calculation_id;
+            });
         });
-    });
-</script>
+    </script>
 @endsection

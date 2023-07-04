@@ -45,7 +45,7 @@
                                     name="component[]" 
                                     type="checkbox" 
                                     class="component mr-2" 
-                                    id="comp-check-{{ $index }}" data="{{ $component['id'] }}" 
+                                    id="comp-check-{{ $component['id'] }}" data="{{ $component['id'] }}" 
                                     value="comp_{{ $component['id'] }}"
                                     onchange="compoClick({{ $index }}, {{ $component['id'] }}, '{{ $component['name'] }}')"
                                     @if ($component['factory_id'] != $factory_id) disabled @endif
@@ -195,7 +195,7 @@
 
         const compoClick = (index, id, compoName) => {
 
-            const selectCheck = $(`#comp-check-${index}`).prop('checked');
+            const selectCheck = $(`#comp-check-${id}`).prop('checked');
             if( selectCheck ) {
                 makeFormEl(index, id, compoName)
 

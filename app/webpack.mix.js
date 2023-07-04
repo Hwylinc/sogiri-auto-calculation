@@ -21,3 +21,8 @@ mix.js('resources/js/app.js', 'public/js')
 })
     // jqueryを使うための記述 - urano
 .copy('node_modules/jquery/dist/jquery.min.js', 'public/js')
+
+  //   mix.js("resources/js/app.js", "public/js")
+  // .postCss("resources/css/app.css", "public/css", [
+  //   require("tailwindcss"),
+  // ]);

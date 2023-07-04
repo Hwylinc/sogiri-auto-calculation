@@ -55,12 +55,3 @@
     </div>
 </div>
 @endsection
-
-
-@section('pageJs')
-<script type="text/javascript">
-	$(function(){
-        alert('tedst');
-    });
-</script>
-@endsection

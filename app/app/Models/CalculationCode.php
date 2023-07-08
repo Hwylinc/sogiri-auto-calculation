@@ -26,7 +26,7 @@ class CalculationCode extends Model
             'client_id' => $data['client_id'],
             'house_name' => $data['house_name'],
             'factory_id' => $data['factory_id'],
-            'calculation_status' => 0,
+            'calculation_status' => 2,
         ]);
     }
 

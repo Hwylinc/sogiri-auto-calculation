@@ -246,8 +246,10 @@
                 const CompoTable = $(createCompTableEl()).appendTo(compDiv)
                 createComponentIdHidden(selectId, compDiv)
 
-                const button = createAddBtn(compId, selectId, createComoTableRowEl, compDiv, !screenMode ? ' hidden' : '')
-
+                if (screenMode) {
+                    const button = createAddBtn(compId, selectId, createComoTableRowEl, compDiv, !screenMode ? ' hidden' : '')
+                }
+                
                 // データが存在するか確認
                 let rowCount = getRowCount(inputData)
                 

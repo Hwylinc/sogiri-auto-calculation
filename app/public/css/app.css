@@ -529,10 +529,10 @@ video {
 .block{
   display: block;
 }
-.inline {
+.inline{
   display: inline;
 }
-.flex {
+.flex{
   display: flex;
 }
 .table{
@@ -643,6 +643,9 @@ video {
 .border{
   border-width: 1px;
 }
+.border-2{
+  border-width: 2px;
+}
 .border-b-2{
   border-bottom-width: 2px;
 }
@@ -712,8 +715,7 @@ video {
   padding-top: 1rem;
   padding-bottom: 1rem;
 }
-
-.pl-10 {
+.pl-10{
   padding-left: 2.5rem;
 }
 .pl-2{
@@ -818,15 +820,6 @@ video {
 .filter{
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
-/* .invert {
-  --tw-invert: invert(100%);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-.filter {
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-} */
-
-
 .header-bg-color {
   background-color: #333333;
 }

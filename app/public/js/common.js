@@ -157,12 +157,17 @@ const addForm = (compId, id, callback) => {
 }
 
 // 追加ボタン作成
-const createAddBtn = (compId, id, createComoTableRowEl, compDiv, op="") => {
-    return $('<button>', {
+const createAddBtn = (compId, id, createComoTableRowEl, compDiv, op) => {
+    const addBtn = $('<button>', {
         type: 'button',
         'class': 'w-26px h-26px p-4px border-2 flex items-center justify-center mt-4 ml-4' + op,
-        on: {
-            click: () => {addForm(compId, id, createComoTableRowEl)}
-        }
+        id: 'add-btn-'+id
     }).text('＋').appendTo(compDiv)
+
+    $(document).on("click",'#add-btn-'+id, () => {
+        addForm(compId, id, createComoTableRowEl)
+    })
+
+    return addBtn
+
 }

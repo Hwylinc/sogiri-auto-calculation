@@ -105,7 +105,7 @@
         // 部材のform枠処理
         const makeFormEl = (index, id, name, inputData=[]) => {
 
-            const compId =  'comp-div-' + index
+            const compId =  'comp-div-' + id
 
             if ( !($(`#${compId}`).length) ) {
                 
@@ -197,7 +197,7 @@
 
             const selectCheck = $(`#comp-check-${id}`).prop('checked');
             if( selectCheck ) {
-                makeFormEl(index, id, compoName)
+                makeFormEl(index, String(id), compoName)
 
                 // 中身要素をid順に並び替える
                 const parent = $('#CompForm')
@@ -212,7 +212,7 @@
                 parent.empty().append(children);
 
             } else {
-                $(`#comp-div-${index}`).addClass('hidden')
+                $(`#comp-div-${id}`).addClass('hidden')
             }
 
             const checkComponent = $('.component:checked').length;

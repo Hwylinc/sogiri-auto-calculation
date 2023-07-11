@@ -115,7 +115,7 @@
                 createComponentIdHidden(id, compDiv)
                 createComponentNameHidden(id, name, compDiv)
 
-                const button = createAddBtn(compId, id, createComoTableRowEl, compDiv)
+                const button = createAddBtn(compId, id, createComoTableRowEl, compDiv, "")
 
                 let rowCount = getRowCount(inputData)
                 

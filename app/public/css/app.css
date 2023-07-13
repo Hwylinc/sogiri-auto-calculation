@@ -526,6 +526,9 @@ video {
 .mt-auto{
   margin-top: auto;
 }
+.mt-6{
+  margin-top: 1.5rem;
+}
 .block{
   display: block;
 }
@@ -643,9 +646,6 @@ video {
 .border{
   border-width: 1px;
 }
-.border-2{
-  border-width: 2px;
-}
 .border-b-2{
   border-bottom-width: 2px;
 }
@@ -732,6 +732,15 @@ video {
 }
 .pt-8{
   padding-top: 2rem;
+}
+.pl-8{
+  padding-left: 2rem;
+}
+.pl-4{
+  padding-left: 1rem;
+}
+.pl-3{
+  padding-left: 0.75rem;
 }
 .text-center{
   text-align: center;
@@ -1005,7 +1014,8 @@ video {
   background-color: #53BC00;
   color: #ffffff;
 }
-.rebar .button {
+
+.rebar-button {
   width: 80px;
   text-align: center;
   display: inline-block;
@@ -1015,7 +1025,9 @@ video {
   cursor: pointer;
   background-color: #DADADA;
 }
-.rebar .button.diameter-select {
+
+/* 鉄筋径の選択 */
+.rebar-button.diameter-select {
   color: #ffffff;
   background-color: #3A7EBA;
 }

@@ -15,7 +15,7 @@
                         <div class="mr-2">
                             <a 
                                 class="
-                                    button 
+                                    rebar-button 
                                     @if($page['now'] == $diameter->id) diameter-select @endif
                                     a-disabled
                                 "

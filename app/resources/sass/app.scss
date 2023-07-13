@@ -211,20 +211,20 @@
         color: #ffffff;
     }
 
-    .button {
-        width: 80px;
-        text-align: center;
-        display: inline-block;
-        padding: 8px 16px;
-        color: #16202E;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #DADADA;
-    }
-    // 鉄筋径の選択
-    .button.diameter-select {
-        color: #ffffff;
-        background-color: #3A7EBA;
-    }
-    
+}
+
+.rebar-button {
+    width: 80px;
+    text-align: center;
+    display: inline-block;
+    padding: 8px 16px;
+    color: #16202E;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #DADADA;
+}
+/* 鉄筋径の選択 */
+.rebar-button.diameter-select {
+    color: #ffffff;
+    background-color: #3A7EBA;
 }

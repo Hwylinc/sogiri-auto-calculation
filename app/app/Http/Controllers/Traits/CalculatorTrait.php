@@ -259,6 +259,7 @@ trait CalculatorTrait
     public function getDivisors($max_limit, $n) 
     {
         $divisors = [];
+        $test = sqrt($n);
         for ($i = 1; $i <= sqrt($n); $i++) {
             if ($n % $i == 0) {
                 // $i が約数である場合
@@ -390,6 +391,7 @@ trait CalculatorTrait
             }
         }        
         
+        // 最後に作成リストだけ回せないので、下に追加していると予想
         $left = 8000 - end($result);
         //　予備材を使って端材を最小化
         if (!empty($spare_cut_list)) {

@@ -236,9 +236,9 @@ trait CalculatorResultTrait
         $requestDisplayList = [];
         if (!empty($calculationRequestList)) {
             foreach ($calculationRequestList as $key => $value) {         
-                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_id']][$key]['length'] = $value['requests_length'];
-                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_id']][$key]['number'] = $value['number'];
-                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_id']][$key]['port'] = $value['port_id'];
+                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_name']][$key]['length'] = $value['requests_length'];
+                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_name']][$key]['number'] = $value['number'];
+                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_name']][$key]['port'] = $value['port_id'];
             }
         }
         return $requestDisplayList;

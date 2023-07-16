@@ -34,6 +34,10 @@
   width: 40%;
 }
 
+.w-26px {
+  width: 26px;
+}
+
 .mb-4 {
   margin-bottom: 1rem;
 }
@@ -48,6 +52,35 @@
 
 .h-5\/6 {
   height: 83.333333%;
+}
+
+.h-26px {
+  height: 26px;
+}
+
+.p-4px {
+  padding: 4px;
+}
+
+.px-3 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+.border-2 {
+  border-width: 2px;
+}
+
+.border-r-1 {
+  border-right-width: 1px;
+}
+
+.border-DADADA {
+  border-color: #DADADA;
+}
+
+.font-bold {
+  font-weight: 700;
 }
 
 /*************************************************** */
@@ -78,12 +111,22 @@
   /* 左サイド */
   /* 右サイド */
   /* 入力全体のフレーム */
+  /* 部材選択フレーム */
+  /* 入力項目の外枠 */
+  /* 入力項目のタイトル */
+  /* 入力項目のテーブルヘッダー */
+  /* 入力項目のテーブルヘッダー */
 }
 .rebar .left {
   width: 70%;
 }
 .rebar .right {
   width: 30%;
+}
+.rebar .right td, .rebar .right th {
+  width: 50%;
+  text-align: left;
+  padding: 6px 8px;
 }
 .rebar .comp-form {
   max-height: 68vh;
@@ -92,36 +135,77 @@
 .rebar .comp-form.confirm-frame {
   max-height: 65vh;
 }
-
-/* 部材選択フレーム */
 .rebar .comp-frame {
   padding: 8px;
 }
-
-/* 入力項目の外枠 */
 .rebar .comp-div-outline {
   border: 1px solid #DADADA;
   padding: 16px;
   margin-bottom: 8px;
 }
-
-/* 入力項目のタイトル */
 .rebar .comp-div-title {
   border-left: 4px solid #2083D7;
   font-weight: 600;
   padding: 4px;
 }
-
-/* 入力項目のテーブルヘッダー */
 .rebar .input-table {
   border: 1px solid #DADADA;
   width: 100%;
 }
-
-/* 入力項目のテーブルヘッダー */
 .rebar .comp-div-th {
   border: 1px solid #DADADA;
   background-color: #333333;
   color: #ffffff;
   padding-left: 10px;
+}
+.rebar input[type=number]::-webkit-outer-spin-button,
+.rebar input[type=number]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.rebar input[type=text],
+.rebar input[type=number] {
+  width: 220px;
+  padding: 4px 8px;
+  border: 1px solid #d0d0d0;
+}
+.rebar .unit {
+  position: absolute;
+  left: 250px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #d0d0d0;
+}
+.rebar .a-disabled {
+  pointer-events: none;
+}
+.rebar .bt-tran {
+  width: 130px;
+}
+.rebar .prev-btn {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  margin-right: 8px;
+}
+.rebar .confirm-btn {
+  background-color: #53BC00;
+  color: #ffffff;
+}
+
+.rebar-button {
+  width: 80px;
+  text-align: center;
+  display: inline-block;
+  padding: 8px 16px;
+  color: #16202E;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #DADADA;
+}
+
+/* 鉄筋径の選択 */
+.rebar-button.diameter-select {
+  color: #ffffff;
+  background-color: #3A7EBA;
 }/*# sourceMappingURL=app.css.map */

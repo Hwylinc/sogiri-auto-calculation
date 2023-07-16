@@ -5,7 +5,7 @@
     <div class="title-head flex">
         <x-head title="鉄筋切断指示" imageFlg="1" horizon="0"></x-head>
         <a href="{{ route('calculate.list') }}" type="button" class="btn btn-dark rounded-pill ">一覧へ戻る</a>
-        <a href="{{ route('home') }}" type="button" class="btn btn-dark rounded-pill ">トップへ戻る</a>
+        <a href="{{ route('rebar.select') }}" type="button" class="btn btn-dark rounded-pill ">トップへ戻る</a>
     </div>
     
     <div class="container">
@@ -24,9 +24,13 @@
                         </li>
                     </ul>
                     
-                    <div class="tab-content">
+                    <div class="
+                        tab-content
+                        @if($page_tab == 'request') bk-request @endif
+                        @if($page_tab == 'exception') bk-exeption  @endif
+                    ">
                         {{-- 切断指示　Start --}}
-                        <div id="result" @if($page_tab=='result') class="tab-pane active" @else class="tab-pane" @endif>
+                        <div id="result" @if($page_tab!='result') class="tab-pane hidden" @else class="tab-pane" @endif>
                             <div class="rebar-select-frame">
                                 <label class="mr-2 font-semibold">現在の鉄筋径</label>
                                 @foreach ($diameterDisplayList as $diameter => $id)
@@ -62,8 +66,8 @@
                                                 @foreach ($combination['data'] as $key => $value)
                                                     <tr>
                                                         <th class="left order">{{ $key }}</th>
-                                                        <td>{{  $value['length'] }} mm</td>
-                                                        <td>{{  $value['number'] }} 本</td>
+                                                        <td>{{  number_format($value['length']) }} <span class="unit">mm</span></td>
+                                                        <td>{{  number_format($value['number']) }} <span class="unit">本</span></td>
                                                         <td>{{  $value['port'] }}</td>
                                                     </tr>
                                                     @endforeach
@@ -83,86 +87,123 @@
                         {{-- 依頼内容　Start --}}
                         <div id="request"
                             @if ($page_tab != 'request') class="tab-pane hidden" @else class="tab-pane" @endif>
-                            @foreach ($diameterDisplayList as $diameter => $id)
-                                <a @if ($id == $diameter_id) class="active_diameter" @endif
-                                    href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'request', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
-                                    {{ $diameter }}<br>
-                                </a>
-                            @endforeach
-                            @if (!empty($calculationRequestCodeList))
-                                <select id="calculation_id">
-                                    @foreach ($calculationRequestCodeList as $value)
-                                        <option @if ($value['code'] == $calculation_id) selected @endif
-                                            value="{{ $value['code'] }}">{{ $value['name'] }}
-                                            {{ $value['house_name'] }}</option>
-                                    @endforeach
-                                </select>
-                            @endif
-                            @if (isset($calculationRequestDisplayList[$calculation_id][$diameter_id]))
-                                @foreach ($calculationRequestDisplayList[$calculation_id][$diameter_id] as $compornent_id => $detailArray)
-                                    @if (!empty($detailArray))
-                                        <?php $disp_no = 1; ?>
-                                        <h3 class="text-center">部材　{{ $compornent_id }}</h3>
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <td>No</td>
-                                                    <td>寸法</td>
-                                                    <td>切断本数</td>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach ($detailArray as $value)
-                                                    <tr>
-                                                        <th scope="row">{{ $disp_no }}</th>
-                                                        <td>{{ $value['length'] }} mm</td>
-                                                        <td>{{ $value['number'] }} 本</td>
-                                                        <td>{{ $value['port'] }}</td>
-                                                    </tr>
-                                                    <?php $disp_no++; ?>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    @endif
+                            <div class="rebar-select-frame">
+                                <label class="mr-2 font-semibold">現在の鉄筋径</label>
+                                @foreach ($diameterDisplayList as $diameter => $id)
+                                    <a 
+                                        class="
+                                            rebar-button
+                                            @if($id == $diameter_id) diameter-select @endif
+                                            mr-2
+                                        "
+                                        href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'request', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
+                                        {{ $diameter }}<br>
+                                    </a>
                                 @endforeach
-                            @endif
+
+                                @if (!empty($calculationRequestCodeList))
+                                    <select id="calculation_id" class="house_name">
+                                        @foreach ($calculationRequestCodeList as $value)
+                                            <option @if ($value['code'] == $calculation_id) selected @endif
+                                                value="{{ $value['code'] }}">{{ $value['name'] }}
+                                                {{ $value['house_name'] }}</option>
+                                        @endforeach
+                                    </select>
+                                @endif
+
+                                <div class="flex items-center">
+                                    <label for="std-size-name" class="mr-2">定尺寸法</label> 
+                                    <p class="text-xl">{{ number_format($diameter_length) }}mm</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-5">
+                                @if (isset($calculationRequestDisplayList[$calculation_id][$diameter_id]))
+                                    @foreach ($calculationRequestDisplayList[$calculation_id][$diameter_id] as $compornent_name => $detailArray)
+                                        @if (!empty($detailArray))
+                                        <div class="time-detail">
+                                            <h3 class="text-center">部材　{{ $compornent_name }}</h3>
+                                            <div class="inner-frame mt-2">
+                                                <?php $disp_no = 1; ?>
+                                                <table class="table notunder">
+                                                    <thead>
+                                                        <tr>
+                                                            <td>No</td>
+                                                            <td>長さ</td>
+                                                            <td>切断本数</td>
+                                                            <td>吐き出し口</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($detailArray as $value)
+                                                            <tr>
+                                                                <th scope="row">{{ $disp_no }}</th>
+                                                                <td>{{ number_format($value['length']) }} <span class="unit">mm</span></td>
+                                                                <td>{{ number_format($value['number']) }} <span class="unit">本</span></td>
+                                                                <td>{{ $value['port'] }}</td>
+                                                            </tr>
+                                                            <?php $disp_no++; ?>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </div>
                         </div>
                         {{-- 依頼内容　End --}}
 
                         {{-- 例外処理内容　Start --}}
                         <div id="exception" @if($page_tab!='exception') class="tab-pane hidden" @else class="tab-pane" @endif>
-                            @foreach ($diameterDisplayList as $diameter => $id)
-                                @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16' )
-                                    <a @if($id == $diameter_id) class="active_diameter" @endif href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'exception', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
-                                        {{ $diameter }}<br>
-                                    </a>
-                                @endif
-                            @endforeach
-                            @if (isset($exceptionDisplayList[$diameter_id]))
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <td>切断順番</td>
-                                        <td>長さ</td>
-                                        <td>切断本数</td>
-                                        <td>吐き出し口</td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                <?php $count=1;?>
-                                @foreach ($exceptionDisplayList[$diameter_id] as $value)
-                                    <tr>
-                                        <th scope="row">{{ $count }}</th>
-                                        <td>{{  $value['length'] }} mm</td>
-                                        <td>{{  $value['number'] }} 本</td>
-                                        <td>{{  $value['port'] }}</td>
-                                    </tr>
-                                         <?php $count++; ?>
+                            <div class="rebar-select-frame">
+                                <label class="mr-2 font-semibold">現在の鉄筋径</label>
+                                @foreach ($diameterDisplayList as $diameter => $id)
+                                    @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16' )
+                                        <a 
+                                            class="
+                                                rebar-button
+                                                @if($id == $diameter_id) diameter-select @endif
+                                                mr-2
+                                            "
+                                             href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'exception', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
+                                            {{ $diameter }}<br>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            </div>
+
+                            <div class="mt-5">
+                                @if (isset($exceptionDisplayList[$diameter_id]))
+                                <div class="time-detail is-inner-frame">
+                                    <div class="inner-frame">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    {{-- <td>切断順番</td> --}}
+                                                    <td>長さ</td>
+                                                    <td>切断本数</td>
+                                                    {{-- <td>吐き出し口</td> --}}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            <?php $count=1;?>
+                                            @foreach ($exceptionDisplayList[$diameter_id] as $value)
+                                                <tr>
+                                                    {{-- <th scope="row">{{ $count }}</th> --}}
+                                                    <td>{{  number_format($value['length']) }} <span class="unit">mm</span></td>
+                                                    <td>{{  number_format($value['number']) }} <span class="unit">本</span></td>
+                                                    {{-- <td>{{  $value['port'] }}</td> --}}
+                                                </tr>
+                                                <?php $count++; ?>
                                             @endforeach
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
                                 @else
-                                    <p>表示内容がありません。</p>
+                                    <p class="text-white">表示内容がありません</p>
                                 @endif
                             </div>
                             {{-- 例外処理内容　End --}}
@@ -202,25 +243,37 @@
 
     .nav {
         display: flex;
-        .nav-item {
-            padding: 12px 78px;
-            color: #ffffff;
-            &.nav-item1 {
-                background-color: #16202E;
-            }
-            &.nav-item2 {
-                background-color: #143361;
-            }
-            &.nav-item3 {
-                background-color: #3F5F8B;
-            }
-        };
+    }
+
+    .nav .nav-item {
+        padding: 12px 78px;
+        color: #ffffff;
+    }
+
+    .nav .nav-item.nav-item1 {
+        background-color: #16202E;
+    }
+
+    .nav .nav-item.nav-item2 {
+        background-color: #143361;
+    }
+
+    .nav .nav-item.nav-item3 {
+        background-color: #3F5F8B;
     }
 
     .tab-content {
         padding: 16px 16px 16px 16px;
         background-color: #16202E;
     }
+
+    .tab-content.bk-request {
+        background-color: #143361;
+    }
+
+    .tab-content.bk-exeption {
+        background-color: #3F5F8B;
+    }   
 
     .rebar-select-frame {
         background-color: #ffffff;
@@ -234,24 +287,53 @@
         background-color: #ffffff;
         margin-bottom: 16px;
         padding: 16px;
-        .time-title {
-            margin-bottom: 8px;
-        };
-        .table {
-            width: 100%;
-        }
-        .table tr {
-            border-bottom: 1px solid #aaaaaa;
-            text-align: center;
-            height: 40px;
-            .left {
-                text-align: left;
-                width: 10%;
-                &.order {
-                    padding-left: 8px; 
-                }
-            }
-        }
+    }
+
+    .time-detail .time-title {
+        margin-bottom: 8px;
+    }
+
+    .time-detail .table {
+        width: 100%;
+    }
+
+    .time-detail .table tr {
+        border-bottom: 1px solid #aaaaaa;
+        text-align: center;
+        height: 40px;
+    }
+    .time-detail .table.notunder tr {
+        border-bottom: 0px;
+    }
+
+    .time-detail .table tr .left {
+        text-align: left;
+        width: 10%;
+    }
+
+    .time-detail .table tr .left.order {
+        padding-left: 8px; 
+    }
+
+
+    .house_name {
+        margin-left: 32px;
+        margin-right: 32px;
+        border: 1px solid #000000;
+    }
+
+    .is-inner-frame {
+        padding-top: 40px;
+    }
+
+    .inner-frame {
+        border: 1px solid #DADADA;
+        padding: 24px 40px;
+    }
+
+    .unit {
+        color: #b1b1b1;
+        font-size: 14px;
     }
 
 </style>

@@ -29,7 +29,7 @@ class Menu extends Component
             '2' => [
                 'title' => '計測結果履歴一覧', 
                 'select' => false, 
-                'route_name' => 'spare.list', 
+                'route_name' => 'calculate.list', 
                 'param' => ['factry_id' => '1'],
                 'image' => 'clock'
             ],

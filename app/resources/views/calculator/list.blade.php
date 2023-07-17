@@ -1,4 +1,4 @@
-<x-menu select-page="1">
+<x-menu select-page="2">
 
     {{-- title --}}
     <x-head title="計算結果履歴一覧" imageFlg="2"></x-head>

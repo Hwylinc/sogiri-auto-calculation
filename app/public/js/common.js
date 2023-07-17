@@ -96,11 +96,13 @@ const createRemoveBtnIcon = (path, id, displayOrder, tdDelete) => {
         src: path,
         height: '16px',
         width: '16px',
-        on: {
-            click: () => {deleteInput(id, displayOrder)}
-        },
-        'class': 'delete-icon'
+        'class': 'delete-icon',
+        id: 'delete-btn-'+id+'-'+displayOrder,
     }).appendTo(tdDelete)
+
+    $(document).on("click",'#delete-btn-'+id+'-'+displayOrder, () => {
+        deleteInput(id, displayOrder)
+    })
 }
 
 // 長さと本数のinput要素を作成

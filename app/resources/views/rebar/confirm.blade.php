@@ -17,7 +17,7 @@
                         <div class="mr-2">
                             <a 
                                 class="
-                                    button 
+                                    rebar-button 
                                     @if($page['now'] == $diameter->id) diameter-select @endif
                                     a-disabled
                                 "
@@ -61,7 +61,7 @@
                     {{-- メッセージ --}}
                     <div class="flex justify-between items-center mb-3">
                         <x-message :message="session('message')" />
-                        <button type="button" id="edit-btn" class="button edit-btn flex items-center hidden">編集</button>
+                        <button type="button" id="edit-btn" class="rebar-button edit-btn flex items-center hidden">編集</button>
                     </div>
 
                     {{-- 入力formのtable --}}
@@ -314,14 +314,15 @@
         height: 16px;
         padding: 1px;
         margin-right: 4px;
-        .select-check-bk {
-            width: 12px;
-            height: 12px;
-            background-color: #2083D7;
-        }
     }
 
-    .button.edit-btn {
+    .select-check-flame .select-check-bk {
+        width: 12px;
+        height: 12px;
+        background-color: #2083D7;
+    }
+
+    .rebar-button.edit-btn {
         display: flex;
         padding: 4px;
         align-items: center;
@@ -344,9 +345,10 @@
         line-height:25px;
         border-radius: 62px;
         text-align: center;
-        &:hover {
-            cursor: pointer;
-        }
+    }
+
+    .page-btn:hover {
+        cursor: pointer;
     }
 
     .hidden {

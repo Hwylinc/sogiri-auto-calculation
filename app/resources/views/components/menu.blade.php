@@ -37,8 +37,8 @@
                     <p class="pl-2 pr-2"><img src="{{ asset("images/logo.svg") }}" alt=""></p>
                     <p class="text-sm pt-4">鉄筋計算システム</p>
                 </div>
-                <div>
-                    ログイン
+                <div class="text-[10px]">
+                    ＜事業再構築　機-3　※事業再構築補助金以外での使用禁止＞
                 </div>
             </div>
         </header>

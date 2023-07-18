@@ -68,7 +68,8 @@ class RebarController extends BaseController
               'client_id' => $request->get('client_id')
             , 'client_name' => $client['name']
             , 'house_name' => $request->get('house_name')
-            , 'factory_id' => $request->get('factory_id')
+            // , 'factory_id' => $request->get('factory_id') 工場選択非表示の間は、デフォルト2で対応
+            , 'factory_id' => 2
         ]);
 
         // idが一番若いdiameterを取得する

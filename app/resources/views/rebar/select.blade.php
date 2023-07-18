@@ -7,7 +7,7 @@
 
         <form method="POST" action="{{ route('rebar.select-store') }}">
             @csrf
-            <div class="mb-4 text-center flex justify-around">
+            {{-- <div class="mb-4 text-center flex justify-around">
                 @foreach(config('const.factory_id') as $id => $name)
                     <div>
                         <input 
@@ -20,7 +20,7 @@
                         >{{ $name }}
                     </div>
                 @endforeach
-            </div>
+            </div> --}}
             <hr class="mt-1 mb-8">
             <div class="mb-4">
                 <label for="client_name" class="form-label">メーカー</label>

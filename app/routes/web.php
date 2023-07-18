@@ -19,6 +19,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// logout
+Route::post('/logout', [App\Http\Controllers\Auth\LoginController::class, 'loggedOut'])->name('logout'); 
+
 Auth::routes();
 Route::middleware('auth')->group(function(){
     // ホーム画面
@@ -89,6 +92,7 @@ Route::middleware('auth')->group(function(){
     // 計算テスト用（後程削除の必要あり）
     Route::get('/cal-test', [App\Http\Controllers\CsvCalculatorController::class, 'calTest']);
     Route::get('/cal-second-test', [App\Http\Controllers\CsvCalculatorController::class, 'calSecondTest']);
+   
 });
 
 

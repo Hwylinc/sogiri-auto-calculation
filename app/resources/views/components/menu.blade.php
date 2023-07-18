@@ -58,15 +58,21 @@
                         </li>
                     @endforeach
                 </ul>
-
+                
                 <div class="mt-auto pl-2 pr-2 text-cente">
                     <div class="h-[0.5px] bg-[#16202E] w-full"></div>
 
-                    <button class="p-4 w-full menu-title flex items-center">
-                        <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" >
-                        ログアウト
-                    </button>
+                    <form action="{{ route('logout') }}" method="POST" >
+                        @csrf
+                        <button class="p-4 w-full menu-title flex items-center">
+                            <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" >
+                            ログアウト
+                        </button>
+                    </form>
                 </div>
+
+                
+                {{-- </div> --}}
 
             </div>
 

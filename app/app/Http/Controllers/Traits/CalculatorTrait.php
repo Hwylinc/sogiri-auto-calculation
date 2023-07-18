@@ -92,7 +92,7 @@ trait CalculatorTrait
         $calculationList = array();
         $exception = array();
         // 例外処理で使う長さの一覧を取得
-        $exception_lengths = [4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
+        $exception_lengths = [4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
         foreach ($calculationRequestList as $value) {
             if (in_array($value['requests_length'], $exception_lengths)) {
                 // 例外処理に渡す値

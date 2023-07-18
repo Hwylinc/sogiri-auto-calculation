@@ -40,13 +40,14 @@ class Menu extends Component
                 'param' => ['factry_id' => '1'],
                 'image' => 'list'
             ],
-            '4' => [
-                'title' => '部材集計データ', 
-                'select' => false, 
-                'route_name' => 'spare.list', 
-                'param' => ['factry_id' => '1'],
-                'image' => 'totalling'
-            ],
+            // 20230718時点では不必要なのでコメントアウト
+            // '4' => [
+            //     'title' => '部材集計データ', 
+            //     'select' => false, 
+            //     'route_name' => 'spare.list', 
+            //     'param' => ['factry_id' => '1'],
+            //     'image' => 'totalling'
+            // ],
         ];
 
         $this->menuList[$selectPage]['select'] = true;

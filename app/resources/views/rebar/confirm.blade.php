@@ -67,7 +67,7 @@
                     {{-- 入力formのtable --}}
                     <div id="CompForm" class="comp-form confirm-frame bg-white p-4 hidden"></div>
 
-                    <div class="flex justify-center mt-4">
+                    <div id="btn-frame" class="flex justify-center mt-4">
 
                         <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
 
@@ -132,6 +132,7 @@
                 $('#prev-btn').addClass('disabled-a')
                 $('#next-btn').addClass('disabled-a')
                 $('#done').addClass('disabled-a')
+                $('#btn-frame').addClass('hidden')
                 changeScreen()
             } else { 
                 // 編集内容をpost送信する   

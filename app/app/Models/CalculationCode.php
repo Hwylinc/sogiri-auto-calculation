@@ -35,7 +35,8 @@ class CalculationCode extends Model
     // 計算対象一覧情報を取得する条件
     // *******************************************
     public function scopeGetCalculationRequestListCondition($query, $params) {
-        $query->join('clients', 'calculation_codes.client_id', '=', 'clients.id');
+        $query->select('*', 'calculation_codes.created_at as create')
+            ->join('clients', 'calculation_codes.client_id', '=', 'clients.id');
         foreach ($params as $key => $value) {
             $query = $query->where('calculation_codes.'.$key, '=', $value);
         }

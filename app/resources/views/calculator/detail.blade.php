@@ -216,18 +216,16 @@
 </x-menu>
 {{--  @endsection  --}}
 
-@section('pageJs')
-    <script type="text/javascript">
-        $(function() {
-            $("#calculation_id").on('change', function() {
-                // selectボックスの値を取得
-                var group_code = "{{ $group_code }}";
-                var calculation_id = $("#calculation_id").val();
-                window.location.href = "/calculate/detail/" + group_code + "/request/" + calculation_id;
-            });
+<script type="text/javascript">
+    $(function() {
+        $("#calculation_id").on('change', function() {
+            // selectボックスの値を取得
+            var group_code = "{{ $group_code }}";
+            var calculation_id = $("#calculation_id").val();
+            window.location.href = "/calculate/detail/" + group_code + "/request/" + calculation_id;
         });
-    </script>
-@endsection
+    });
+</script>
 
 <style scoped lang="scss">
     .title-head a {

@@ -7,7 +7,7 @@
             <div class="mt-5">
                 <p class="text-center mb-5">計算が完了いたしました。</p>
                 <div class="flex justify-center">
-                    <a href="{{ route('home') }}" class="btn btn-top">トップへ戻る</a>
+                    <a href="{{ route('rebar.select') }}" class="btn btn-top">トップへ戻る</a>
                     <a href="{{ route('calculate.detail', ['group_code' => $group_code]) }}" class="btn btn-confirm">計算結果を確認</a>
                 </div>
             </div>

@@ -21,7 +21,7 @@
                         </thead>
                         <tbody>
                         @foreach ($calculationRequestCodeList as $value)
-                            <tr>
+                            <tr class="row-detail-tr">
                                 <td class="row-detail date">{{ date('Y/m/d', strtotime($value['create'])); }}</td>
                                 <td class="row-detail">{{  $value['name'] }}</td>
                                 <td class="row-detail">{{  $value['house_name'] }}</td>
@@ -64,6 +64,10 @@
     .row-detail {
         border: 1px solid #dadada;
         padding: 4px 8px;
+    }
+
+    .row-detail-tr:nth-child(even) {
+        background-color: #E3E7ED;
     }
 
     .btn {

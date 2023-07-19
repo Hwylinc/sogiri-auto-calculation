@@ -47,6 +47,7 @@
         padding: 16px;
         margin-top: 16px;
         background-color: #ffffff;
+        height: 92%;
     }
 
     .date {

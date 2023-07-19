@@ -244,7 +244,6 @@
     }
 
     .nav .nav-item {
-        padding: 12px 78px;
         color: #ffffff;
     }
 
@@ -258,6 +257,11 @@
 
     .nav .nav-item.nav-item3 {
         background-color: #3F5F8B;
+    }
+
+    .nav-item a {
+        display: block;
+        padding: 12px 78px;
     }
 
     .tab-content {

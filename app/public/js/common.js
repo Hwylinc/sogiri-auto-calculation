@@ -6,6 +6,19 @@ const deleteInput = (compId, display_order) => {
     console.log('delete')
     $(`#comp-len-${compId}-${display_order}`).val("");
     $(`#comp-num-${compId}-${display_order}`).val("");
+
+    const tr = $(`#comp-div-${compId} table tr`);
+    const tr_count = tr.length;
+
+    for(let i = display_order; i < tr_count; i++) {
+        $(`#comp-len-${compId}-${i}`).val($(`#comp-len-${compId}-${i+1}`).val());
+        $(`#comp-num-${compId}-${i}`).val($(`#comp-num-${compId}-${i+1}`).val());
+    }
+
+    if (tr_count > 11) {
+        tr.eq(tr_count - 1).remove()
+    }
+    
 }
 
 // formのテーブル要素作成

@@ -529,6 +529,9 @@ video {
 .mt-auto{
   margin-top: auto;
 }
+.mt-6{
+  margin-top: 1.5rem;
+}
 .block{
   display: block;
 }
@@ -813,6 +816,10 @@ video {
 .text-red-500{
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity));
+}
+.text-\[\#989797\]{
+  --tw-text-opacity: 1;
+  color: rgb(152 151 151 / var(--tw-text-opacity));
 }
 .underline{
   text-decoration-line: underline;

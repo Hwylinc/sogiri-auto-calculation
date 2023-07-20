@@ -187,9 +187,9 @@ class CalculatorController extends BaseController
         // 紐づく計算結果一覧を取得
         $calculationResultList = $this->getCalculationResultList($calculationResultModel, $group_code);
         // 紐づく計算結果が存在するか確認
-        if ($calculationResultList->isEmpty()) {
-            abort(403, '該当する結果がありません。計算結果番号を確認してください。');
-        }
+        // if ($calculationResultList->isEmpty()) {
+        //     abort(403, '該当する結果がありません。計算結果番号を確認してください。');
+        // }
         // 計算結果一覧を表示用のリストに加工
         $resultDisplayList = $this->convertResultDisplayData($calculationResultList);
         // 例外処理の一覧を取得

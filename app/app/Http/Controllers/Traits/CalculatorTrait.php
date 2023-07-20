@@ -104,7 +104,7 @@ trait CalculatorTrait
                 }            
             } else {
                 // 既に値がある場合は追加する
-                if ( isset($exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']]) ) {
+                if ( isset($data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']]) ) {
                     $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] + $value['number'];
                 } else {
                     $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $value['number'];
@@ -480,7 +480,9 @@ trait CalculatorTrait
             $waste = $left;
             for ($j = 0; $j < $cutCount; $j++) {
                 if ($used_spare_result[$j] > 0) {
-                    $return_data['used'][] = $spare_cut_list[$j];
+                    for ($i = 0; $i <  $used_spare_result[$j]; $i++) {
+                        $return_data['used'][] = $spare_cut_list[$j];
+                    }
                     $waste -= $spare_cut_list[$j] * $used_spare_result[$j];
                 }
             }

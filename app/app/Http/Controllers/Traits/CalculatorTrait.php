@@ -318,9 +318,9 @@ trait CalculatorTrait
         $cut_list  = $lengths['length'];
         // shuffle($cut_list);
         // 鉄筋径ごとの生材の長さを取得（8000の場所をこの変数に後程置き換え）
-        // $material_length =
+        $material_length = 9000;
         
-        $rods = [8000];
+        $rods = [$material_length];
         $cuts = [];
 
         // 予備材リスト
@@ -328,7 +328,7 @@ trait CalculatorTrait
 
         while (count($cut_list) > 0) {
             $best_cut_index = -1;
-            $best_cut_waste = 8000;
+            $best_cut_waste = $material_length;
             for ($i = 0; $i < count($rods); $i++) {
                 $rod = $rods[$i];
                 for ($j = 0; $j < count($cut_list); $j++) {
@@ -348,7 +348,7 @@ trait CalculatorTrait
 
             if ($best_cut_index == -1) {
                 // Need a new rod
-                $rods[] = 8000;
+                $rods[] = $material_length;
                 continue;
             }
 
@@ -364,7 +364,7 @@ trait CalculatorTrait
             // dd($cut);
             if ($count != $cut[1]+1) {
                 if($i != 0) {
-                    $left = 8000 - $result[$cut[1]];
+                    $left = $material_length - $result[$cut[1]];
                     //　予備材を使って端材を最小化
                     if (!empty($spare_cut_list)) {
                         $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
@@ -392,7 +392,7 @@ trait CalculatorTrait
         }        
         
         // 最後に作成リストだけ回せないので、下に追加していると予想
-        $left = 8000 - end($result);
+        $left = $material_length - end($result);
         //　予備材を使って端材を最小化
         if (!empty($spare_cut_list)) {
             $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);

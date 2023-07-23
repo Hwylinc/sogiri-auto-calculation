@@ -190,8 +190,50 @@ trait CalculatorTrait
                         $count++;
                     }
                 }
+
                 // 切断指示作成
-                $calculationList['target'][$size][$cutting_num] = $this->getCombination($spareList, $lengths, $size);                
+                // 数回同じ内容で切断指示が出るため、吸い上げデータを見直し、再度データの作り替えを実行(2023.07.23 浦野)
+                $cut_lists_dummy = $this->getCombination($spareList, $lengths, $size);
+                $prev_list = [];
+                $cut_lists = [];
+                $cut_count = 0;
+                $order = 1;
+                // 紐づく物理最大数を取得
+                $max_limit = $this->getMaxNumber($size);
+
+                foreach( $cut_lists_dummy as $n => $detail ){
+                    if ($prev_list === $detail && $cutting_num < $max_limit) {
+                        $prev_cut_count = $cut_count;
+                        $cut_count += $cutting_num;
+                        foreach( $cut_lists[$prev_cut_count] as $cut_lists_detail => $value ) {
+                            if ($value === $detail) {
+                                $cut_lists[$cut_count][$order] = $detail;
+                                unset($cut_lists[$prev_cut_count][$order]);
+                                if (count($cut_lists[$prev_cut_count]) === 0) {
+                                    unset($cut_lists[$prev_cut_count]);
+                                }
+                            }
+                        }
+                    } else {
+                        $cut_count = $cutting_num;
+                        if ( isset($cut_lists[$cut_count]) ) {
+                            $order = count($cut_lists[$cut_count]) + 1;
+                        }
+                        $cut_lists[$cut_count][$order] = $detail;
+                        $prev_list = $detail;
+                    }
+                }
+
+                foreach($cut_lists as $count => $value) {
+                    if ( isset($calculationList['target'][$size][$count]) && count($calculationList['target'][$size][$count]) != 0 ) {
+                        foreach($value as $order => $value_detail) {
+                            array_push($calculationList['target'][$size][$count],  [count($calculationList['target'][$size][$count]) + 1 => $value_detail]);
+                        }
+                    } else {
+                        $calculationList['target'][$size][$count] = $value;    
+                    }
+                }
+
             }            
         }
         
@@ -411,6 +453,18 @@ trait CalculatorTrait
                 }
             }
         }
+
+        // $max_limit = $this->getMaxNumber($size);
+        // $prevData = [];
+        // foreach( $data as $n => $arr ){
+        //     if( $prevData == $arr ) {
+
+        //     } else {
+
+        //     }
+        // }
+
+
         
 
         // $data[$cut[1]+1]['waste'] = $used_spare_list['waste'];

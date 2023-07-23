@@ -141,6 +141,9 @@ trait CalculatorTrait
                 rsort($exist_divisors);
                 // 共通する約数を持つ数字をグループ化するための配列
                 $groups = [];
+
+                // $dataが1つの場合は別処理
+
                 if (!empty($exist_divisors)) {
                     // 存在する約数をループ
                     foreach ($exist_divisors as $n) {
@@ -151,10 +154,15 @@ trait CalculatorTrait
                                 // unset($divisors[$key]);
                             }
                         }
-                        // group内に一つしかなければ共通約数ではないのでグループにはしない
                         if(array_key_exists($n, $groups)) {
                             if (count($groups[$n]) <= 1) {
-                                unset($groups[$n]);
+                                // group内に一つしかなければ共通約数ではないのでグループにはしない(2023.07.23 浦野 修正)
+                                if (count($temp_array) === 1) {
+                                    $key = array_keys($groups[$n], $n);
+                                    unset($divisors[$key[0]]);
+                                } else {
+                                    unset($groups[$n]);
+                                }
                             } else {
                                 // 複数ある場合は共通約数として括り、以後のループにその数値は考慮されないように除外する
                                 foreach (array_keys($groups[$n]) as  $value) {

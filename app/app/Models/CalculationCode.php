@@ -17,6 +17,7 @@ class CalculationCode extends Model
                 , 'house_name'
                 , 'factory_id'
                 , 'calculation_status'
+                , 'length'
             ];
     
     public static function insert(array $data)
@@ -26,9 +27,14 @@ class CalculationCode extends Model
             'client_id' => $data['client_id'],
             'house_name' => $data['house_name'],
             'factory_id' => $data['factory_id'],
+            'length' => 9000, // 生材の長さを変更できるようになったら変更必要
             'calculation_status' => 2,
         ]);
     }
+
+    public static function get_by_code($code) {
+        return self::where('code', '=', $code)->first();
+    }   
 
 
     // *******************************************

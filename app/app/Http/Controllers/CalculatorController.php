@@ -170,13 +170,15 @@ class CalculatorController extends BaseController
         $diameterDisplayList = $this->convertDiameterDisplayData($diameterList);
         // 選択されている鉄筋径の値
         $diameter_id = empty($diameter_id) ? $diameterList[0]['id'] : $diameter_id;
-        $diameter_length = Diameter::get_by_id($diameter_id)['length'];
+        // $diameter_length = Diameter::get_by_id($diameter_id)['length'];
         
         // 計算結果に紐づく計算依頼コードを取得する
         $calGroupCalCodeList = $this->getCalGroupCalCodeList($calGroupCalCodeModel, $group_code);
 
         // 選択されている計算番号の値
         $calculation_id = empty($calculation_id) ? $calGroupCalCodeList[0]['code'] : $calculation_id;
+        // 選択されている計算番号の生材の長さ
+        $length = CalculationCode::get_by_code($calculation_id)['length'];
         // 計算依頼コード情報一覧を取得
         $calculationRequestCodeList = $this->calculationRequestCodes($calculationCodeModel, $calGroupCalCodeList, $factory_id);     
         // 紐づく計算依頼情報一覧を取得
@@ -207,7 +209,7 @@ class CalculatorController extends BaseController
           , 'page_tab'                       => $page_tab 
           , 'calculation_id'                 => $calculation_id
           , 'diameter_id'                    => $diameter_id 
-          , 'diameter_length'                => $diameter_length
+          , 'diameter_length'                => $length
         ]);   
     }
 }

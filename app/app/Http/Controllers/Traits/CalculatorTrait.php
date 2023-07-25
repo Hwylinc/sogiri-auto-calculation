@@ -172,6 +172,14 @@ trait CalculatorTrait
                         }
                     }
                 }
+
+                if (count($divisors) != 0) {
+                    foreach($divisors as $name => $arr) {
+                        $max = max(array_keys($arr));
+                        $groups[$max][$name] = $max;
+                    }
+                }
+
                 $dataArray = $this->getGroupResult($size, $groups, $array, $dataArray);
             }
         }

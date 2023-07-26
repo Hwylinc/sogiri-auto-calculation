@@ -175,8 +175,10 @@ trait CalculatorTrait
 
                 if (count($divisors) != 0) {
                     foreach($divisors as $name => $arr) {
-                        $max = max(array_keys($arr));
-                        $groups[$max][$name] = $max;
+                        if (count($arr) != 0) {
+                            $max = max(array_keys($arr));
+                            $groups[$max][$name] = $max;
+                        }
                     }
                 }
 

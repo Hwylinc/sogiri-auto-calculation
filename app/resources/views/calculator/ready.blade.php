@@ -1,4 +1,4 @@
-<x-menu select-page="1">
+<x-menu select-page="4">
     {{-- title --}}
     <x-head title="鉄筋計算" imageFlg="1"></x-head>
 

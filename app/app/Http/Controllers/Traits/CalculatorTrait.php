@@ -237,7 +237,7 @@ trait CalculatorTrait
                 foreach($cut_lists as $count => $value) {
                     if ( isset($calculationList['target'][$size][$count]) && count($calculationList['target'][$size][$count]) != 0 ) {
                         foreach($value as $order => $value_detail) {
-                            array_push($calculationList['target'][$size][$count],  [count($calculationList['target'][$size][$count]) + 1 => $value_detail]);
+                            $calculationList['target'][$size][$count][count($calculationList['target'][$size][$count])+1] = $value_detail;
                         }
                     } else {
                         $calculationList['target'][$size][$count] = $value;    

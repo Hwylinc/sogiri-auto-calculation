@@ -33,9 +33,9 @@ class RebarController extends BaseController
     // *******************************************
     // 鉄筋情報入力方法・工場選択画面
     // *******************************************
-    public function getSelect()
-    {   
-
+    public function getSelect(Request $request)
+    {           
+        
         // メーカーを全件取得
         $clients = Client::get_all();
 
@@ -54,6 +54,9 @@ class RebarController extends BaseController
     // *******************************************
     public function postSelect(Request $request)
     { 
+        // session保存内容を削除
+        $request->session()->forget('rebar.data');
+
         // validation処理
         $request->validate([
               'client_id' => 'required'

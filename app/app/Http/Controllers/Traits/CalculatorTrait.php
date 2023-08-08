@@ -603,6 +603,7 @@ trait CalculatorTrait
                                             $convertData[$count]['length']        = $length;                                  //長さ 
                                             $convertData[$count]['set_number']    = $setNumber;                               //同時切断セット本数	  
                                             $convertData[$count]['port_id']       = $combination['port'][$preCuttingOrder];   //吐出口ID 
+                                            $convertData[$count]['spare_flag']    = gettype($length) == 'string' ? 0 : 1;     // 予備材かどうか
                                             
                                             $count++;
                                         }

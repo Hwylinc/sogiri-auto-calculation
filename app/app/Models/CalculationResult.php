@@ -17,6 +17,7 @@ class CalculationResult extends Model
        , "length"          //長さ 
        , "set_number"      //同時切断セット本数	  
        , "port_id"         //吐出口ID 
+       , 'spare_flag'
     ];
 
     // *******************************************

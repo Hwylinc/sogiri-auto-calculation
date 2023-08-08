@@ -108,6 +108,8 @@ trait CalculatorResultTrait
                 $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['number'] = $calculation['set_number'];
                 // 吐き出し口
                 $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['port'] = $calculation['port_id'];
+                // 予備材フラグ
+                $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['spare_flag'] = $calculation['spare_flag'];
 
                 // 端材の長さ管理
                 if (empty($resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'])) {

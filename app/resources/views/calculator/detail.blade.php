@@ -60,6 +60,7 @@
                                                         <td>長さ</td>
                                                         <td>切断本数</td>
                                                         <td>吐き出し口</td>
+                                                        <td>予備材判定</td>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -69,6 +70,7 @@
                                                         <td>{{  number_format($value['length']) }} <span class="unit">mm</span></td>
                                                         <td>{{  number_format($value['number']) }} <span class="unit">本</span></td>
                                                         <td>{{  $value['port'] }}</td>
+                                                        <td>{{ $value['spare_flag'] ? '予備材' : '指示材'  }}</td>
                                                     </tr>
                                                     @endforeach
                                                 </tbody>

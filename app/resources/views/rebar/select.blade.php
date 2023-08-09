@@ -24,13 +24,21 @@
             <hr class="mt-1 mb-8">
             <div class="mb-4">
                 <label for="client_name" class="form-label">メーカー</label>
-                <select id="client_select" name="client_id" class="w-250px">
+                <input 
+                    type="text" 
+                    name="client_name" 
+                    id="client_name" 
+                    placeholder="メーカーを記入してください" 
+                    class="@error('client_name') is-invalid @enderror w-250px client_name" 
+                    value="{{ old('client_name') }}"
+                >
+                {{-- <select id="client_select" name="client_id" class="w-250px">
                     <option value="" disabled selected style="display:none;">メーカーを選択してください</option>
                     @foreach($clients as $client)
                     <option value="{{ $client['id'] }}" data-id="{{ $client['id'] }}">{{ $client['name'] }}</option>
                     @endforeach
-                </select>
-                @error('client_id')
+                </select> --}}
+                @error('client_name')
                      <div class="alert alert-danger text-center text-error">{{ $message }}</div>
                 @enderror
             </div>
@@ -64,21 +72,22 @@
 </x-menu>
 
 <script>
-window.addEventListener('DOMContentLoaded', function(){
+// メーカ名が入力式になったのコメントアウト(23/08/09 浦野)
+// window.addEventListener('DOMContentLoaded', function(){
 
-    $(document).ready(function() {
-        $('#client_select').select2()
-    })
+//     $(document).ready(function() {
+//         $('#client_select').select2()
+//     })
 
-    $('#client_select').on('change', function(){
-        if($(this).val() == "placeholder"){
-            $('#select2-client_select-container').css('color','#9ca3af')
-        } else {
-            $('#select2-client_select-container').css('color','#333')
-        }
-    });
+//     $('#client_select').on('change', function(){
+//         if($(this).val() == "placeholder"){
+//             $('#select2-client_select-container').css('color','#9ca3af')
+//         } else {
+//             $('#select2-client_select-container').css('color','#333')
+//         }
+//     });
 
-})
+// })
 </script>
 
 <style scoped lang="scss">
@@ -109,7 +118,7 @@ window.addEventListener('DOMContentLoaded', function(){
         background-color: #F9F9F9;
     }
 
-    .house_name {
+    .house_name, .client_name {
         padding: 2px;
         padding-left: 6px;
         border: 1px solid #aaacb0;

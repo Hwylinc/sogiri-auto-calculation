@@ -35,17 +35,17 @@ class RebarController extends BaseController
     // *******************************************
     public function getSelect(Request $request)
     {           
-        
+
         // メーカーを全件取得
-        $clients = Client::get_all();
+        // $clients = Client::get_all();
 
         // ログインユーザのfactory_idを取得する
         $factory_checked = Auth::user()['factory_id'];
 
         // viewを表示する
         return view('rebar.select')->with([
-              'clients' => $clients 
-            , 'factory_checked' => $factory_checked
+            //   'clients' => $clients,  
+            'factory_checked' => $factory_checked
         ]); 
     }
 
@@ -59,17 +59,17 @@ class RebarController extends BaseController
 
         // validation処理
         $request->validate([
-              'client_id' => 'required'
+              'client_name' => 'required'
             , 'house_name' => 'required',
         ]);
 
         // クライアント名を取得する
-        $client = Client::get_by_id($request->get('client_id'));
+        // $client = Client::get_by_id($request->get('client_id'));
     
         // sessionに履歴を保存
         $request->session()->put('rebar.select.now', [
-              'client_id' => $request->get('client_id')
-            , 'client_name' => $client['name']
+            //   'client_id' => $request->get('client_id')
+            'client_name' => $request->get('client_name')
             , 'house_name' => $request->get('house_name')
             // , 'factory_id' => $request->get('factory_id') 工場選択非表示の間は、デフォルト2で対応
             , 'factory_id' => 2

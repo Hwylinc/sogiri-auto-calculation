@@ -40,13 +40,63 @@ trait CalculatorTrait
     /* 予備材一覧情報を取得
     /* **************************************** */
     private function getSpareList($spareModel) {
+        // $list1 = [];
+        $spareList = $spareModel->getSpareListCondition()
+            ->get()
+            ->toArray();    
+        // if (!empty($spareList)) {
+        //     foreach ($spareList as $spare) {
+        //         $list1['D'.$spare['size']][] = intval($spare['name']);
+        //     }
+        // }
+        
         $list = [];
-        $spareList = $spareModel->getSpareListCondition()->get()->toArray();    
-        if (!empty($spareList)) {
-            foreach ($spareList as $spare) {
-                $list['D'.$spare['size']][] = intval($spare['name']);
+        $priority_spare = [];
+        $normal_spare = [];
+
+        // 優先予備材と普通の予備材で分ける
+        if( !empty($spareList) ) {
+
+            $prev_size = "";
+
+            foreach($spareList as $index => $spare) {
+
+                // 予備材のサイズが変わった場合
+                if ($prev_size !== $spare['size']) {
+
+                    // 前回までのデータをlistに格納する
+                    if ($index !== 0) {
+                        // 優先予備材配列と普通の予備材配列を大きい順に並び替える
+                        sort($priority_spare);
+                        sort($normal_spare);
+                        // 優先予備材と普通の予備材を結合する：merge引数の順番大事
+                        $list['D'. $prev_size] = array_merge($normal_spare, $priority_spare);
+                    }
+
+                    // 初期化
+                    $priority_spare = [];
+                    $normal_spare = [];
+                }
+
+                // 優先予備材か普通用の予備材かで格納する配列を変更する
+                if ($spare['priority_flg'] === 1) {
+                    array_push($priority_spare, intval($spare['name']));
+                } else {
+                    array_push($normal_spare, intval($spare['name']));
+                }
+
+                // 現在のサイズを格納
+                $prev_size = $spare['size'];
             }
         }
+
+        // 最後のサイズだけ
+        // 優先予備材配列と普通の予備材配列を大きい順に並び替える
+        sort($priority_spare);
+        sort($normal_spare);
+        // 優先予備材と普通の予備材を結合する：merge引数の順番大事
+        $list['D'. $prev_size] = array_merge($priority_spare, $normal_spare);
+
         return $list;
     }
 
@@ -515,7 +565,7 @@ trait CalculatorTrait
     public function findCutList($left_length, $spare_cut_list) 
     {
         // $spare_cut_listを昇順にソートする
-        sort($spare_cut_list); 
+        // sort($spare_cut_list); 
         // $spare_cut_listの数を取得する
         $cut_count = count($spare_cut_list);
         // $spare_cut_listの要素数分、0で初期化された配列を作成する
@@ -546,7 +596,7 @@ trait CalculatorTrait
         if ($used_spare_result === false) {
             
         } else {
-            sort($spare_cut_list); 
+            // sort($spare_cut_list); 
 
             $cutCount = count($spare_cut_list);
             $waste = $left;

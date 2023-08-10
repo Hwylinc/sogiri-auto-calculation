@@ -30,7 +30,7 @@
 
     <div class="flex flex-col h-full">
 
-        <header class="header-bg-color p-2">
+        <header class="head header-bg-color p-2">
 
             <div class="flex justify-between items-center text-white">
                 <div class="flex items-center">
@@ -45,7 +45,7 @@
 
         <main class="body flex flex-1" >
 
-            <div class="menu-bg-color w-[220px] flex flex-col ">
+            <div class="side-menu menu-bg-color w-[220px] flex flex-col ">
 
                 <ul>
                     @foreach ($menuList as $key => $array)

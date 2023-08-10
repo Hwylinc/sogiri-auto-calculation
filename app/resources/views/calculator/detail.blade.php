@@ -2,7 +2,7 @@
 <x-menu select-page="1">
 
     {{-- title --}}
-    <div class="title-head flex">
+    <div class="title-head flex print-off">
         <x-head title="鉄筋切断指示" imageFlg="1" horizon="0"></x-head>
         <a href="{{ route('calculate.list') }}" type="button" class="btn btn-dark rounded-pill ">一覧へ戻る</a>
         <a href="{{ route('rebar.select') }}" type="button" class="btn btn-dark rounded-pill ">トップへ戻る</a>
@@ -12,7 +12,7 @@
         <div class="row justify-content-center">
             <div class="card">
                 <div class="card-body">
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs print-off">
                         <li class="nav-item nav-item1">
                           <a data-bs-toggle="tab" href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'result']) }}"  @if($page_tab=='result') class="nav-link active" @else class="nav-link" @endif>切断指示</a>
                         </li>
@@ -29,6 +29,18 @@
                         @if($page_tab == 'request') bk-request @endif
                         @if($page_tab == 'exception') bk-exeption  @endif
                     ">
+                        {{-- 印刷時に使用する要素 --}}
+                        <div class="print_header">
+                            @if( $page_tab=='result' )
+                                <div>切断指示</div>
+                            @endif
+                            @if( $page_tab=='request' )
+                                <div>計算依頼内容</div>
+                            @endif
+                            @if( $page_tab=='exception' )
+                                <div>例外処理内容</div>
+                            @endif
+                        </div>
                         {{-- 切断指示　Start --}}
                         <div id="result" @if($page_tab!='result') class="tab-pane hidden" @else class="tab-pane" @endif>
                             <div class="rebar-select-frame">
@@ -38,7 +50,7 @@
                                     <a 
                                         class="
                                             rebar-button
-                                            @if($id == $diameter_id) diameter-select @endif
+                                            @if($id == $diameter_id) diameter-select @else print-off @endif
                                             mr-2
                                         "
                                          href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'result', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
@@ -47,7 +59,7 @@
                                 @endif
                                 @endforeach
                             </div>
-                            <div class="mt-5">
+                            <div class="mt-5 print-space">
                                 @if (!empty($resultDisplayList[$diameter_id])) 
                                     @foreach ($resultDisplayList[$diameter_id] as $setTimes => $combination)
                                         <div class="time-detail">
@@ -56,7 +68,7 @@
                                             <table class="table">
                                                 <thead>
                                                     <tr>
-                                                        <td class="left">切断順番</td>
+                                                        <td class="left print-size">切断順番</td>
                                                         <td>長さ</td>
                                                         <td>切断本数</td>
                                                         <td>吐き出し口</td>
@@ -95,7 +107,7 @@
                                     <a 
                                         class="
                                             rebar-button
-                                            @if($id == $diameter_id) diameter-select @endif
+                                            @if($id == $diameter_id) diameter-select @else print-off @endif
                                             mr-2
                                         "
                                         href="{{ route('calculate.detail', ['group_code' => $group_code, 'page_tab' => 'request', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
@@ -227,9 +239,11 @@
             window.location.href = "/calculate/detail/" + group_code + "/request/" + calculation_id;
         });
     });
+
 </script>
 
 <style scoped lang="scss">
+
     .title-head a {
         width: 180px;
         height: 32px;
@@ -239,6 +253,10 @@
         text-align: center;
         color: #ffffff;
         margin-left: 34px;
+    }
+
+    .print_header {
+        display: none;
     }
 
     .nav {
@@ -339,5 +357,46 @@
         color: #b1b1b1;
         font-size: 14px;
     }
+
+    @media print{
+    /* 印刷時にのみ適用されるスタイルを記述 */
+    .time-detail {
+        break-inside: avoid;
+    }
+    
+    .head, .side-menu, .print-off  {
+        display: none;
+    }
+
+    .tab-content {
+        padding: 0;
+    }
+
+    .nav-link.active {
+        color: #000000;
+        font-size: 24px;
+        padding: 24px;
+    }
+    .rebar-button.diameter-select {
+        color: #000000;
+        padding; 0;
+    }
+
+    .rebar-select-frame  {
+        padding: 0;
+    }
+
+    body {
+        font-size: 16px;
+    }
+
+    .print_header {
+        display: block;
+    }
+
+    .table .print-size {
+        font-size: 14px;
+    }
+}
 
 </style>

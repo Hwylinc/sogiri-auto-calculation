@@ -35,8 +35,14 @@ class CalculationCode extends Model
 
     public static function get_by_code($code) {
         return self::where('code', '=', $code)->first();
-    }   
+    } 
 
+    public static function get_by_codes($codes) {
+        return self::select('*', 'client_name as name', 'calculation_codes.created_at as create')
+            ->whereIn('code', $codes)
+            ->orderby('create', 'ASC')
+            ->get();
+    } 
 
     // *******************************************
     // 計算対象一覧情報を取得する条件
@@ -44,7 +50,7 @@ class CalculationCode extends Model
     public function scopeGetCalculationRequestListCondition($query, $params) {
         // $query->select('*', 'calculation_codes.created_at as create', );
             // ->join('clients', 'calculation_codes.client_id', '=', 'clients.id');
-        $query->select('*', 'client_name as name' );
+        $query->select('*', 'client_name as name', 'calculation_codes.created_at as create' );
         foreach ($params as $key => $value) {
             $query = $query->where('calculation_codes.'.$key, '=', $value);
         }

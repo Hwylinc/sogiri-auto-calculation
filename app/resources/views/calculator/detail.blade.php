@@ -342,6 +342,13 @@
         margin-left: 32px;
         margin-right: 32px;
         border: 1px solid #000000;
+        max-width: 20%;
+        overflow: hidden; 
+    }
+    option {
+        white-space: nowrap;      /* テキストを折り返さない */
+        overflow: hidden;        /* テキストのオーバーフローを隠す */
+        text-overflow: ellipsis; /* テキストがオーバーフローした場合に3点リーダを表示 */
     }
 
     .is-inner-frame {

@@ -30,9 +30,10 @@ class CalculatorController extends BaseController
     
     
     // *******************************************
-    // 計算開始確認画面
+    // 未計算選択入力画面
     // *******************************************
     public function getReady(
+        Request $request,
         CalculationCode $calculationCodeModel
     ) {
         // BaseControllerでログインは確認済み
@@ -43,7 +44,43 @@ class CalculatorController extends BaseController
         //  userに紐づく工場の依頼中（未計算）コードの情報一覧取得
         $calculationRequestCodeList = $this->getCalculationRequestCodeList($calculationCodeModel, $factory_id);
 
+        // sessionに情報が残っているか確認する
+        $sessionSelectCalcuCode = $request->session()->get('calculation.select');
+        if(is_null($sessionSelectCalcuCode) || count($sessionSelectCalcuCode) === 0) {
+            $sessionSelectCalcuCode = [];
+        }
+
+
         return view('calculator.ready', [
+            'calculationRequestCodeList' => $calculationRequestCodeList,
+            'sessionSelectCalcuCode' => $sessionSelectCalcuCode,
+        ]);
+    }
+
+    // *******************************************
+    // 未計算選択確認画面
+    // *******************************************
+    public function postReady(
+        Request $request,
+        CalculationCode $calculationCodeModel
+    ) {
+        $selectCalculation = $request->input('priority');
+
+        $request->session()->put('calculation.select', $selectCalculation);
+        if(is_null($selectCalculation)) {
+            $this->addFlash($request, 'error', '選択してください。');
+            return back()->withInput();
+        }
+
+        // BaseControllerでログインは確認済み
+        $user = Auth::user();
+        //  userに紐づく工場
+        $factory_id = $user['factory_id'];
+
+        //  選択された依頼中（未計算）コードの情報一覧取得
+        $calculationRequestCodeList = CalculationCode::get_by_codes($selectCalculation);
+
+        return view('calculator.ready_confirm', [
             'calculationRequestCodeList' => $calculationRequestCodeList
         ]);
     }
@@ -52,6 +89,7 @@ class CalculatorController extends BaseController
     // 計算結果登録処理
     // *******************************************
     public function getCaliculationStart(
+        Request $request,
         CalculationCode $calculationCodeModel
       , CalculationGroup $calculationGroupModel
       , CalculationRequests $calculationRequestModel
@@ -65,8 +103,12 @@ class CalculatorController extends BaseController
         //  userに紐づく工場
         $factory_id = $user['factory_id'];
 
-        //  userに紐づく工場の依頼中（未計算）コードの情報一覧取得
-        $calculationRequestCodeList = $this->getCalculationRequestCodeList($calculationCodeModel, $factory_id);
+        // 選択された未計算を取得する
+        $sessionSelectCalcuCode = $request->session()->get('calculation.select');
+        $calculationRequestCodeList = CalculationCode::get_by_codes($sessionSelectCalcuCode);
+
+        //  userに紐づく工場の依頼中（未計算）コードの情報一覧取得 
+        // $calculationRequestCodeList = $this->getCalculationRequestCodeList($calculationCodeModel, $factory_id);
 
         // 計算対象一覧の取得
         if ($calculationRequestCodeList->isNotEmpty()) {
@@ -105,7 +147,7 @@ class CalculatorController extends BaseController
             // 失敗時はエラー表示
             abort(403, $e);
         }
-
+        $request->session()->forget('calculation.select');
         return redirect()->route('calculate.complete',['group_code'=> $resultGroupCode]);
     }
         
@@ -174,6 +216,13 @@ class CalculatorController extends BaseController
         
         // 計算結果に紐づく計算依頼コードを取得する
         $calGroupCalCodeList = $this->getCalGroupCalCodeList($calGroupCalCodeModel, $group_code);
+
+        // caluclationGroupに該当するcaluclationCodeを全件取得
+        $codes = [];
+        foreach( $calGroupCalCodeList as $index => $data ) {
+            array_push($codes, $data['code']);
+        }
+        $calCodes = CalculationCode::get_by_codes($codes);
 
         // 選択されている計算番号の値
         $calculation_id = empty($calculation_id) ? $calGroupCalCodeList[0]['code'] : $calculation_id;

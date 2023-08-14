@@ -3,7 +3,7 @@
         <ul>
             @if(session('message'))
                 @foreach (session('message') as $key => $messages)
-                    <li class="{{ $key }} p-2">{{ $messages }}</li>
+                    <li class="{{ $key }} p-2 {{ $align }}">{{ $messages }}</li>
                 @endforeach
             @endif
         </ul>
@@ -17,6 +17,12 @@
     }
     .error {
         color: #ff5353;
+    }
+    .center {
+        text-align: center;
+    }
+    .left {
+        text-align: left;
     }
 </style>
 

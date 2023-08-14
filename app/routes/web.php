@@ -59,8 +59,10 @@ Route::middleware('auth')->group(function(){
 
     // 5_ * （計算管理) 
     Route::controller(App\Http\Controllers\CalculatorController::class)->group(function () {
-        // 計算開始確認画面
+        // 未計算選択入力画面
         Route::get('/calculate/ready',                                                              'getReady')->name('calculate.ready');
+        // 未計算選択確認画面
+        Route::post('/calculate/ready',                                                              'postReady')->name('calculate.confirm');
         // 計算結果確認画面
         Route::get('/calculate/start',                                                              'getCaliculationStart')->name('calculate.start');
         // 計算結果完了画面

@@ -10,17 +10,16 @@
                         <p class="text-center text-red-500">表示する内容はありません</p>
                     @else
                         <div class="text-center">
-                            計算するもの選択してください。
+                            以下の内容のものを選択しますか?
                         </div>
 
                         <table class="mt-4 w-full">
                             <thead>
                                 <tr>
-                                    <td class="w-[10%] row-head">日時</td>
-                                    <td class="w-[29%] row-head">メーカー</td>
-                                    <td class="w-[29%] row-head">邸名</td>
-                                    <td class="w-[29%] row-head">登録番号</td>
-                                    <td class="w-[3%] row-head"></td>
+                                    <td class="w-[16%] row-head">日時</td>
+                                    <td class="w-[28%] row-head">メーカー</td>
+                                    <td class="w-[28%] row-head">邸名</td>
+                                    <td class="w-[28%] row-head">登録番号</td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -30,31 +29,16 @@
                                     <td class="row-detail">{{  $value['name'] }}</td>
                                     <td class="row-detail">{{  $value['house_name'] }}</td>
                                     <td class="row-detail">{{  $value['code'] }}</td>
-                                    <td class="row-detail text-center">
-                                        <input 
-                                            id="priFlg-{{$value["id"]}}" 
-                                            type="checkbox"
-                                            name='priority[]'
-                                            value="{{ $value["code"] }}"
-                                            {{ in_array($value["code"], $sessionSelectCalcuCode) ? 'checked' : '' }}
-                                        >
-                                        <label 
-                                            for="priFlg-{{$value["id"]}}" 
-                                            class="pri-flag pri-border"
-                                        >
-                                            <div>
-
-                                            </div>
-                                        </label>
-                                    </td>
                                 </tr>
                             @endforeach
                             </tbody>
                         </table>
                     @endif
-                    <x-message :message="session('message')" align="center"/>
                     <div class="flex justify-center mt-4">
-                        <input type="submit" value="確認画面へ進む" class="btn btn-exe">
+                        <a href="{{ route('calculate.ready') }}" class="btn btn-top">未計算一覧へ戻る</a>
+                        @if ($calculationRequestCodeList->isNotEmpty())
+                            <a href="{{ route('calculate.start') }}" class="btn btn-exe">計算を行う</a>
+                        @endif
                     </div>
                 </form>
             </div>

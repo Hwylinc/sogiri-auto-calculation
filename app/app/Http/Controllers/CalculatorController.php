@@ -259,6 +259,7 @@ class CalculatorController extends BaseController
           , 'calculation_id'                 => $calculation_id
           , 'diameter_id'                    => $diameter_id 
           , 'diameter_length'                => $length
+          , 'calculationCodeList'            => $calCodes
         ]);   
     }
 }

@@ -43,7 +43,7 @@
                         </div>
                         {{-- 切断指示　Start --}}
                         <div id="result" @if($page_tab!='result') class="tab-pane hidden" @else class="tab-pane" @endif>
-                            <div class="rebar-select-frame">
+                            <div class="rebar-select-frame flex-wrap">
                                 <label class="mr-2 font-semibold">現在の鉄筋径</label>
                                 @foreach ($diameterDisplayList as $diameter => $id)
                                 @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16')
@@ -58,6 +58,13 @@
                                     </a>
                                 @endif
                                 @endforeach
+                                <div class="w-full"></div>
+                                <div class="calculation-code-list">
+                                    <p>計算結果対象</p>
+                                    @foreach($calculationCodeList as $index => $code)
+                                        {{ $index !== 0 ? '/' : ""}} {{ $code['name'] }} {{ $code['house_name'] }}
+                                    @endforeach
+                                </div>
                             </div>
                             <div class="mt-5 print-space">
                                 @if (!empty($resultDisplayList[$diameter_id])) 
@@ -301,8 +308,9 @@
         background-color: #ffffff;
         display: flex;
         align-items: center;
-        height: 88px;
-        padding: 0px 16px;
+        min-height: 160px;
+        max-height: 200px;
+        padding: 16px 16px;
     }
 
     .time-detail {

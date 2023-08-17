@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class head extends Component
+class Head extends Component
 {
     public $show;
     /**
@@ -12,7 +12,7 @@ class head extends Component
      *
      * @return void
      */
-    public function __construct($title, $imageFlg)
+    public function __construct($title, $imageFlg, $horizon="1")
     {
         $img = "";
 
@@ -33,6 +33,7 @@ class head extends Component
 
         $this->show['title'] = $title;
         $this->show['image'] = $img;
+        $this->show['horizon'] = $horizon === "0" ? false : true;
     }
 
     /**

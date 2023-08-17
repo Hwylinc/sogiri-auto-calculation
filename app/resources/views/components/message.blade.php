@@ -1,9 +1,11 @@
-<div class="h-[36px]">
+<div class="mt-4">
     <div>
         <ul>
             @if(session('message'))
                 @foreach (session('message') as $key => $messages)
-                    <li class="{{ $key }}">{{ $messages }}</li>
+                    @foreach( $messages as $message )
+                        <li class="{{ $key }} common {{ $align }}">{{ $message }}</li>
+                    @endforeach
                 @endforeach
             @endif
         </ul>
@@ -11,11 +13,23 @@
 </div>
 
 <style>
+    .common {
+        padding: 4px;
+        padding-left: 16px;
+    }
     .success {
-        color: #00aaff;
+        background-color: #d6ffdc;
+        color: #04d023;
     }
     .error {
-        color: #ff5353;
+        background-color: #ffa1a1;
+        color: #ba0000;
+    }
+    .center {
+        text-align: center;
+    }
+    .left {
+        text-align: left;
     }
 </style>
 

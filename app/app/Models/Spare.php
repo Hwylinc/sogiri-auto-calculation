@@ -27,6 +27,9 @@ class Spare extends Model
     // 予備材一覧情報を取得する条件
     // *******************************************
     public function scopeGetSpareListCondition($query) {
-        return $query->join('diameters', 'spares.diameters_id', '=', 'diameters.id');
+        return $query->join('diameters', 'spares.diameters_id', '=', 'diameters.id')
+        ->orderby('diameters_id', 'ASC')
+        ->orderby('priority_flg', 'DESC')
+        ->orderby('length', 'DESC');
     }
 }

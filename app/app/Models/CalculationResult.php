@@ -17,7 +17,15 @@ class CalculationResult extends Model
        , "length"          //長さ 
        , "set_number"      //同時切断セット本数	  
        , "port_id"         //吐出口ID 
+       , 'spare_flag'
     ];
+
+    static public function update_length_by_id($id, $length){
+        return self::where('id', "=", $id)
+            ->update([
+                'length' => $length,
+            ]);
+    }
 
     // *******************************************
     // 紐づく計算結果を取得する条件

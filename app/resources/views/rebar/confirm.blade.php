@@ -17,7 +17,7 @@
                         <div class="mr-2">
                             <a 
                                 class="
-                                    button 
+                                    rebar-button 
                                     @if($page['now'] == $diameter->id) diameter-select @endif
                                     a-disabled
                                 "
@@ -61,13 +61,13 @@
                     {{-- メッセージ --}}
                     <div class="flex justify-between items-center mb-3">
                         <x-message :message="session('message')" />
-                        <button type="button" id="edit-btn" class="button edit-btn flex items-center hidden">編集</button>
+                        <button type="button" id="edit-btn" class="rebar-button edit-btn flex items-center hidden">編集</button>
                     </div>
 
                     {{-- 入力formのtable --}}
                     <div id="CompForm" class="comp-form confirm-frame bg-white p-4 hidden"></div>
 
-                    <div class="flex justify-center mt-4">
+                    <div id="btn-frame" class="flex justify-center mt-4">
 
                         <input type="hidden" name="select_diameter" value="{{ $page['now'] }}" />
 
@@ -132,6 +132,7 @@
                 $('#prev-btn').addClass('disabled-a')
                 $('#next-btn').addClass('disabled-a')
                 $('#done').addClass('disabled-a')
+                $('#btn-frame').addClass('hidden')
                 changeScreen()
             } else { 
                 // 編集内容をpost送信する   
@@ -246,8 +247,10 @@
                 const CompoTable = $(createCompTableEl()).appendTo(compDiv)
                 createComponentIdHidden(selectId, compDiv)
 
-                const button = createAddBtn(compId, selectId, createComoTableRowEl, compDiv, !screenMode ? ' hidden' : '')
-
+                if (screenMode) {
+                    const button = createAddBtn(compId, selectId, createComoTableRowEl, compDiv, !screenMode ? ' hidden' : '')
+                }
+                
                 // データが存在するか確認
                 let rowCount = getRowCount(inputData)
                 
@@ -312,14 +315,15 @@
         height: 16px;
         padding: 1px;
         margin-right: 4px;
-        .select-check-bk {
-            width: 12px;
-            height: 12px;
-            background-color: #2083D7;
-        }
     }
 
-    .button.edit-btn {
+    .select-check-flame .select-check-bk {
+        width: 12px;
+        height: 12px;
+        background-color: #2083D7;
+    }
+
+    .rebar-button.edit-btn {
         display: flex;
         padding: 4px;
         align-items: center;
@@ -342,9 +346,10 @@
         line-height:25px;
         border-radius: 62px;
         text-align: center;
-        &:hover {
-            cursor: pointer;
-        }
+    }
+
+    .page-btn:hover {
+        cursor: pointer;
     }
 
     .hidden {

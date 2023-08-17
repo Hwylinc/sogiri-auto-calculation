@@ -8,15 +8,17 @@ class message extends Component
 {
 
     public $message;
+    public $align;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($message, $align="left")
     {
         $this->message = $message;
+        $this->align = $align;
     }
 
     /**

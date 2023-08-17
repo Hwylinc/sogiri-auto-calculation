@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>創桐鉄筋計算システム</title>
 
         <!-- Fonts -->
         <link href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -30,22 +30,22 @@
 
     <div class="flex flex-col h-full">
 
-        <header class="header-bg-color p-2">
+        <header class="head header-bg-color p-2">
 
             <div class="flex justify-between items-center text-white">
                 <div class="flex items-center">
                     <p class="pl-2 pr-2"><img src="{{ asset("images/logo.svg") }}" alt=""></p>
                     <p class="text-sm pt-4">鉄筋計算システム</p>
                 </div>
-                <div>
-                    ログイン
+                <div class="text-[10px]">
+                    ＜事業再構築　機-3　※事業再構築補助金以外での使用禁止＞
                 </div>
             </div>
         </header>
 
         <main class="body flex flex-1" >
 
-            <div class="menu-bg-color w-[220px] flex flex-col ">
+            <div class="side-menu menu-bg-color w-[220px] flex flex-col ">
 
                 <ul>
                     @foreach ($menuList as $key => $array)
@@ -58,15 +58,21 @@
                         </li>
                     @endforeach
                 </ul>
-
+                
                 <div class="mt-auto pl-2 pr-2 text-cente">
                     <div class="h-[0.5px] bg-[#16202E] w-full"></div>
 
-                    <button class="p-4 w-full menu-title flex items-center">
-                        <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" >
-                        ログアウト
-                    </button>
+                    <form action="{{ route('logout') }}" method="POST" >
+                        @csrf
+                        <button class="p-4 w-full menu-title flex items-center">
+                            <img src="{{ asset("images/logout.svg") }}" alt="" class="mr-2" >
+                            ログアウト
+                        </button>
+                    </form>
                 </div>
+
+                
+                {{-- </div> --}}
 
             </div>
 

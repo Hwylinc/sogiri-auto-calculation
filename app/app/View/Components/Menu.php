@@ -26,10 +26,16 @@ class Menu extends Component
                 'param' => ['diameter' => "1"],
                 'image' => 'calculate'
             ],
+            '4' => [
+                'title' => '計算未実施一覧', 
+                'select' => false, 
+                'route_name' => 'calculate.ready', 
+                'image' => 'calculate'
+            ],
             '2' => [
                 'title' => '計測結果履歴一覧', 
                 'select' => false, 
-                'route_name' => 'spare.list', 
+                'route_name' => 'calculate.list', 
                 'param' => ['factry_id' => '1'],
                 'image' => 'clock'
             ],
@@ -40,13 +46,14 @@ class Menu extends Component
                 'param' => ['factry_id' => '1'],
                 'image' => 'list'
             ],
-            '4' => [
-                'title' => '部材集計データ', 
-                'select' => false, 
-                'route_name' => 'spare.list', 
-                'param' => ['factry_id' => '1'],
-                'image' => 'totalling'
-            ],
+            // 20230718時点では不必要なのでコメントアウト
+            // '4' => [
+            //     'title' => '部材集計データ', 
+            //     'select' => false, 
+            //     'route_name' => 'spare.list', 
+            //     'param' => ['factry_id' => '1'],
+            //     'image' => 'totalling'
+            // ],
         ];
 
         $this->menuList[$selectPage]['select'] = true;

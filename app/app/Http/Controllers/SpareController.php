@@ -131,16 +131,19 @@ class SpareController extends BaseController
         $ids = $request->input('priority');
         $select_id = $request->input('select_id');
 
-        // 選択項目が6個以上の場合は元の画面に戻す
-        if(count($ids) > 5) {
-            $this->throwError('6個以上は選択できません。');
+        if(!is_null($ids)) {
+            // 選択項目が6個以上の場合は元の画面に戻す
+            if(count($ids) > 5) {
+                $this->addFlash($request, 'error', '6個以上は選択できません。');
+                return back()->withInput();
+            } else {
+                $spareIns->update_all_priority_reset($select_id);
+                $spareIns->update_priority($ids);
+        
+                $this->addFlash($request, 'success', '登録が完了しました。');
+            }
         }
 
-        $spareIns->update_all_priority_reset($select_id);
-        $spareIns->update_priority($ids);
-
-        $this->addFlash($request, 'success', '登録が完了しました。');
-        
         return redirect()->route('spare.list', ['factry_id' => $select_id])->withInput();
     }
 }

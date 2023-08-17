@@ -21,10 +21,12 @@ class CalculationGroupCalculationCode extends Model
     // *******************************************
     public function scopeGetCalGroupCodeByFactIdCondition($query, $params) 
     {
-        return $query->select('*', 'calculation_codes.created_at as created', 'calculation_groups.id as group_id')
+        // return $query->select('*', 'calculation_codes.created_at as created', 'calculation_groups.id as group_id')
+        return $query->select('*', 'calculation_codes.created_at as created', 'calculation_groups.id as group_id', 'calculation_codes.client_name as name')
                      ->join('calculation_groups', 'calculation_group_calculation_code.group_code', '=', 'calculation_groups.group_code')
                      ->join('calculation_codes', 'calculation_group_calculation_code.code', '=', 'calculation_codes.code')
-                     ->join('clients', 'calculation_codes.client_id', '=', 'clients.id')
-                     ->where('calculation_codes.factory_id', '=', $params['factory_id']);
+                    //  ->join('clients', 'calculation_codes.client_id', '=', 'clients.id')
+                     ->where('calculation_codes.factory_id', '=', $params['factory_id'])
+                     ->orderby('calculation_groups.id', 'DESC');
     }
 }

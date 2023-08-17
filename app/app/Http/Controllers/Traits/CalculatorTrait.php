@@ -40,13 +40,63 @@ trait CalculatorTrait
     /* 予備材一覧情報を取得
     /* **************************************** */
     private function getSpareList($spareModel) {
+        // $list1 = [];
+        $spareList = $spareModel->getSpareListCondition()
+            ->get()
+            ->toArray();    
+        // if (!empty($spareList)) {
+        //     foreach ($spareList as $spare) {
+        //         $list1['D'.$spare['size']][] = intval($spare['name']);
+        //     }
+        // }
+        
         $list = [];
-        $spareList = $spareModel->getSpareListCondition()->get()->toArray();    
-        if (!empty($spareList)) {
-            foreach ($spareList as $spare) {
-                $list['D'.$spare['size']][] = intval($spare['name']);
+        $priority_spare = [];
+        $normal_spare = [];
+
+        // 優先予備材と普通の予備材で分ける
+        if( !empty($spareList) ) {
+
+            $prev_size = "";
+
+            foreach($spareList as $index => $spare) {
+
+                // 予備材のサイズが変わった場合
+                if ($prev_size !== $spare['size']) {
+
+                    // 前回までのデータをlistに格納する
+                    if ($index !== 0) {
+                        // 優先予備材配列と普通の予備材配列を大きい順に並び替える
+                        sort($priority_spare);
+                        sort($normal_spare);
+                        // 優先予備材と普通の予備材を結合する：merge引数の順番大事
+                        $list['D'. $prev_size] = array_merge($normal_spare, $priority_spare);
+                    }
+
+                    // 初期化
+                    $priority_spare = [];
+                    $normal_spare = [];
+                }
+
+                // 優先予備材か普通用の予備材かで格納する配列を変更する
+                if ($spare['priority_flg'] === 1) {
+                    array_push($priority_spare, intval($spare['name']));
+                } else {
+                    array_push($normal_spare, intval($spare['name']));
+                }
+
+                // 現在のサイズを格納
+                $prev_size = $spare['size'];
             }
         }
+
+        // 最後のサイズだけ
+        // 優先予備材配列と普通の予備材配列を大きい順に並び替える
+        sort($priority_spare);
+        sort($normal_spare);
+        // 優先予備材と普通の予備材を結合する：merge引数の順番大事
+        $list['D'. $prev_size] = array_merge($priority_spare, $normal_spare);
+
         return $list;
     }
 
@@ -92,7 +142,7 @@ trait CalculatorTrait
         $calculationList = array();
         $exception = array();
         // 例外処理で使う長さの一覧を取得
-        $exception_lengths = [4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
+        $exception_lengths = [4000, 4500, 5000, 5500, 6000, 6500, 7000, 7500, 8000];
         foreach ($calculationRequestList as $value) {
             if (in_array($value['requests_length'], $exception_lengths)) {
                 // 例外処理に渡す値
@@ -104,7 +154,7 @@ trait CalculatorTrait
                 }            
             } else {
                 // 既に値がある場合は追加する
-                if ( isset($exception['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']]) ) {
+                if ( isset($data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']]) ) {
                     $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] + $value['number'];
                 } else {
                     $data['D'.$value['size']][$value['port_id'].'-'.$value['requests_length']] = $value['number'];
@@ -141,6 +191,9 @@ trait CalculatorTrait
                 rsort($exist_divisors);
                 // 共通する約数を持つ数字をグループ化するための配列
                 $groups = [];
+
+                // $dataが1つの場合は別処理
+
                 if (!empty($exist_divisors)) {
                     // 存在する約数をループ
                     foreach ($exist_divisors as $n) {
@@ -151,10 +204,15 @@ trait CalculatorTrait
                                 // unset($divisors[$key]);
                             }
                         }
-                        // group内に一つしかなければ共通約数ではないのでグループにはしない
                         if(array_key_exists($n, $groups)) {
                             if (count($groups[$n]) <= 1) {
-                                unset($groups[$n]);
+                                // group内に一つしかなければ共通約数ではないのでグループにはしない(2023.07.23 浦野 修正)
+                                if (count($temp_array) === 1) {
+                                    $key = array_keys($groups[$n], $n);
+                                    unset($divisors[$key[0]]);
+                                } else {
+                                    unset($groups[$n]);
+                                }
                             } else {
                                 // 複数ある場合は共通約数として括り、以後のループにその数値は考慮されないように除外する
                                 foreach (array_keys($groups[$n]) as  $value) {
@@ -164,6 +222,16 @@ trait CalculatorTrait
                         }
                     }
                 }
+
+                if (count($divisors) != 0) {
+                    foreach($divisors as $name => $arr) {
+                        if (count($arr) != 0) {
+                            $max = max(array_keys($arr));
+                            $groups[$max][$name] = $max;
+                        }
+                    }
+                }
+
                 $dataArray = $this->getGroupResult($size, $groups, $array, $dataArray);
             }
         }
@@ -182,8 +250,50 @@ trait CalculatorTrait
                         $count++;
                     }
                 }
+
                 // 切断指示作成
-                $calculationList['target'][$size][$cutting_num] = $this->getCombination($spareList, $lengths, $size);                
+                // 数回同じ内容で切断指示が出るため、吸い上げデータを見直し、再度データの作り替えを実行(2023.07.23 浦野)
+                $cut_lists_dummy = $this->getCombination($spareList, $lengths, $size);
+                $prev_list = [];
+                $cut_lists = [];
+                $cut_count = 0;
+                $order = 1;
+                // 紐づく物理最大数を取得
+                $max_limit = $this->getMaxNumber($size);
+
+                foreach( $cut_lists_dummy as $n => $detail ){
+                    if ($prev_list === $detail && $cutting_num < $max_limit) {
+                        $prev_cut_count = $cut_count;
+                        $cut_count += $cutting_num;
+                        foreach( $cut_lists[$prev_cut_count] as $cut_lists_detail => $value ) {
+                            if ($value === $detail) {
+                                $cut_lists[$cut_count][$order] = $detail;
+                                unset($cut_lists[$prev_cut_count][$order]);
+                                if (count($cut_lists[$prev_cut_count]) === 0) {
+                                    unset($cut_lists[$prev_cut_count]);
+                                }
+                            }
+                        }
+                    } else {
+                        $cut_count = $cutting_num;
+                        if ( isset($cut_lists[$cut_count]) ) {
+                            $order = count($cut_lists[$cut_count]) + 1;
+                        }
+                        $cut_lists[$cut_count][$order] = $detail;
+                        $prev_list = $detail;
+                    }
+                }
+
+                foreach($cut_lists as $count => $value) {
+                    if ( isset($calculationList['target'][$size][$count]) && count($calculationList['target'][$size][$count]) != 0 ) {
+                        foreach($value as $order => $value_detail) {
+                            $calculationList['target'][$size][$count][count($calculationList['target'][$size][$count])+1] = $value_detail;
+                        }
+                    } else {
+                        $calculationList['target'][$size][$count] = $value;    
+                    }
+                }
+
             }            
         }
         
@@ -259,6 +369,7 @@ trait CalculatorTrait
     public function getDivisors($max_limit, $n) 
     {
         $divisors = [];
+        $test = sqrt($n);
         for ($i = 1; $i <= sqrt($n); $i++) {
             if ($n % $i == 0) {
                 // $i が約数である場合
@@ -317,9 +428,9 @@ trait CalculatorTrait
         $cut_list  = $lengths['length'];
         // shuffle($cut_list);
         // 鉄筋径ごとの生材の長さを取得（8000の場所をこの変数に後程置き換え）
-        // $material_length =
+        $material_length = 9000;
         
-        $rods = [8000];
+        $rods = [$material_length];
         $cuts = [];
 
         // 予備材リスト
@@ -327,7 +438,7 @@ trait CalculatorTrait
 
         while (count($cut_list) > 0) {
             $best_cut_index = -1;
-            $best_cut_waste = 8000;
+            $best_cut_waste = $material_length;
             for ($i = 0; $i < count($rods); $i++) {
                 $rod = $rods[$i];
                 for ($j = 0; $j < count($cut_list); $j++) {
@@ -347,7 +458,7 @@ trait CalculatorTrait
 
             if ($best_cut_index == -1) {
                 // Need a new rod
-                $rods[] = 8000;
+                $rods[] = $material_length;
                 continue;
             }
 
@@ -363,7 +474,7 @@ trait CalculatorTrait
             // dd($cut);
             if ($count != $cut[1]+1) {
                 if($i != 0) {
-                    $left = 8000 - $result[$cut[1]];
+                    $left = $material_length - $result[$cut[1]];
                     //　予備材を使って端材を最小化
                     if (!empty($spare_cut_list)) {
                         $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
@@ -390,7 +501,8 @@ trait CalculatorTrait
             }
         }        
         
-        $left = 8000 - end($result);
+        // 最後に作成リストだけ回せないので、下に追加していると予想
+        $left = $material_length - end($result);
         //　予備材を使って端材を最小化
         if (!empty($spare_cut_list)) {
             $used_spare_list = $this->cutLeftWithSpare($left, $spare_cut_list);
@@ -401,6 +513,18 @@ trait CalculatorTrait
                 }
             }
         }
+
+        // $max_limit = $this->getMaxNumber($size);
+        // $prevData = [];
+        // foreach( $data as $n => $arr ){
+        //     if( $prevData == $arr ) {
+
+        //     } else {
+
+        //     }
+        // }
+
+
         
 
         // $data[$cut[1]+1]['waste'] = $used_spare_list['waste'];
@@ -441,7 +565,7 @@ trait CalculatorTrait
     public function findCutList($left_length, $spare_cut_list) 
     {
         // $spare_cut_listを昇順にソートする
-        sort($spare_cut_list); 
+        // sort($spare_cut_list); 
         // $spare_cut_listの数を取得する
         $cut_count = count($spare_cut_list);
         // $spare_cut_listの要素数分、0で初期化された配列を作成する
@@ -472,13 +596,15 @@ trait CalculatorTrait
         if ($used_spare_result === false) {
             
         } else {
-            sort($spare_cut_list); 
+            // sort($spare_cut_list); 
 
             $cutCount = count($spare_cut_list);
             $waste = $left;
             for ($j = 0; $j < $cutCount; $j++) {
                 if ($used_spare_result[$j] > 0) {
-                    $return_data['used'][] = $spare_cut_list[$j];
+                    for ($i = 0; $i <  $used_spare_result[$j]; $i++) {
+                        $return_data['used'][] = $spare_cut_list[$j];
+                    }
                     $waste -= $spare_cut_list[$j] * $used_spare_result[$j];
                 }
             }
@@ -527,6 +653,7 @@ trait CalculatorTrait
                                             $convertData[$count]['length']        = $length;                                  //長さ 
                                             $convertData[$count]['set_number']    = $setNumber;                               //同時切断セット本数	  
                                             $convertData[$count]['port_id']       = $combination['port'][$preCuttingOrder];   //吐出口ID 
+                                            $convertData[$count]['spare_flag']    = gettype($length) == 'string' ? 0 : 1;     // 予備材かどうか
                                             
                                             $count++;
                                         }

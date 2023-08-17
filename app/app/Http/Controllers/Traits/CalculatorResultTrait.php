@@ -102,16 +102,20 @@ trait CalculatorResultTrait
         if (!empty($calculationResultList)) {
             foreach ($calculationResultList as $calculation) {
                 // 鉄筋径→カット回数順→切断順番
+                // id
+                $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['id'] = $calculation['id'];
                 // 長さ
                 $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['length'] = $calculation['length'];
                 // 切断本数
                 $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['number'] = $calculation['set_number'];
                 // 吐き出し口
                 $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['port'] = $calculation['port_id'];
+                // 予備材フラグ
+                $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['spare_flag'] = $calculation['spare_flag'];
 
                 // 端材の長さ管理
                 if (empty($resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'])) {
-                    $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] = 8000 - $calculation['length'];
+                    $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] = 9000 - $calculation['length'];
                 } else {
                     $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] = $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] - $calculation['length'];
                 }
@@ -236,9 +240,9 @@ trait CalculatorResultTrait
         $requestDisplayList = [];
         if (!empty($calculationRequestList)) {
             foreach ($calculationRequestList as $key => $value) {         
-                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_id']][$key]['length'] = $value['requests_length'];
-                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_id']][$key]['number'] = $value['number'];
-                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_id']][$key]['port'] = $value['port_id'];
+                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_name']][$key]['length'] = $value['requests_length'];
+                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_name']][$key]['number'] = $value['number'];
+                $requestDisplayList[$value['code']][$value['diameter_id']][$value['component_name']][$key]['port'] = $value['port_id'];
             }
         }
         return $requestDisplayList;

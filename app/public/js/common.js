@@ -6,6 +6,19 @@ const deleteInput = (compId, display_order) => {
     console.log('delete')
     $(`#comp-len-${compId}-${display_order}`).val("");
     $(`#comp-num-${compId}-${display_order}`).val("");
+
+    const tr = $(`#comp-div-${compId} table tr`);
+    const tr_count = tr.length;
+
+    for(let i = display_order; i < tr_count; i++) {
+        $(`#comp-len-${compId}-${i}`).val($(`#comp-len-${compId}-${i+1}`).val());
+        $(`#comp-num-${compId}-${i}`).val($(`#comp-num-${compId}-${i+1}`).val());
+    }
+
+    if (tr_count > 11) {
+        tr.eq(tr_count - 1).remove()
+    }
+    
 }
 
 // formのテーブル要素作成
@@ -96,11 +109,13 @@ const createRemoveBtnIcon = (path, id, displayOrder, tdDelete) => {
         src: path,
         height: '16px',
         width: '16px',
-        on: {
-            click: () => {deleteInput(id, displayOrder)}
-        },
-        'class': 'delete-icon'
+        'class': 'delete-icon',
+        id: 'delete-btn-'+id+'-'+displayOrder,
     }).appendTo(tdDelete)
+
+    $(document).on("click",'#delete-btn-'+id+'-'+displayOrder, () => {
+        deleteInput(id, displayOrder)
+    })
 }
 
 // 長さと本数のinput要素を作成
@@ -157,12 +172,17 @@ const addForm = (compId, id, callback) => {
 }
 
 // 追加ボタン作成
-const createAddBtn = (compId, id, createComoTableRowEl, compDiv, op="") => {
-    return $('<button>', {
+const createAddBtn = (compId, id, createComoTableRowEl, compDiv, op) => {
+    const addBtn = $('<button>', {
         type: 'button',
         'class': 'w-26px h-26px p-4px border-2 flex items-center justify-center mt-4 ml-4' + op,
-        on: {
-            click: () => {addForm(compId, id, createComoTableRowEl)}
-        }
+        id: 'add-btn-'+id
     }).text('＋').appendTo(compDiv)
+
+    $(document).on("click",'#add-btn-'+id, () => {
+        addForm(compId, id, createComoTableRowEl)
+    })
+
+    return addBtn
+
 }

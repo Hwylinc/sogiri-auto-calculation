@@ -5,7 +5,9 @@
         <h2>{{ $show['title'] }}</h2>
     </div>
 
+    @if($show['horizon'])
     <hr>
+    @endif
 </div>
 
 <style scoped>

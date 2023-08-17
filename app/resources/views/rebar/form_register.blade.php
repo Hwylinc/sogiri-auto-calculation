@@ -15,7 +15,7 @@
                         <div class="mr-2">
                             <a 
                                 class="
-                                    button 
+                                    rebar-button 
                                     @if($page['now'] == $diameter->id) diameter-select @endif
                                     a-disabled
                                 "
@@ -45,7 +45,7 @@
                                     name="component[]" 
                                     type="checkbox" 
                                     class="component mr-2" 
-                                    id="comp-check-{{ $index }}" data="{{ $component['id'] }}" 
+                                    id="comp-check-{{ $component['id'] }}" data="{{ $component['id'] }}" 
                                     value="comp_{{ $component['id'] }}"
                                     onchange="compoClick({{ $index }}, {{ $component['id'] }}, '{{ $component['name'] }}')"
                                     @if ($component['factory_id'] != $factory_id) disabled @endif
@@ -105,7 +105,7 @@
         // 部材のform枠処理
         const makeFormEl = (index, id, name, inputData=[]) => {
 
-            const compId =  'comp-div-' + index
+            const compId =  'comp-div-' + id
 
             if ( !($(`#${compId}`).length) ) {
                 
@@ -115,7 +115,7 @@
                 createComponentIdHidden(id, compDiv)
                 createComponentNameHidden(id, name, compDiv)
 
-                const button = createAddBtn(compId, id, createComoTableRowEl, compDiv)
+                const button = createAddBtn(compId, id, createComoTableRowEl, compDiv, "")
 
                 let rowCount = getRowCount(inputData)
                 
@@ -195,9 +195,9 @@
 
         const compoClick = (index, id, compoName) => {
 
-            const selectCheck = $(`#comp-check-${index}`).prop('checked');
+            const selectCheck = $(`#comp-check-${id}`).prop('checked');
             if( selectCheck ) {
-                makeFormEl(index, id, compoName)
+                makeFormEl(index, String(id), compoName)
 
                 // 中身要素をid順に並び替える
                 const parent = $('#CompForm')
@@ -212,7 +212,7 @@
                 parent.empty().append(children);
 
             } else {
-                $(`#comp-div-${index}`).addClass('hidden')
+                $(`#comp-div-${id}`).addClass('hidden')
             }
 
             const checkComponent = $('.component:checked').length;

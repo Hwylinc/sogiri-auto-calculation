@@ -88,7 +88,6 @@
                                         @foreach ($resultDisplayList[$diameter_id] as $setTimes => $combination)
                                             <div class="time-detail">
                                                 <h2 class="time-title">{{ $setTimes }}回目</h2>
-                                                <input type="text" name="test" value="{{ old('test', 'urano') }}">
                                                 @if (!empty($combination['data']))
                                                 <table class="table">
                                                     <thead>

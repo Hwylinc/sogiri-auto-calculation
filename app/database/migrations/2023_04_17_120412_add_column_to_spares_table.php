@@ -13,11 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('user_factories', function (Blueprint $table) {
-            $table->id();
-            $table->integer('user_id')->nullable(false)->comment('ユーザーID');
-            $table->integer('factory_id')->nullable(false)->comment('工場ID');
-            $table->timestamps();
+        Schema::table('spares', function (Blueprint $table) {
+            $table->integer('diameters_id')->nullable(false)->comment('鉄筋径のID');
         });
     }
 
@@ -28,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_factories');
+        Schema::table('spares', function (Blueprint $table) {
+            //
+        });
     }
 };

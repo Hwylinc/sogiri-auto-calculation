@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('diameters', function (Blueprint $table) {
             $table->id();
             $table->integer('size')->comment('鉄筋径の値')->nullable(false);
+            $table->integer('length')->comment('生材のデフォルトの長さ')->nullable(false);
+            $table->integer('max_limit')->comment('同時切断可能数')->nullable(false);
             $table->timestamps();
             $table->softDeletes();
         });

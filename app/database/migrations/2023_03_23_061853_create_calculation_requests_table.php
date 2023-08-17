@@ -15,14 +15,12 @@ return new class extends Migration
     {
         Schema::create('calculation_requests', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable(false)->comment('計算番号');
+            $table->string('code')->nullable(false)->comment('計算依頼コード');
             $table->integer('length')->nullable(false)->comment('長さ');
             $table->integer('number')->nullable(false)->comment('本数');
             $table->integer('diameter_id')->nullable(false)->comment('鉄筋径ID');
             $table->integer('component_id')->nullable(false)->comment('部材ID');
             $table->integer('port_id')->nullable(false)->comment('吐き出し口ID');
-            $table->integer('client_id')->nullable(false)->comment('メーカーID');
-            $table->string('house_name')->nullable(false)->comment('邸名');
             $table->integer('user_id')->nullable(false)->comment('登録者ID');
             $table->integer('display_order')->nullable(false)->comment('表示順');
             $table->timestamps();

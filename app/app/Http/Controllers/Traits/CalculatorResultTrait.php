@@ -102,6 +102,8 @@ trait CalculatorResultTrait
         if (!empty($calculationResultList)) {
             foreach ($calculationResultList as $calculation) {
                 // 鉄筋径→カット回数順→切断順番
+                // id
+                $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['id'] = $calculation['id'];
                 // 長さ
                 $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['data'][$calculation['cutting_order']]['length'] = $calculation['length'];
                 // 切断本数

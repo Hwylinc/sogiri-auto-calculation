@@ -20,6 +20,13 @@ class CalculationResult extends Model
        , 'spare_flag'
     ];
 
+    static public function update_length_by_id($id, $length){
+        return self::where('id', "=", $id)
+            ->update([
+                'length' => $length,
+            ]);
+    }
+
     // *******************************************
     // 紐づく計算結果を取得する条件
     // *******************************************

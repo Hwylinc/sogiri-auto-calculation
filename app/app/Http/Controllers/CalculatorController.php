@@ -15,6 +15,8 @@ use App\Http\Controllers\Traits\CalculatorTrait;
 use App\Http\Controllers\Traits\CalculatorResultTrait;
 use Illuminate\Support\Facades\DB;
 use Auth;
+use Exception;
+use Illuminate\Support\Facades\Redirect;
 
 class CalculatorController extends BaseController
 {
@@ -203,6 +205,13 @@ class CalculatorController extends BaseController
         //  userに紐づく工場
         $factory_id = $user['factory_id'];
 
+        $getKeyParamenter = [
+            "group_code" => $group_code,
+            "page_tab"   => $page_tab,
+            "calculation_id" => $calculation_id,
+            "diameter_id" => $diameter_id,
+        ];
+
         // 現在開いているタブを取得
         $page_tab = empty($page_tab) ? 'result' : $page_tab;
         
@@ -260,6 +269,75 @@ class CalculatorController extends BaseController
           , 'diameter_id'                    => $diameter_id 
           , 'diameter_length'                => $length
           , 'calculationCodeList'            => $calCodes
+          , 'getKeyParamenter'               => $getKeyParamenter
         ]);   
+    }
+
+    // *******************************************
+    // 計算結果詳細編集
+    // *******************************************
+    public function postEdit(Request $request) {
+        $inputLengths = $request->input('length-input');
+        $url = $request->input('get-key-parameter');
+        
+        foreach( $inputLengths as $time => $lengths) {
+            $material_length = 9000;
+            foreach($lengths as $id => $length) {
+                $material_length -= (int)str_replace(',', '', $length);
+            }
+
+            if( $material_length < 0 ) {
+                $absLength = abs($material_length);
+                $this->addFlash($request, 'error', "{$time}回目の端材がマイナス{$absLength}です。");
+
+            }
+        }
+
+        if($request->session()->has('message.error')) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '1');
+        }
+
+        DB::beginTransaction();
+        try {
+
+            foreach( $inputLengths as $time => $lengths ) {
+                foreach( $lengths as $id => $length ) {
+                    $result = CalculationResult::update_length_by_id($id, $length);
+                    if( $result !== 1 ) {
+                        throw new Exception();
+                    }
+                }
+            }
+
+            DB::commit();
+            $this->addFlash($request, 'success', "編集が完了しました。");
+            return redirect()->route(
+                'calculate.detail',
+                [
+                    'group_code'=> $url['group_code'],
+                    'page_tab' => $url['page_tab'],
+                    'calculation_id' => $url['calculation_id'],
+                    'diameter_id' => $url['diameter_id'],
+                ]
+            );
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $this->addFlash($request, 'error', "データベースエラー。登録内容を控え管理者に問い合わせてください。");
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '1');
+        }
+        
+
+        // DB
+
+        // SUCCESS MESSAGE
+
+
+
     }
 }

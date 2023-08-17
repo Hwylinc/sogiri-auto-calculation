@@ -71,6 +71,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/calculate/list',                                                               'getList')->name('calculate.list');
         // 計算結果詳細画面
         Route::get('/calculate/detail/{group_code}/{page_tab?}/{calculation_id?}/{diameter_id?}',   'getDetail')->name('calculate.detail');
+        // 計算結果詳細編集
+        Route::post('/calculate/edit',                                                              'postEdit')->name('calculate.edit');
     });
 
     // 6_ * （予備材管理) 

@@ -43,65 +43,88 @@
                         </div>
                         {{-- 切断指示　Start --}}
                         <div id="result" @if($page_tab!='result') class="tab-pane hidden" @else class="tab-pane" @endif>
-                            <div class="rebar-select-frame flex-wrap">
-                                <label class="mr-2 font-semibold">現在の鉄筋径</label>
-                                @foreach ($diameterDisplayList as $diameter => $id)
-                                @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16')
-                                    <a 
-                                        class="
-                                            rebar-button
-                                            @if($id == $diameter_id) diameter-select @else print-off @endif
-                                            mr-2
-                                        "
-                                         href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'result', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
-                                        {{ $diameter }}<br>
-                                    </a>
-                                @endif
-                                @endforeach
-                                <div class="w-full"></div>
-                                <div class="calculation-code-list">
-                                    <p>計算結果対象</p>
-                                    @foreach($calculationCodeList as $index => $code)
-                                        {{ $index !== 0 ? '/' : ""}} {{ $code['name'] }} {{ $code['house_name'] }}
-                                    @endforeach
+                            <form class="cutting-instruction-form" action="{{ route('calculate.edit') }}" method="post">
+                                @csrf
+                                {{-- URLの情報をpost送信 --}}
+                                <input type="hidden" name="get-key-parameter[group_code]" value="{{ $getKeyParamenter['group_code'] }}">
+                                <input type="hidden" name="get-key-parameter[page_tab]" value="{{ $getKeyParamenter['page_tab'] }}">
+                                <input type="hidden" name="get-key-parameter[calculation_id]" value="{{ $getKeyParamenter['calculation_id'] }}">
+                                <input type="hidden" name="get-key-parameter[diameter_id]" value="{{ $getKeyParamenter['diameter_id'] }}">
+
+                                <div class="rebar-select-frame flex-wrap justify-between">
+                                    <div class="flex items-center">
+                                        <label class="mr-2 font-semibold">現在の鉄筋径</label>
+                                        @foreach ($diameterDisplayList as $diameter => $id)
+                                        @if($diameter == 'D10' || $diameter == 'D13' || $diameter == 'D16')
+                                            <a 
+                                                class="
+                                                    rebar-button
+                                                    @if($id == $diameter_id) diameter-select @else print-off @endif
+                                                    mr-2
+                                                "
+                                                href="{{ route('calculate.detail',['group_code' => $group_code, 'page_tab' => 'result', 'calculation_id' => $calculation_id, 'diameter_id' => $id]) }}">
+                                                {{ $diameter }}<br>
+                                            </a>
+                                        @endif
+                                        @endforeach
+                                    </div>
+                                    <div class="flex items-center">
+                                        <label for="std-size-name" class="mr-2">定尺寸法</label> 
+                                        <p class="text-xl">{{ number_format($diameter_length) }}mm</p>
+                                        <button type="button" id="edit-btn" class="rebar-button edit-btn flex items-center hidden">編集</button>
+                                    </div>
+                                    <div class="w-full"></div>
+
+                                    <div class="calculation-code-list mt-4">
+                                        <p>計算結果対象</p>
+                                        @foreach($calculationCodeList as $index => $code)
+                                            {{ $index !== 0 ? '/' : ""}} {{ $code['name'] }} {{ $code['house_name'] }}
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="mt-5 print-space">
-                                @if (!empty($resultDisplayList[$diameter_id])) 
-                                    @foreach ($resultDisplayList[$diameter_id] as $setTimes => $combination)
-                                        <div class="time-detail">
-                                            <h2 class="time-title">{{ $setTimes }}回目</h2>
-                                            @if (!empty($combination['data']))
-                                            <table class="table">
-                                                <thead>
-                                                    <tr>
-                                                        <td class="left print-size">切断順番</td>
-                                                        <td>長さ</td>
-                                                        <td>切断本数</td>
-                                                        <td>吐き出し口</td>
-                                                        <td>予備材判定</td>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                @foreach ($combination['data'] as $key => $value)
-                                                    <tr>
-                                                        <th class="left order">{{ $key }}</th>
-                                                        <td>{{  number_format($value['length']) }} <span class="unit">mm</span></td>
-                                                        <td>{{  number_format($value['number']) }} <span class="unit">本</span></td>
-                                                        <td>{{  $value['port'] }}</td>
-                                                        <td>{{ $value['spare_flag'] ? '予備材' : '指示材'  }}</td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                            <p class="mt-4 pl-2">端材　{{ $combination['left'] }}</p>
-                                            @endif
-                                        </div>
-                                @endforeach
-                            @else
-                                <p class="text-white">表示内容がありません</p>
-                            @endif
-                            </div>
+                                <x-message :message="session('message')"/>
+                                <div class="mt-4 print-space">
+                                    @if (!empty($resultDisplayList[$diameter_id])) 
+                                        @foreach ($resultDisplayList[$diameter_id] as $setTimes => $combination)
+                                            <div class="time-detail">
+                                                <h2 class="time-title">{{ $setTimes }}回目</h2>
+                                                <input type="text" name="test" value="{{ old('test', 'urano') }}">
+                                                @if (!empty($combination['data']))
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <td class="left print-size">切断順番</td>
+                                                            <td class="w-[20%]">長さ</td>
+                                                            <td>切断本数</td>
+                                                            <td>吐き出し口</td>
+                                                            <td>予備材判定</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @foreach ($combination['data'] as $key => $value)
+                                                        <tr>
+                                                            <th class="left order">{{ $key }}</th>
+                                                            <td class="complete-input-legnth">{{  number_format($value['length']) }} <span class="unit">mm</span></td>
+                                                            <td class="edit-input-legnth hidden">
+                                                                <input class="edit-input-length-entry" type="text" value="{{ old("length-input." . $setTimes . "." . $value["id"], $value['length']) }}" name="length-input[{{ $setTimes }}][{{ $value['id'] }}]">
+                                                                <span class="unit">mm</span>
+                                                            </td>
+                                                            <td>{{  number_format($value['number']) }} <span class="unit">本</span></td>
+                                                            <td>{{  $value['port'] }}</td>
+                                                            <td>{{ $value['spare_flag'] ? '予備材' : '指示材'  }}</td>
+                                                        </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                                <p class="mt-4 pl-2">端材　{{ $combination['left'] }}</p>
+                                                @endif
+                                            </div>
+                                    @endforeach
+                                @else
+                                    <p class="text-white">表示内容がありません</p>
+                                @endif
+                                </div>
+                            </form>
                         </div>
                         {{-- 切断指示　End --}}
                         
@@ -239,12 +262,49 @@
 
 <script type="text/javascript">
     $(function() {
+
+        let screenMode = 0; // 0：編集 1：完了
+        let error = @json(session('error') ?? '0');
+        console.log(error)
+    
+
         $("#calculation_id").on('change', function() {
             // selectボックスの値を取得
             var group_code = "{{ $group_code }}";
             var calculation_id = $("#calculation_id").val();
             window.location.href = "/calculate/detail/" + group_code + "/request/" + calculation_id;
         });
+
+        // 編集ボタンクリック時処理
+        $('#edit-btn').on('click', (e) => {
+            // クリック処理を停止する
+            e.preventDefault();
+
+            const btnTitle = $('#edit-btn').text()
+            
+            // 確認モードか編集モードによって処理を行う
+            if (btnTitle === '編集') {
+                // 編集モードに切り替える準備を行う
+                $('.complete-input-legnth').each((index, element) => {
+                    $(element).addClass('hidden')
+                });
+                $('.edit-input-legnth').each((index, element) => {
+                    $(element).removeClass('hidden')
+                });
+
+                $('#edit-btn').text('完了')
+            } else { 
+                // 編集内容をpost送信する   
+                $('.cutting-instruction-form').submit()
+                $('#edit-btn').text('編集')
+            }
+            
+        })
+
+        if( error === '1' ) {
+            console.log('error')
+            $('#edit-btn').trigger('click');
+        }
     });
 
 </script>
@@ -308,8 +368,9 @@
         background-color: #ffffff;
         display: flex;
         align-items: center;
-        min-height: 160px;
+        min-height: 88px;
         max-height: 200px;
+        /* height: 88px; */
         padding: 16px 16px;
     }
 
@@ -371,6 +432,25 @@
     .unit {
         color: #b1b1b1;
         font-size: 14px;
+    }
+
+    .rebar-button.edit-btn {
+        display: flex;
+        padding: 4px;
+        align-items: center;
+        justify-content: center;
+        background-color: #53BC00;
+        color: #ffffff;
+        height: 32px;
+        margin-left: 24px;
+    }
+
+    .edit-input-legnth .edit-input-length-entry {
+        width: 108px;
+        text-align: right;
+        padding: 0 8px;
+        border: 1px solid #d7d7d7;
+        border-radius: 4px;
     }
 
     @media print{

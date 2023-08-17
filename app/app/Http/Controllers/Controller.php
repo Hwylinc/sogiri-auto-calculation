@@ -57,10 +57,10 @@ class Controller extends BaseController
         $sessionStore = $request->session();
         $messageKbn = 'message.' . $messageKbn;
 
-        if ($sessionStore->has('$messageKbn')) {
+        if ($sessionStore->has($messageKbn)) {
             $sessionStore->push($messageKbn, $messageTxt);
         } else {
-            $sessionStore->flash($messageKbn, $messageTxt);
+            $sessionStore->flash($messageKbn, [$messageTxt]);
         }
     }
 

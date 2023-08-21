@@ -460,7 +460,6 @@
         width: 300px;
         border-radius: 5px;
         position: relative;
-        padding-right: 15px;
         z-index: 1;
 
     }
@@ -490,7 +489,7 @@
         font-size: 14px;
         width: 100%;
         height: 100%;
-        padding: 0 10px;
+        padding: 0 25px 0 10px;
         position: relative;
     }
 

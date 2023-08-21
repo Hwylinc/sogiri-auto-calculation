@@ -27,7 +27,7 @@ class Menu extends Component
                 'image' => 'calculate'
             ],
             '4' => [
-                'title' => '計算未実施一覧', 
+                'title' => '未計算一覧', 
                 'select' => false, 
                 'route_name' => 'calculate.ready', 
                 'image' => 'calculate'

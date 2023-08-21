@@ -30,7 +30,7 @@ class Menu extends Component
                 'title' => '未計算一覧', 
                 'select' => false, 
                 'route_name' => 'calculate.ready', 
-                'image' => 'calculate'
+                'image' => 'mikeisan'
             ],
             '2' => [
                 'title' => '計測結果履歴一覧', 

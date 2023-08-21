@@ -115,7 +115,9 @@ trait CalculatorResultTrait
 
                 // 端材の長さ管理
                 if (empty($resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'])) {
-                    $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] = 9000 - $calculation['length'];
+                    if ($calculation['length'] !== 0) {
+                        $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] = 9000 - $calculation['length'];
+                    }
                 } else {
                     $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] = $resultDisplayList[$calculation['diameter_id']][$calculation['times']]['left'] - $calculation['length'];
                 }

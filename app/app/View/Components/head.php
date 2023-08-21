@@ -29,6 +29,9 @@ class Head extends Component
             case "4":
                 $img = 'totalling';
                 break;
+            case "5":
+                $img = 'mikeisan';
+                break;
         }
 
         $this->show['title'] = $title;

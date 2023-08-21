@@ -1,6 +1,6 @@
 <x-menu select-page="4">
     {{-- title --}}
-    <x-head title="未計算一覧" imageFlg="1"></x-head>
+    <x-head title="未計算一覧" imageFlg="5"></x-head>
 
         <div class="card">
             <div class="card-body">

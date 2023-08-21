@@ -215,6 +215,11 @@ trait CalculatorResultTrait
                     abort(403, '別工場の情報です。閲覧権限がありません。');
                 } else {
                     $calculationRequestCodeList[$value['code']] = $temp_data->toArray();
+                    $join_name = $calculationRequestCodeList[$value['code']]['name'] ." " .  $calculationRequestCodeList[$value['code']]['house_name'];
+                    if (mb_strlen($join_name) > 32) {
+                        $join_name = mb_substr($join_name, 0, 32) . "...";
+                    }
+                    $calculationRequestCodeList[$value['code']]['join_name'] = $join_name;
                 }
             }
         }

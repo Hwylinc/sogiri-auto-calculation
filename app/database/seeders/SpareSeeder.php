@@ -67,6 +67,7 @@ class SpareSeeder extends Seeder
                     'name' => $value,
                     'priority_flg' => $array['priority_flg'],
                     'diameters_id' => $array['diameters_id'],
+                    'order_number' => $array['order_number'],
                 ]);
             }
         }

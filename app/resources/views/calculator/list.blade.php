@@ -9,31 +9,35 @@
                 <div class="card">
                     <div class="card-body">
                         @if (!empty($calculationGroupCodes))
-                            <div class="row flex justify-between text-left">
-                                <div class="w-[16%] row-head">日時</div>
-                                <div class="w-[28%] row-head">メーカー</div>
-                                <div class="w-[28%] row-head">邸名</div>
-                                <div class="w-[28%] row-head">登録番号</div>
+                            <div  class="row flex">
+                                <div class="row flex justify-between text-left w-[90%]">
+                                    <div class="w-[14%] row-head">日時</div>
+                                    <div class="w-[41%] row-head">メーカー</div>
+                                    <div class="w-[53%] row-head">邸名</div>
+                                </div>
+                                <div class="w-[10%] row-head text-center">削除</div>
                             </div>
                             @foreach ($calculationGroupCodes as $group_code => $caliculatedInfo)
                                 @if (!empty($caliculatedInfo))
-                                    <div class="row-group">
-                                        <a href="{{ route('calculate.detail', ['group_code' => $group_code]) }}">
-                                            <div class="border-top">
+                                    <div class="row-group flex">
+                                            <div class="border-top w-[90%]">
                                                 @foreach ($caliculatedInfo as $disp_group_id => $codes)
                                                     @if (!empty($codes))
+                                                    <a href="{{ route('calculate.detail', ['group_code' => $group_code]) }}">
                                                         @foreach ($codes as $code)
                                                             <div class="row flex justify-between">
-                                                                <div class="w-[16%] row-detail">{{ date( "Y/m/d", strtotime($code['created'])) }}</div>
-                                                                <div class="w-[28%] row-detail">{{ $code['name'] }}</div>
-                                                                <div class="w-[28%] row-detail">{{ $code['house_name'] }}</div>
-                                                                <div class="w-[28%] row-detail">{{ sprintf('%06d', $code['group_id']) }}</div>
+                                                                <div class="w-[14%] row-detail">{{ date( "Y/m/d", strtotime($code['created'])) }}</div>
+                                                                <div class="w-[41%] row-detail">{{ $code['name'] }}</div>
+                                                                <div class="w-[53%] row-detail">{{ $code['house_name'] }}</div>
+                                                                {{-- <div class="w-[28%] row-detail">{{ sprintf('%06d', $code['group_id']) }}</div> --}}
                                                             </div>
                                                         @endforeach
+                                                    </a>
                                                     @endif
+
                                                 @endforeach
                                             </div>
-                                        </a>
+                                            <div class="w-[10%] border-top row-detail flex items-center justify-center" onclick="deleteBtn(event, '{{ $group_code }}')"><img src="{{ asset("images/delete.svg") }}" alt="" class="head-logo"></div>
                                     </div>
                                 @endif
                             @endforeach
@@ -46,6 +50,15 @@
         </div>
     </div>
 </x-menu>
+
+<script type="text/javascript">
+
+function deleteBtn(e, group_code) {
+    console.log('test')
+    e.preventDefault()
+    window.location.href = `{{ route("calculate.delete", ["group_code" => "*"]) }}`.replace('*', group_code);
+}
+</script>
 
 <style lang="scss" scoped>
     .card {

@@ -592,6 +592,9 @@ video {
 .w-\[108px\]{
   width: 108px;
 }
+.w-\[12\%\]{
+  width: 12%;
+}
 .w-\[16\%\]{
   width: 16%;
 }
@@ -610,17 +613,53 @@ video {
 .w-\[3\%\]{
   width: 3%;
 }
+.w-\[35\%\]{
+  width: 35%;
+}
+.w-\[45\%\]{
+  width: 45%;
+}
+.w-\[96px\]{
+  width: 96px;
+}
 .w-auto{
   width: auto;
 }
 .w-full{
   width: 100%;
 }
-.w-\[96px\]{
-  width: 96px;
+.w-\[90\%\]{
+  width: 90%;
 }
-.w-\[104px\]{
-  width: 104px;
+.w-\[65\%\]{
+  width: 65%;
+}
+.w-\[15\%\]{
+  width: 15%;
+}
+.w-\[32\%\]{
+  width: 32%;
+}
+.w-\[53\%\]{
+  width: 53%;
+}
+.w-\[13\%\]{
+  width: 13%;
+}
+.w-\[14\%\]{
+  width: 14%;
+}
+.w-\[40\%\]{
+  width: 40%;
+}
+.w-\[42\%\]{
+  width: 42%;
+}
+.w-\[41\%\]{
+  width: 41%;
+}
+.w-\[53\DF\%\]{
+  width: 53ß%;
 }
 .min-w-\[100px\]{
   min-width: 100px;
@@ -630,6 +669,9 @@ video {
 }
 .flex-1{
   flex: 1 1 0%;
+}
+.transform{
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 .resize{
   resize: both;
@@ -845,6 +887,9 @@ video {
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --tw-shadow-colored: 0 1px 2px 0 var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.outline{
+  outline-style: solid;
 }
 .blur{
   --tw-blur: blur(8px);

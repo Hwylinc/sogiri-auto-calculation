@@ -27,6 +27,10 @@ class CalculationResult extends Model
             ]);
     }
 
+    static public function delete_by_groupCode($group_code) {
+        return self::where('group_code', "=" ,$group_code)->delete();
+    }
+
     // *******************************************
     // 紐づく計算結果を取得する条件
     // *******************************************

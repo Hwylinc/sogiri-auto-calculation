@@ -44,6 +44,10 @@ class CalculationCode extends Model
             ->get();
     } 
 
+    public static function delete_by_ids($codes) {
+        return self::whereIn('code', $codes)->delete();
+    }
+
     // *******************************************
     // 計算対象一覧情報を取得する条件
     // *******************************************

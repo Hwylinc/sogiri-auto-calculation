@@ -28,7 +28,7 @@ class CalculationCode extends Model
             'client_name' => $data['client_name'],
             'house_name' => $data['house_name'],
             'factory_id' => $data['factory_id'],
-            'length' => 9000, // 生材の長さを変更できるようになったら変更必要
+            'length' => config('const.stadard_size'), // 生材の長さを変更できるようになったら変更必要
             'calculation_status' => 2,
         ]);
     }

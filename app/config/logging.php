@@ -117,6 +117,18 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'sql' => [
+            'driver' => 'daily',  // 日別
+            'path' => storage_path('logs/sql.log'), // 出力先
+            'level' => 'debug', // ログレベル
+            'days' => 14, // 保存期間
+        ],
+    ],
+
+    'sql' => [
+        'enable' => env('LOG_SQL_ENABLE', true),
+        // 'slow_query_time' => env('LOG_SQL_SLOW_QUERY_TIME', 2000), // ms
     ],
 
 ];

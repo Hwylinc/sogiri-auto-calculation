@@ -17,5 +17,7 @@ return [
     'calculation_status_key' => [
         1 => '計算済み',
         2 => '未計算'
-    ]
+    ],
+    'stadard_size' => 9000,
+
 ];

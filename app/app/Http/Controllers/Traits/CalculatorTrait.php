@@ -428,7 +428,7 @@ trait CalculatorTrait
         $cut_list  = $lengths['length'];
         // shuffle($cut_list);
         // 鉄筋径ごとの生材の長さを取得（8000の場所をこの変数に後程置き換え）
-        $material_length = 9000;
+        $material_length = config('const.stadard_size');
         
         $rods = [$material_length];
         $cuts = [];

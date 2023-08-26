@@ -281,7 +281,7 @@ class CalculatorController extends BaseController
         $url = $request->input('get-key-parameter');
         
         foreach( $inputLengths as $time => $lengths) {
-            $material_length = 9000;
+            $material_length = config('const.stadard_size');
             foreach($lengths as $id => $length) {
                 $material_length -= (int)str_replace(',', '', $length);
             }

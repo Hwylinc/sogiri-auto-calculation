@@ -45,16 +45,21 @@ Route::middleware('auth')->group(function(){
         Route::get('/rebar/edit/{calculation_id}/{diameter}',    'getEdit')->name('rebar.edit');
         // 鉄筋情報CSVアップロード画面
         Route::get('/rebar/csv-register',                        'getCsvRegister')->name('rebar.csv-register');
-        // 鉄筋情報CSV読み込みアップロード画面
+        // 鉄筋情報CSV読み込みアップロード確認画面
         Route::post('/rebar/csv-upload',                         'postCsvUpload')->name('rebar.csv-upload');
-        // 鉄筋情報CSVアップロード確認画面
-        Route::get('/rebar/csv-confirm',                         'getCsvConfirm')->name('rebar.csv-confirm');
+        // 鉄筋情報CSVアップロード後画面
+        Route::post('/rebar/csv-result' ,                         'getCsvResult')->name('rebar.csv-result');
         // 鉄筋情報登録・編集完了処理
         Route::post('/rebar/complete',                           'postComplete')->name('rebar.complete');
         // 鉄筋情報登録・編集完了画面
         Route::get('/rebar/complete',                            'getComplete')->name('rebar.done');
         // 鉄筋情報詳細画面
         Route::get('/rebar/detail/{calculation_id}',             'getDetail')->name('rebar.detail');
+        ////// CSV用 //////
+        // csvアップロード後、確認画面
+        Route::match(['get', 'post'], '/csv/confirm/{diameter}', 'getConfirm')->name('csv.confirm');
+        // csv用の鉄筋情報登録・編集完了画面
+        Route::get('/csv/complete',                            'getComplete')->name('csv.done');
     });
 
     // 5_ * （計算管理) 
@@ -73,6 +78,8 @@ Route::middleware('auth')->group(function(){
         Route::get('/calculate/detail/{group_code}/{page_tab?}/{calculation_id?}/{diameter_id?}',   'getDetail')->name('calculate.detail');
         // 計算結果詳細編集
         Route::post('/calculate/edit',                                                              'postEdit')->name('calculate.edit');
+        // 計算グループ削除
+        Route::get('/calculate/delete/{group_code}',                                               'getDelete')->name('calculate.delete');
     });
 
     // 6_ * （予備材管理) 
@@ -83,6 +90,16 @@ Route::middleware('auth')->group(function(){
         Route::get('/spare/edit/{factry_id}',  'getEdit')->name('spare.edit');
         // 編集完了処理
         Route::post('/spare/complete',         'postComplete')->name('spare.complete');
+    });
+
+    // CSVアップロード
+    Route::controller(\App\Http\Controllers\CsvUploadController::class)->group(function () {
+        // 鉄筋情報CSVアップロード画面
+        Route::get('/csv/csv-upload',                        'getCsvRegister')->name('csv.csv-upload');
+        // 鉄筋情報CSV読み込みアップロード確認画面
+        Route::post('/csv/csv-register',                     'postCsvUpload')->name('csv.csv-register');
+        // 鉄筋情報CSVアップロード後画面
+        Route::post('/csv/csv-result' ,                      'getCsvResult')->name('csv.csv-result');
     });
 
     // Ajax系 

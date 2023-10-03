@@ -25,6 +25,7 @@ class SpareSeeder extends Seeder
                 ],
                 'priority_flg' => 0,
                 'diameters_id' => 1,
+                'order_number' => 999,
             ],
             'd13' => [
                 'name' => [
@@ -32,6 +33,7 @@ class SpareSeeder extends Seeder
                 ],
                 'priority_flg' => 0,
                 'diameters_id' => 2,
+                'order_number' => 999,
             ],
             'd16' => [
                 'name' => [
@@ -39,6 +41,7 @@ class SpareSeeder extends Seeder
                 ],
                 'priority_flg' => 0,
                 'diameters_id' => 3,
+                'order_number' => 999,
             ],
             'd19' => [
                 'name' => [
@@ -46,6 +49,7 @@ class SpareSeeder extends Seeder
                 ],
                 'priority_flg' => 0,
                 'diameters_id' => 4,
+                'order_number' => 999,
             ],
             'd22' => [
                 'name' => [
@@ -53,6 +57,7 @@ class SpareSeeder extends Seeder
                 ],
                 'priority_flg' => 0,
                 'diameters_id' => 5,
+                'order_number' => 999,
             ],
         ];
         
@@ -62,6 +67,7 @@ class SpareSeeder extends Seeder
                     'name' => $value,
                     'priority_flg' => $array['priority_flg'],
                     'diameters_id' => $array['diameters_id'],
+                    'order_number' => $array['order_number'],
                 ]);
             }
         }

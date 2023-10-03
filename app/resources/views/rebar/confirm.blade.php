@@ -1,4 +1,17 @@
-<x-menu select-page="1">
+<?php
+    if (session()->has('view_type')) {
+        $select_page = 5;
+        $jump_view = false;
+        $href = 'csv.confirm';
+        $href_done = 'csv.done';
+    } else {
+        $select_page = 1;
+        $jump_view = true;
+        $href = 'rebar.confirm';
+        $href_done = 'rebar.done';
+    }
+?>
+<x-menu select-page="{{ $select_page }}">
 <div class="rebar">
     {{-- title --}}
     <x-head title="鉄筋計算" imageFlg="1"></x-head>
@@ -74,7 +87,7 @@
                         {{-- 戻るボタン --}}
                         @if (array_key_exists('prev', $page))
                             <a 
-                                href="{{ route('rebar.confirm', ['diameter' => $page['prev']->id])}}"
+                                href="{{ route($href, ['diameter' => $page['prev']->id])}}"
                                 class="page-btn prev-btn"
                                 id="prev-btn"
                             >
@@ -84,7 +97,7 @@
 
                         @if ($page['next']["id"] !== -1)
                             <a 
-                                href="{{ route('rebar.confirm', ['diameter' => $page['next']->id])}}"
+                                href="{{ route($href, ['diameter' => $page['next']->id])}}"
                                 class="page-btn black-btn"
                                 id="next-btn"
                             >
@@ -92,7 +105,7 @@
                             </a>
                         @else
                             <a 
-                                href="{{ route('rebar.done') }}"
+                                href="{{ route($href_done) }}"
                                 class="page-btn confirm-btn"
                                 id="done"
                             >
@@ -100,7 +113,6 @@
                             </a>
                         @endif
                     </div>
-
                 </div>
             </form>
         </div>

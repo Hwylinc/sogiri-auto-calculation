@@ -48,6 +48,10 @@ class CalculationRequests extends Model
         return self::where('id', $id)->delete();
     }
 
+    static public function deleteByIds($codes) {
+        return self::whereIn('code', $codes)->forceDelete();
+    }
+
     // *******************************************
     // 計算対象一覧情報を取得する条件
     // *******************************************

@@ -145,13 +145,15 @@
                                 @endforeach
 
                                 @if (!empty($calculationRequestCodeList))
-                                    <select id="calculation_id" class="house_name">
-                                        @foreach ($calculationRequestCodeList as $value)
-                                            <option @if ($value['code'] == $calculation_id) selected @endif
-                                                value="{{ $value['code'] }}">{{ $value['name'] }}
-                                                {{ $value['house_name'] }}</option>
-                                        @endforeach
-                                    </select>
+                                    <div class="house-name-select house_name">
+                                        <select id="calculation_id" class="house-name-select-none">
+                                            @foreach ($calculationRequestCodeList as $value)
+                                                <option @if ($value['code'] == $calculation_id) selected @endif
+                                                    value="{{ $value['code'] }}">{{ $value['join_name'] }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
                                 @endif
 
                                 <div class="flex items-center">
@@ -450,6 +452,45 @@
         padding: 0 8px;
         border: 1px solid #d7d7d7;
         border-radius: 4px;
+    }
+
+    .house-name-select {
+        background: #ffffff;
+        height: 40px;
+        width: 300px;
+        border-radius: 5px;
+        position: relative;
+        z-index: 1;
+
+    }
+
+    .house-name-select::after {
+        position: absolute;
+        content: '';
+        width: 8px;
+        height: 8px;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%) rotate(45deg);
+        border-bottom: 2px solid #000000;
+        border-right: 2px solid #000000;
+        z-index: -1;
+    }
+
+    .house-name-select-none {
+        /* 初期化 */
+        outline: none;
+        appearance: none;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        background: none;
+        border: none;
+        color: #333;
+        font-size: 14px;
+        width: 100%;
+        height: 100%;
+        padding: 0 25px 0 10px;
+        position: relative;
     }
 
     @media print{

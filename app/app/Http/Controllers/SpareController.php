@@ -138,7 +138,9 @@ class SpareController extends BaseController
                 return back()->withInput();
             } else {
                 $spareIns->update_all_priority_reset($select_id);
-                $spareIns->update_priority($ids);
+                foreach($ids as $order => $id) {
+                    $spareIns->update_priority($id, $order);
+                }
         
                 $this->addFlash($request, 'success', '登録が完了しました。');
             }

@@ -23,6 +23,7 @@
         <script src="{{ mix('js/app.js') }}" ></script>
         <script src="{{ asset('js/jquery.min.js') }}"></script>
         <script src="{{ asset('js/select2.min.js') }}" defer></script>
+        <script src="{{ asset('js/jquery-ui.min.js') }}" defer></script>
         
 
     </head>

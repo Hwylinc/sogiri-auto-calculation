@@ -13,4 +13,8 @@ class CalculationGroup extends Model
         "group_code"   //計算結果番号
     ];
 
+    static public function delete_by_groupCode($group_code) {
+        return self::where('group_code', "=" ,$group_code)->delete();
+    }
+
 }

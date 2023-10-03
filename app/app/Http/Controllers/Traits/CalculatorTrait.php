@@ -67,7 +67,7 @@ trait CalculatorTrait
                     // 前回までのデータをlistに格納する
                     if ($index !== 0) {
                         // 優先予備材配列と普通の予備材配列を大きい順に並び替える
-                        sort($priority_spare);
+                        // sort($priority_spare);
                         sort($normal_spare);
                         // 優先予備材と普通の予備材を結合する：merge引数の順番大事
                         $list['D'. $prev_size] = array_merge($normal_spare, $priority_spare);
@@ -428,7 +428,7 @@ trait CalculatorTrait
         $cut_list  = $lengths['length'];
         // shuffle($cut_list);
         // 鉄筋径ごとの生材の長さを取得（8000の場所をこの変数に後程置き換え）
-        $material_length = 9000;
+        $material_length = config('const.stadard_size');
         
         $rods = [$material_length];
         $cuts = [];
@@ -600,7 +600,7 @@ trait CalculatorTrait
 
             $cutCount = count($spare_cut_list);
             $waste = $left;
-            for ($j = 0; $j < $cutCount; $j++) {
+            for ($j = $cutCount - 1; $j >= 0; $j--) {
                 if ($used_spare_result[$j] > 0) {
                     for ($i = 0; $i <  $used_spare_result[$j]; $i++) {
                         $return_data['used'][] = $spare_cut_list[$j];

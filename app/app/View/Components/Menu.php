@@ -27,10 +27,10 @@ class Menu extends Component
                 'image' => 'calculate'
             ],
             '4' => [
-                'title' => '計算未実施一覧', 
+                'title' => '未計算一覧', 
                 'select' => false, 
                 'route_name' => 'calculate.ready', 
-                'image' => 'calculate'
+                'image' => 'mikeisan'
             ],
             '2' => [
                 'title' => '計測結果履歴一覧', 
@@ -45,6 +45,12 @@ class Menu extends Component
                 'route_name' => 'spare.list', 
                 'param' => ['factry_id' => '1'],
                 'image' => 'list'
+            ],
+            '5' => [
+                'title' => 'CSVアップロード', 
+                'select' => false, 
+                'route_name' => 'csv.csv-upload', 
+                'image' => 'calculate'
             ],
             // 20230718時点では不必要なのでコメントアウト
             // '4' => [

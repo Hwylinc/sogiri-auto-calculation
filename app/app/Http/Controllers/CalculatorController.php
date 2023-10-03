@@ -281,7 +281,7 @@ class CalculatorController extends BaseController
         $url = $request->input('get-key-parameter');
         
         foreach( $inputLengths as $time => $lengths) {
-            $material_length = 9000;
+            $material_length = config('const.stadard_size');
             foreach($lengths as $id => $length) {
                 $material_length -= (int)str_replace(',', '', $length);
             }
@@ -331,13 +331,49 @@ class CalculatorController extends BaseController
                 ->withInput()
                 ->with('error', '1');
         }
-        
+    }
 
-        // DB
+    public function getDelete(Request $request, $group_code) {
 
-        // SUCCESS MESSAGE
+        DB::beginTransaction();
+        try {
+             // group_codeの中間テーブルからgroupに紐づくcalculation_code(複数個あり)を取り出す
+            $group_code_results = CalculationGroupCalculationCode::get_by_groupCode($group_code);
 
+            // calculaiton_groupsの削除
+            CalculationGroup::delete_by_groupCode($group_code);
 
+            // calculation_result(複数あり)の削除 - group_codeより
+            CalculationResult::delete_by_groupCode($group_code);
 
+            // group_code_resultの
+            $calculation_codes = [];
+            foreach( $group_code_results as $group_code_result ) {
+                array_push($calculation_codes, $group_code_result['code']);
+            }
+
+            // 3 calculation_request(複数 * 複数あり)削除 - 2より
+            CalculationRequests::deleteByIds($calculation_codes);
+
+            // 4 calculation_code(複数あり)削除 - 2より
+            CalculationCode::delete_by_ids($calculation_codes);
+
+            // 5 calculation_groupの削除(1つのみ) - group_codeより
+            CalculationGroupCalculationCode::delete_by_id($group_code);
+
+            DB::commit();
+
+            return redirect()->route(
+                'calculate.list'
+            );
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            $this->addFlash($request, 'error', "データベースエラー。登録内容を控え管理者に問い合わせてください。");
+            return redirect()->back()
+                ->withInput()
+                ->with('error', '1');
+        }
     }
 }

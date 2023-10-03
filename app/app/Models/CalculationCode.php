@@ -28,7 +28,7 @@ class CalculationCode extends Model
             'client_name' => $data['client_name'],
             'house_name' => $data['house_name'],
             'factory_id' => $data['factory_id'],
-            'length' => 9000, // 生材の長さを変更できるようになったら変更必要
+            'length' => config('const.stadard_size'), // 生材の長さを変更できるようになったら変更必要
             'calculation_status' => 2,
         ]);
     }
@@ -43,6 +43,10 @@ class CalculationCode extends Model
             ->orderby('create', 'ASC')
             ->get();
     } 
+
+    public static function delete_by_ids($codes) {
+        return self::whereIn('code', $codes)->delete();
+    }
 
     // *******************************************
     // 計算対象一覧情報を取得する条件

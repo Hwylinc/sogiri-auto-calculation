@@ -19,7 +19,7 @@
                         </div>
                         <div class="hide" id="input_text">
                             <label class="maker_label">メーカー</label>
-                            <input type="text" placeholder="メーカーを記入してください" name="maker_name" class="maker_text">
+                            <input type="text" placeholder="メーカーを記入してください" name="client_name" class="maker_text">
                         </div>
                         <div class="regist-btn">
                             <input class="submit" type="submit" value="登録">

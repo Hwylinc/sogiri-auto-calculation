@@ -55,6 +55,11 @@ Route::middleware('auth')->group(function(){
         Route::get('/rebar/complete',                            'getComplete')->name('rebar.done');
         // 鉄筋情報詳細画面
         Route::get('/rebar/detail/{calculation_id}',             'getDetail')->name('rebar.detail');
+        ////// CSV用 //////
+        // csvアップロード後、確認画面
+        Route::match(['get', 'post'], '/csv/confirm/{diameter}', 'getConfirm')->name('csv.confirm');
+        // csv用の鉄筋情報登録・編集完了画面
+        Route::get('/csv/complete',                            'getComplete')->name('csv.done');
     });
 
     // 5_ * （計算管理) 
@@ -86,6 +91,8 @@ Route::middleware('auth')->group(function(){
         // 編集完了処理
         Route::post('/spare/complete',         'postComplete')->name('spare.complete');
     });
+
+    // CSVアップロード
     Route::controller(\App\Http\Controllers\CsvUploadController::class)->group(function () {
         // 鉄筋情報CSVアップロード画面
         Route::get('/csv/csv-upload',                        'getCsvRegister')->name('csv.csv-upload');

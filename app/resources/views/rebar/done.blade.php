@@ -1,4 +1,13 @@
-<x-menu select-page="1">
+<?php
+    if (session()->has('view_type')) {
+        $select_page = 5;
+        $jump_view = false;
+    } else {
+        $select_page = 1;
+        $jump_view = true;
+    }
+?>
+<x-menu select-page="{{ $select_page }}">
 
     {{-- title --}}
     <x-head title="鉄筋計算" imageFlg="1"></x-head>
